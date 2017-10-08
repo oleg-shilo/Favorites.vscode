@@ -2,7 +2,7 @@
 	"name": "favorites",
 	"displayName": "Favorites",
 	"description": "Manage and quickly access frequently used documents",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"publisher": "oleg-shilo",
 	"engines": {
 		"vscode": "^1.13.0"
@@ -10,6 +10,18 @@
 	"categories": [
 		"Other"
 	],
+	"keywords": [
+		"Favorites"
+    ],
+    "bugs": {
+        "url": "https://github.com/oleg-shilo/Favorites.vscode/issues",
+        "email": "oshilo@gmail.com"
+    },
+    "homepage": "https://github.com/oleg-shilo/Favorites.vscode/blob/master/README.md",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/oleg-shilo/Favorites.vscode.git"
+    },
 	"activationEvents": [
 		"onView:favorites"
 	],
@@ -91,6 +103,7 @@
 		"@types/node": "*"
 	},
 	"dependencies": {
-		"ftp": "^0.3.10"
+		"mkdirp": "^0.5.1",
+        "vscode": "^1.0.0"
 	}
 }

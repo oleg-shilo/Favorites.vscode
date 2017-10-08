@@ -11,7 +11,7 @@ This simple extension allows in adding, removing and managing documents in the g
 * Refresh (reload) _Favorites_ via the dedicated toolbar button.
 * Manage (edit) _Favorites_ list directly in _VSCode_. Once the _Favorites_ list definition is edited and saved the changes are automatically reflected in the _Favorites_ panel.
 
-![image](resources/images/favorites_vscode.gif)
+![image](https://raw.githubusercontent.com/oleg-shilo/Favorites.vscode/master/resources/images/favorites_vscode.gif)
 
 Note: by default VSCode opens any file clicked from the  _Favorites_ list in the so called "preview mode". Thus the document tabs are reused and every new file is opened in the same tab. If you prefer to open a clicked _Favorites_ document in ane tab then you need to disable document the previewMode is the settings:
 1. Use _Command Palette_ to open your settings file ("Preferences: Open User Settings")
