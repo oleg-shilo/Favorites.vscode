@@ -42,11 +42,23 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<Dependency
 		let items = this.aggregateItems();
 		items.forEach(file => {
 			if (file != '') {
+
+				let commandValue = 'vscode.open';
+				let iconName = 'document.svg'
+
+				try {
+					if (fs.lstatSync(file).isDirectory()) {
+						commandValue = 'vscode.openFolder';
+						iconName='folder.svg'
+					}
+				} catch (error) {
+				}
+
 				let node = new Dependency(
 					path.basename(file),
 					vscode.TreeItemCollapsibleState.None,
 					{
-						command: 'vscode.open',
+						command: commandValue,
 						title: '',
 						tooltip: file,
 						arguments: [Uri.file(file)],
@@ -54,6 +66,18 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<Dependency
 					null,
 					file
 				);
+
+				if (!path.isAbsolute(file))
+					node.command = null;
+
+				if (fs.existsSync(file)) {
+					node.iconPath = {
+						light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
+						dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
+					};
+				}
+				else
+					node.iconPath = null;
 
 				nodes.push(node);
 			}
@@ -68,7 +92,7 @@ export class Dependency extends vscode.TreeItem {
 	constructor(
 		public readonly label: string,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		public readonly command?: vscode.Command,
+		public command?: vscode.Command,
 		public readonly children?: string[],
 		public readonly context?: string,
 	) {

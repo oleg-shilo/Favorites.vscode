@@ -2,7 +2,7 @@
 	"name": "favorites",
 	"displayName": "Favorites",
 	"description": "Manage and quickly access frequently used documents",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"publisher": "oleg-shilo",
 	"engines": {
 		"vscode": "^1.13.0"
@@ -12,16 +12,16 @@
 	],
 	"keywords": [
 		"Favorites"
-    ],
-    "bugs": {
-        "url": "https://github.com/oleg-shilo/Favorites.vscode/issues",
-        "email": "oshilo@gmail.com"
-    },
-    "homepage": "https://github.com/oleg-shilo/Favorites.vscode/blob/master/README.md",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/oleg-shilo/Favorites.vscode.git"
-    },
+	],
+	"bugs": {
+		"url": "https://github.com/oleg-shilo/Favorites.vscode/issues",
+		"email": "oshilo@gmail.com"
+	},
+	"homepage": "https://github.com/oleg-shilo/Favorites.vscode/blob/master/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/oleg-shilo/Favorites.vscode.git"
+	},
 	"activationEvents": [
 		"onView:favorites"
 	],
@@ -46,8 +46,24 @@
 				}
 			},
 			{
+				"command": "favorites.add_workspace",
+				"title": "Add active workspace/folder to Favorites",
+				"icon": {
+					"light": "resources/light/add_folder.svg",
+					"dark": "resources/dark/add_folder.svg"
+				}
+			},
+			{
 				"command": "favorites.remove",
-				"title": "Remove selected document"
+				"title": "Remove from the list"
+			},
+			{
+				"command": "favorites.move_up",
+				"title": "Move up"
+			},
+			{
+				"command": "favorites.move_down",
+				"title": "Move down"
 			},
 			{
 				"command": "favorites.refresh",
@@ -61,8 +77,8 @@
 				"command": "favorites.edit",
 				"title": "Manage Favorites",
 				"icon": {
-					"light": "resources/light/folder.svg",
-					"dark": "resources/dark/folder.svg"
+					"light": "resources/light/edit.svg",
+					"dark": "resources/dark/edit.svg"
 				}
 			}
 		],
@@ -70,6 +86,11 @@
 			"view/title": [
 				{
 					"command": "favorites.add",
+					"when": "view == favorites",
+					"group": "navigation@1"
+				},
+				{
+					"command": "favorites.add_workspace",
 					"when": "view == favorites",
 					"group": "navigation@1"
 				},
@@ -88,6 +109,14 @@
 				{
 					"command": "favorites.remove",
 					"when": "view == favorites && viewItem == file"
+				},
+				{
+					"command": "favorites.move_up",
+					"when": "view == favorites && viewItem == file"
+				},
+				{
+					"command": "favorites.move_down",
+					"when": "view == favorites && viewItem == file"
 				}
 			]
 		}
@@ -104,6 +133,6 @@
 	},
 	"dependencies": {
 		"mkdirp": "^0.5.1",
-        "vscode": "^1.0.0"
+		"vscode": "^1.0.0"
 	}
 }

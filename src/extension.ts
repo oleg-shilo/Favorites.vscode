@@ -8,11 +8,20 @@ import { FavoritesTreeProvider, Dependency } from './tree_view';
 import { Uri, commands } from 'vscode';
 
 function get_favorites_items() {
-    return Utils.read_all_lines(Utils.fav_file);
+    return Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
+}
+
+function add_workspace(element: Dependency) {
+    if (vscode.workspace.rootPath) 
+        _add(vscode.workspace.rootPath);
 }
 
 function add(element: Dependency) {
     let document = vscode.window.activeTextEditor.document.fileName;
+    _add(document);
+}
+
+function _add(document: string) {
 
     let lines: string[] = Utils.read_all_lines(Utils.fav_file);
 
@@ -22,16 +31,47 @@ function add(element: Dependency) {
     else {
         lines.push(document);
 
-        Utils.write_all_lines(Utils.fav_file, lines);
+        Utils.write_all_lines(Utils.fav_file, lines.filter(x => x != ''));
 
         commands.executeCommand('favorites.refresh');
     }
+}
+
+function up(element: Dependency) {
+
+    let lines = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
+    
+    let index = lines.indexOf(element.context);
+    if (index != -1 && index != 0) {
+        lines.splice(index, 1);
+        lines.splice(index - 1, 0, element.context);
+    }
+
+    Utils.write_all_lines(Utils.fav_file, lines);
+
+    commands.executeCommand('favorites.refresh');
+}
+
+function down(element: Dependency) {
+
+    let lines = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
+    
+    let index = lines.indexOf(element.context);
+    if (index != -1 && index <= lines.length) {
+        lines.splice(index, 1);
+        lines.splice(index + 1, 0, element.context);
+    }
+
+    Utils.write_all_lines(Utils.fav_file, lines);
+
+    commands.executeCommand('favorites.refresh');
 }
 
 function remove(element: Dependency) {
     let lines: string[] = [];
 
     Utils.read_all_lines(Utils.fav_file)
+        .filter(x => x != '')
         .forEach(x => {
             if (x != element.context)
                 lines.push(x);
@@ -56,8 +96,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh());
     vscode.commands.registerCommand('favorites.edit', edit);
+    vscode.commands.registerCommand('favorites.add_workspace', add_workspace);
     vscode.commands.registerCommand('favorites.add', add);
     vscode.commands.registerCommand('favorites.remove', remove);
+    vscode.commands.registerCommand('favorites.move_up', up);
+    vscode.commands.registerCommand('favorites.move_down', down);
 }
 
 class Utils {
