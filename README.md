@@ -1,7 +1,7 @@
 # Favorites - VSCode Extension
 
 Manage and quickly access frequently used files. 
-<hr/>>
+<hr/>
 
 This simple extension allows in adding, removing and managing documents in the globally maintained "Favorites" list. 
 
