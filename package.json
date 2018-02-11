@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites",
     "description": "Manage and quickly access frequently used documents",
-    "version": "1.0.2",
+    "version": "1.1.0",
     "publisher": "oleg-shilo",
     "engines": {
         "vscode": "^1.13.0"
@@ -119,6 +119,17 @@
                     "when": "view == favorites && viewItem == file"
                 }
             ]
+        }
+    },
+    "configuration": {
+        "type": "object",
+        "title": "Favorites configuration",
+        "properties": {
+            "favorites.showFolderFiles": {
+                "type": "boolean",
+                "default": true,
+                "description": "Show folder children. The children are the top-level files present in the folder."
+            }
         }
     },
     "scripts": {

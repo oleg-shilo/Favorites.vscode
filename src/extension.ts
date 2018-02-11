@@ -4,19 +4,19 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
-import { FavoritesTreeProvider, Dependency } from './tree_view';
+import { FavoritesTreeProvider, FavoriteItem } from './tree_view';
 import { Uri, commands } from 'vscode';
 
 function get_favorites_items() {
     return Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
 }
 
-function add_workspace(element: Dependency) {
+function add_workspace(element: FavoriteItem) {
     if (vscode.workspace.rootPath) 
         _add(vscode.workspace.rootPath);
 }
 
-function add(element: Dependency) {
+function add(element: FavoriteItem) {
     let document = vscode.window.activeTextEditor.document.fileName;
     _add(document);
 }
@@ -37,7 +37,7 @@ function _add(document: string) {
     }
 }
 
-function up(element: Dependency) {
+function up(element: FavoriteItem) {
 
     let lines = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
     
@@ -52,7 +52,7 @@ function up(element: Dependency) {
     commands.executeCommand('favorites.refresh');
 }
 
-function down(element: Dependency) {
+function down(element: FavoriteItem) {
 
     let lines = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
     
@@ -67,7 +67,7 @@ function down(element: Dependency) {
     commands.executeCommand('favorites.refresh');
 }
 
-function remove(element: Dependency) {
+function remove(element: FavoriteItem) {
     let lines: string[] = [];
 
     Utils.read_all_lines(Utils.fav_file)
@@ -111,7 +111,7 @@ class Utils {
             Utils._fav_file = Utils.ensure_fav_file();
         return Utils._fav_file;
     }
-
+    
     public static read_all_lines(file: string): string[] {
         let text = fs.readFileSync(file, 'utf8');
         return text.split(/\r?\n/g);
