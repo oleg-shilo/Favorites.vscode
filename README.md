@@ -15,12 +15,19 @@ The functionality is self explanatory and includes following features:
 * Removing active document from _Favorites_ via the item context menu.
 * Refreshing (reloading) _Favorites_ via the dedicated toolbar button.
 * Moving items up and down in the list
-* Managing (editing) _Favorites_ list directly in _VSCode_. Once the _Favorites_ list definition is edited and saved the changes are automatically reflected in the _Favorites_ panel.
+* Managing (editing) _Favorites_ list directly in _VSCode_. Once the _Favorites_ list definition is edited and saved the changes are automatically reflected in the _Favorites_ panel. Below is a sample of the _Favorites_ list definition.
 
 ![image](https://raw.githubusercontent.com/oleg-shilo/Favorites.vscode/master/resources/images/favorites_vscode.gif)
 
-The extension also allows showing Favorite folder item content (top-level-only or all-files). 
-This feature is not a substitution of the Workspace explorer view, which does by far superior job. It's just a convenience measure for a quick access of the top level folder files. The feature can be enabled/disabled with `favorites.showFolderFiles` setting. The depth of the folder content visualization is controlled by `favorites.folderFilesTopLevelOnly`.
+The item definition (in favorites.txt) can contain environment variables, which  are extended at runtime into a full path:  
+```
+$USERPROFILE\AppData\Roaming\Code\User\cs-script.user\new_script.cs
+``` 
+
+
+The extension also allows showing Favorite folder item content. 
+This feature is not a substitution of the Workspace explorer view, which does by far superior job. It's just a convenience measure for a quick access of the top level folder files. The feature can be enabled/disabled with `favorites.showFolderFiles` setting. 
+
 
 ## Limitations
 * _ShowFolderFiles_ feature overall experience is subject to the limitations/defects of the VSCode tree view. Thus TreeView node always triggers node selection when you try to expand it. This defect is officially reported and being dealt with by the VSCode team:<br/>

@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.2
+- Implemented extending envars in the path of the item definition (Issue #2).
+- Implemented 'command-node' for opening parent folder node. To address usability problems caused by VSCode TreeView item defect (Microsoft/vscode/issues/34130 and patrys/vscode-code-outline/issues/24)
+
 ## 1.1.1
 - Fixed problem with settings section being hidden in VSCode contributions tab.
 - Added option to show favorite's folder item sub-folders content. Controlled by `favorites.folderFilesTopLevelOnly` setting.
