@@ -39,6 +39,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 	private getFolderItems(dir: string): FavoriteItem[] {
 		let fileNodes = [];
 		let dirNodes = [];
+
 		fs.readdirSync(dir).forEach(fileName => {
 			var file = path.join(dir, fileName);
 			if (fs.lstatSync(file).isFile()) {
@@ -79,9 +80,21 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
 		let nodes = [];
 
-		let folderFilesTopLevelOnly = vscode.workspace.getConfiguration("favorites").get('folderFilesTopLevelOnly', false);
-		if (!folderFilesTopLevelOnly)
-			dirNodes.forEach(item => nodes.push(item));
+		let commandNode = new FavoriteItem(
+			"<Open folder>",
+			vscode.TreeItemCollapsibleState.None,
+			{
+				command: 'vscode.openFolder',
+				title: '',
+				tooltip: path.basename(dir),
+				arguments: [],
+			},
+			null,
+			dir);
+		commandNode.iconPath = null;
+		
+		nodes.push(commandNode);
+		dirNodes.forEach(item => nodes.push(item));
 		fileNodes.forEach(item => nodes.push(item));
 
 		return nodes;
@@ -104,8 +117,10 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 					if (path.isAbsolute(file) && fs.lstatSync(file).isDirectory()) {
 						commandValue = 'vscode.openFolder';
 						iconName = 'folder.svg';
-						if (showFolderFiles)
+						if (showFolderFiles) {
 							collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
+							commandValue = '';
+						}
 					}
 				} catch (error) {
 				}
