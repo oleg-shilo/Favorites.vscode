@@ -31,7 +31,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 				let dir = element.context;
 				resolve(this.getFolderItems(dir));
 			} else {
-				resolve(this.getScriptItems());
+				resolve(this.getFavoriteItems());
 			}
 		});
 	}
@@ -100,7 +100,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 		return nodes;
 	}
 
-	private getScriptItems(): FavoriteItem[] {
+	private getFavoriteItems(): FavoriteItem[] {
 
 		let nodes = [];
 

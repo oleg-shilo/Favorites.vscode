@@ -6,9 +6,10 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { FavoritesTreeProvider, FavoriteItem } from './tree_view';
 import { Uri, commands } from 'vscode';
+let expandenv = require('expandenv');
 
 function get_favorites_items() {
-    return Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
+    return Utils.read_all_lines(Utils.fav_file).filter(x => x != '').map(x=>expandenv(x));
 }
 
 function add_workspace(element: FavoriteItem) {
