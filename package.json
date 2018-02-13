@@ -43,7 +43,7 @@
                 "favorites.showFolderFiles": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Show favorite's folder item content (children). The children are the top-level files present in the folder. If you want to show sub-folders as well set `favorites.folderFilesTopLevelOnly` correspondingly.\nThis feature is heavily affected by the VSCode treeView item bug (#34130 and #24) which always triggers node selection when you try to expand it."
+                    "description": "Show favorite's folder item content (sub-folders and files). \nThis feature is heavily affected by the VSCode treeView item bug (#34130 and #24) which always triggers node selection when you try to expand it."
                 }
             }
         },
