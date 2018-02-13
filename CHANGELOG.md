@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.1.1
+- Fixed problem with settings section being hidden in VSCode contributions tab.
+- Added option to show favorite's folder item sub-folders content. Controlled by `favorites.folderFilesTopLevelOnly` setting.
+
 ## 1.1.0
 - Added option to show Favorite folder content (top level files). It is the response to the feature request #1.
 This feature is not a substitution of the Workspace explorer view, which does by far superior job. It's just a convenience measure for a quick access of the top level folder files.  The feature can be enabled/disabled with `favorites.showFolderFiles` setting.

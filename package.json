@@ -2,10 +2,10 @@
     "name": "favorites",
     "displayName": "Favorites",
     "description": "Manage and quickly access frequently used documents",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "publisher": "oleg-shilo",
     "engines": {
-        "vscode": "^1.13.0"
+        "vscode": "^1.20.0"
     },
     "categories": [
         "Other"
@@ -35,6 +35,22 @@
                     "name": "Favorites"
                 }
             ]
+        },
+        "configuration": {
+            "type": "object",
+            "title": "Favorites configuration",
+            "properties": {
+                "favorites.showFolderFiles": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show favorite's folder item content (children). The children are the top-level files present in the folder. If you want to show sub-folders as well set `favorites.folderFilesTopLevelOnly` correspondingly.\nThis feature is heavily affected by the VSCode treeView item bug (#34130 and #24) which always triggers node selection when you try to expand it."
+                },
+                "favorites.folderFilesTopLevelOnly": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "If `favorites.showFolderFiles` is set to true you can decide if you want to show the top-level files only or the sub-folder files as well."
+                }
+            }
         },
         "commands": [
             {
@@ -120,18 +136,9 @@
                 }
             ]
         }
-    },
-    "configuration": {
-        "type": "object",
-        "title": "Favorites configuration",
-        "properties": {
-            "favorites.showFolderFiles": {
-                "type": "boolean",
-                "default": true,
-                "description": "Show folder children. The children are the top-level files present in the folder."
-            }
-        }
-    },
+    }
+    ,
+
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",

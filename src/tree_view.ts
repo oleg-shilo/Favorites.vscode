@@ -28,31 +28,63 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 	getChildren(element?: FavoriteItem): Thenable<FavoriteItem[]> {
 		return new Promise(resolve => {
 			if (element) {
-				let nodes = [];
 				let dir = element.context;
-				fs.readdirSync(dir).forEach(fileName => {
-					var file = path.join(dir, fileName);
-					if (fs.lstatSync(file).isFile()) {
-						let node = new FavoriteItem(
-							fileName,
-							vscode.TreeItemCollapsibleState.None,
-							{
-								command: 'vscode.open',
-								title: '',
-								tooltip: file,
-								arguments: [Uri.file(file)],
-							},
-							null,
-							file
-						);
-						nodes.push(node);
-					}
-				})
-				resolve(nodes);
+				resolve(this.getFolderItems(dir));
 			} else {
 				resolve(this.getScriptItems());
 			}
 		});
+	}
+
+	private getFolderItems(dir: string): FavoriteItem[] {
+		let fileNodes = [];
+		let dirNodes = [];
+		fs.readdirSync(dir).forEach(fileName => {
+			var file = path.join(dir, fileName);
+			if (fs.lstatSync(file).isFile()) {
+				let node = new FavoriteItem(
+					fileName,
+					vscode.TreeItemCollapsibleState.None,
+					{
+						command: 'vscode.open',
+						title: '',
+						tooltip: file,
+						arguments: [Uri.file(file)],
+					},
+					null,
+					file
+				);
+				fileNodes.push(node);
+			}
+			else if (fs.lstatSync(file).isDirectory()) {
+				let node = new FavoriteItem(
+					fileName,
+					vscode.TreeItemCollapsibleState.Collapsed,
+					{
+						command: '',
+						title: '',
+						tooltip: file,
+						arguments: [],
+					},
+					null,
+					file
+				);
+				node.iconPath = {
+					light: path.join(__filename, '..', '..', '..', 'resources', 'light', "folder.svg"),
+					dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', "folder.svg")
+				};
+				dirNodes.push(node);
+			}
+		});
+
+		let nodes = [];
+
+		let folderFilesTopLevelOnly = vscode.workspace.getConfiguration("favorites").get('folderFilesTopLevelOnly', false);
+		if (!folderFilesTopLevelOnly)
+			dirNodes.forEach(item => nodes.push(item));
+		fileNodes.forEach(item => nodes.push(item));
+
+		return nodes;
 	}
 
 	private getScriptItems(): FavoriteItem[] {
@@ -66,7 +98,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 				let commandValue = 'vscode.open';
 				let iconName = 'document.svg';
 				let collapsableState = vscode.TreeItemCollapsibleState.None;
-				let showFolderFiles = vscode.workspace.getConfiguration("favorites").get('showFolderFiles', true);
+				let showFolderFiles = vscode.workspace.getConfiguration("favorites").get('showFolderFiles', false);
 
 				try {
 					if (path.isAbsolute(file) && fs.lstatSync(file).isDirectory()) {
