@@ -1,5 +1,8 @@
 # Change Log
 
+## 1.1.3
+- Fixed problem with opening folder on "<Open folder>" node double-click.
+
 ## 1.1.2
 - Implemented extending envars in the path of the item definition (Issue #2).
 - Implemented 'command-node' for opening parent folder node. To address usability problems caused by VSCode TreeView item defect (Microsoft/vscode/issues/34130 and patrys/vscode-code-outline/issues/24)

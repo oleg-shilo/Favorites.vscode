@@ -87,7 +87,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 				command: 'vscode.openFolder',
 				title: '',
 				tooltip: path.basename(dir),
-				arguments: [],
+				arguments: [Uri.file(dir)],
 			},
 			null,
 			dir);
