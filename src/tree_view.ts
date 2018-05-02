@@ -21,7 +21,10 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 		})
 	}
 
-	refresh(): void {
+	refresh(collapseLists: boolean): void {
+		if (collapseLists) {
+			this.list_root_state = vscode.TreeItemCollapsibleState.Collapsed;
+		}
 		this._onDidChangeTreeData.fire();
 	}
 
@@ -33,6 +36,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 		return new Promise(resolve => {
 			if (element) {
 				if (element.contextValue == 'list_root') {
+					this.list_root_state = vscode.TreeItemCollapsibleState.Expanded; // to prevent collapsing on refresh
 					resolve(this.getFavoriteLists());
 				}
 				else {
@@ -109,14 +113,16 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 		return nodes;
 	}
 
+	list_root_state = vscode.TreeItemCollapsibleState.Collapsed;
+
 	private getFavoriteItems(): FavoriteItem[] {
 
 		let nodes = [];
 
 		let items = this.aggregateItems();
 		let active_list_node = new FavoriteItem(
-			this.currentListName(),
-			vscode.TreeItemCollapsibleState.Collapsed,
+			'< ' + this.currentListName() + " >",
+			this.list_root_state,
 			{
 				command: '',
 				title: '',
@@ -197,13 +203,18 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 		items.forEach(file => {
 			if (file != '') {
 
+				let short_name = path.basename(file).replace(".list.txt", "");
+
 				let commandValue = 'favorites.load';
 				let iconName = '';
-				// let iconName = 'document.svg';
+
+				if (short_name == this.currentListName())
+					iconName = 'tick.svg';
+
 				let collapsableState = vscode.TreeItemCollapsibleState.None;
 
 				let node = new FavoriteItem(
-					path.basename(file).replace(".list.txt", ""),
+					short_name,
 					collapsableState,
 					{
 						command: commandValue,

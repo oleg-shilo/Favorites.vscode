@@ -93,6 +93,14 @@
                 }
             },
             {
+                "command": "favorites.refresh_all",
+                "title": "Reload Favorites",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
+            },
+            {
                 "command": "favorites.edit",
                 "title": "Manage Favorites",
                 "icon": {
@@ -102,11 +110,15 @@
             },
             {
                 "command": "favorites.remove_list",
-                "title": "Removes selected Favorites list"
+                "title": "Remove selected Favorites list"
+            },
+            {
+                "command": "favorites.rename_list",
+                "title": "Rename selected Favorites list"
             },
             {
                 "command": "favorites.edit_list",
-                "title": "Loads selected Favorites list for editing",
+                "title": "Load selected Favorites list for editing",
                 "icon": {
                     "light": "resources/light/edit.svg",
                     "dark": "resources/dark/edit.svg"
@@ -131,7 +143,7 @@
                     "group": "navigation@1"
                 },
                 {
-                    "command": "favorites.refresh",
+                    "command": "favorites.refresh_all",
                     "when": "view == favorites",
                     "group": "navigation@2"
                 },
@@ -160,6 +172,10 @@
                 },
                 {
                     "command": "favorites.edit_list",
+                    "when": "view == favorites && viewItem == list"
+                },
+                {
+                    "command": "favorites.rename_list",
                     "when": "view == favorites && viewItem == list"
                 },
                 {

@@ -9,11 +9,18 @@ import { Uri, commands } from 'vscode';
 let expandenv = require('expandenv');
 
 function get_favorites_items() {
-    return Utils.read_all_lines(Utils.fav_file).filter(x => x != '').map(x => expandenv(x));
+    if (fs.existsSync(Utils.fav_file)) {
+        return Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
+    }
+    else {
+        vscode.window.showErrorMessage(`The list ${path.basename(Utils.fav_file)} is not found. Loading the default Favorites list instead.`);
+        Utils.setCurrentFavFile(Utils.fav_default_file);
+        commands.executeCommand('favorites.refresh');
+    }
 }
 
 function get_current_list_name() {
-    return '< ' + path.basename(Utils.fav_file).replace(".list.txt", "") + ' >';
+    return path.basename(Utils.fav_file).replace(".list.txt", "");
 }
 
 function get_favorites_lists() {
@@ -99,7 +106,7 @@ function edit_list(element: FavoriteItem) {
 
 function remove_list(element: FavoriteItem) {
     if (element.context == Utils.fav_file) {
-        vscode.window.showErrorMessage("Error: you cannot  delete the list that is currently loaded.");
+        vscode.window.showErrorMessage("Error: you cannot delete the list that is currently loaded.");
     }
     else if (element.context.endsWith("Default.list.txt")) {
         vscode.window.showErrorMessage("Error: you can only delete non default favorites list.");
@@ -107,6 +114,35 @@ function remove_list(element: FavoriteItem) {
     else {
         fs.unlinkSync(element.context);
         commands.executeCommand('favorites.refresh');
+    }
+}
+
+function rename_list(element: FavoriteItem) {
+
+    if (element.context.endsWith("Default.list.txt")) {
+        vscode.window.showErrorMessage("Error: you can only rename non default favorites list.");
+    }
+    else {
+        let options: vscode.InputBoxOptions = {
+            prompt: "Enter the new file name for the selected Favorites list",
+            placeHolder: "ex.: Test scripts.",
+        };
+
+        vscode.window.showInputBox(options)
+            .then(value => {
+                if (value) {
+
+                    let new_file = path.join(Utils.user_dir, value + ".list.txt");
+
+                    try {
+                        fs.renameSync(element.context, new_file);
+                        // Utils.setCurrentFavFile(new_file);
+                        commands.executeCommand('favorites.refresh');
+                    } catch (error) {
+                        vscode.window.showErrorMessage(error.message);
+                    }
+                }
+            });
     }
 }
 
@@ -123,7 +159,7 @@ function load(list: string) {
 
 function new_list() {
     let options: vscode.InputBoxOptions = {
-        prompt: "Enter the name of the new Favorites list",
+        prompt: "Enter the file name of the new Favorites list",
         placeHolder: "ex.: Test scripts",
     };
 
@@ -146,13 +182,15 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.commands.registerCommand('favorites.load', load);
     vscode.commands.registerCommand('favorites.new_list', new_list);
-    vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh());
+    vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh(false));
+    vscode.commands.registerCommand('favorites.refresh_all', () => treeViewProvider.refresh(true));
     vscode.commands.registerCommand('favorites.edit', edit);
     vscode.commands.registerCommand('favorites.edit_list', edit_list);
     vscode.commands.registerCommand('favorites.add_workspace', add_workspace);
     vscode.commands.registerCommand('favorites.add', add);
     vscode.commands.registerCommand('favorites.remove', remove);
     vscode.commands.registerCommand('favorites.remove_list', remove_list);
+    vscode.commands.registerCommand('favorites.rename_list', rename_list);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
 }
@@ -178,6 +216,12 @@ class Utils {
         if (Utils._fav_file == null)
             Utils.setCurrentFavFile(Utils.ensure_fav_file());
         return Utils._fav_file;
+    }
+    static get fav_default_file(): string {
+        let default_list = path.join(Utils.user_dir, 'Default.list.txt');
+        if (!fs.existsSync(default_list))
+            Utils.write_all_lines(default_list, []);
+        return default_list;
     }
 
     public static read_all_lines(file: string): string[] {
@@ -223,7 +267,7 @@ class Utils {
 
     static createNewList(list_name: string): void {
         let file = path.join(Utils.user_dir, list_name + ".list.txt");
-        Utils.write_all_lines(file, [file]);
+        Utils.write_all_lines(file, ["# The line below is just a sample", file]);
         Utils.setCurrentFavFile(file);
     }
 
@@ -263,9 +307,7 @@ class Utils {
 
         Utils.migrate_old_version_to();
 
-        let default_list = path.join(Utils.user_dir, 'Default.list.txt');
-        if (!fs.existsSync(default_list))
-            Utils.write_all_lines(default_list, []);
+        let default_list = Utils.fav_default_file; // 'Default.list.txt'
 
         let config_file = path.join(Utils.user_dir, 'config.json');
         if (!fs.existsSync(config_file)) {
