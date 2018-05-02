@@ -49,6 +49,14 @@
         },
         "commands": [
             {
+                "command": "favorites.new_list",
+                "title": "Creates and loads a new Favorites list",
+                "icon": {
+                    "light": "resources/light/favorite.svg",
+                    "dark": "resources/dark/favorite.svg"
+                }
+            },
+            {
                 "command": "favorites.add",
                 "title": "Add active document to Favorites",
                 "icon": {
@@ -91,10 +99,27 @@
                     "light": "resources/light/edit.svg",
                     "dark": "resources/dark/edit.svg"
                 }
+            },
+            {
+                "command": "favorites.remove_list",
+                "title": "Removes selected Favorites list"
+            },
+            {
+                "command": "favorites.edit_list",
+                "title": "Loads selected Favorites list for editing",
+                "icon": {
+                    "light": "resources/light/edit.svg",
+                    "dark": "resources/dark/edit.svg"
+                }
             }
         ],
         "menus": {
             "view/title": [
+                {
+                    "command": "favorites.new_list",
+                    "when": "view == favorites",
+                    "group": "navigation@0"
+                },
                 {
                     "command": "favorites.add",
                     "when": "view == favorites",
@@ -128,12 +153,22 @@
                 {
                     "command": "favorites.move_down",
                     "when": "view == favorites && viewItem == file"
+                },
+                {
+                    "command": "favorites.remove_list",
+                    "when": "view == favorites && viewItem == list"
+                },
+                {
+                    "command": "favorites.edit_list",
+                    "when": "view == favorites && viewItem == list"
+                },
+                {
+                    "command": "favorites.new_list",
+                    "when": "view == favorites && viewItem == list_root"
                 }
             ]
         }
-    }
-    ,
-
+    },
     "scripts": {
         "vscode:prepublish": "tsc -p ./",
         "compile": "tsc -watch -p ./",

@@ -8,7 +8,11 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 	private _onDidChangeTreeData: vscode.EventEmitter<FavoriteItem | undefined> = new vscode.EventEmitter<FavoriteItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<FavoriteItem | undefined> = this._onDidChangeTreeData.event;
 
-	constructor(private aggregateItems: () => string[]) {
+	constructor(
+		private aggregateItems: () => string[],
+		private aggregateLists: () => string[],
+		private currentListName: () => string) {
+
 		vscode.window.onDidChangeActiveTextEditor(editor => {
 			// no need to do it so often
 			// this._onDidChangeTreeData.fire();
@@ -28,8 +32,13 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 	getChildren(element?: FavoriteItem): Thenable<FavoriteItem[]> {
 		return new Promise(resolve => {
 			if (element) {
-				let dir = element.context;
-				resolve(this.getFolderItems(dir));
+				if (element.contextValue == 'list_root') {
+					resolve(this.getFavoriteLists());
+				}
+				else {
+					let dir = element.context;
+					resolve(this.getFolderItems(dir));
+				}
 			} else {
 				resolve(this.getFavoriteItems());
 			}
@@ -92,7 +101,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 			null,
 			dir);
 		commandNode.iconPath = null;
-		
+
 		nodes.push(commandNode);
 		dirNodes.forEach(item => nodes.push(item));
 		fileNodes.forEach(item => nodes.push(item));
@@ -105,6 +114,28 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 		let nodes = [];
 
 		let items = this.aggregateItems();
+		let active_list_node = new FavoriteItem(
+			this.currentListName(),
+			vscode.TreeItemCollapsibleState.Collapsed,
+			{
+				command: '',
+				title: '',
+				tooltip: "Select Favorites predefined list",
+				arguments: null,
+			},
+			null,
+			null
+		);
+
+		active_list_node.contextValue = "list_root";
+
+		active_list_node.iconPath = {
+			light: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg'),
+			dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg')
+		};
+
+		nodes.push(active_list_node);
+
 		items.forEach(file => {
 			if (file != '') {
 
@@ -156,6 +187,50 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
 		return nodes;
 	}
+
+	private getFavoriteLists(): FavoriteItem[] {
+
+		let nodes = [];
+
+		let items = this.aggregateLists();
+
+		items.forEach(file => {
+			if (file != '') {
+
+				let commandValue = 'favorites.load';
+				let iconName = '';
+				// let iconName = 'document.svg';
+				let collapsableState = vscode.TreeItemCollapsibleState.None;
+
+				let node = new FavoriteItem(
+					path.basename(file).replace(".list.txt", ""),
+					collapsableState,
+					{
+						command: commandValue,
+						title: '',
+						tooltip: file,
+						arguments: [file],
+					},
+					null,
+					file
+				);
+
+				if (fs.existsSync(file)) {
+					node.iconPath = {
+						light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
+						dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
+					};
+				}
+				else
+					node.iconPath = null;
+
+				node.contextValue = "list";
+				nodes.push(node);
+			}
+		});
+
+		return nodes;
+	}
 }
 
 export class FavoriteItem extends vscode.TreeItem {
@@ -175,5 +250,10 @@ export class FavoriteItem extends vscode.TreeItem {
 		dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'document.svg')
 	};
 
+	// this is the value that is foing to be evaluated in the "view/item/context" from the packae.json
+	// possible values are:
+	// - file
+	// - list
+	// - list_root
 	contextValue = 'file';
 }

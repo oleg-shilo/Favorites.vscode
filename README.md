@@ -3,7 +3,7 @@
 Manage and quickly access frequently used files. 
 <hr/>
 
-This simple extension allows in adding, removing and managing documents in the globally maintained "Favorites" list. 
+This simple extension allows adding, removing and managing documents in the globally maintained "Favorites" list. 
 
 This extensions is similar to other plugins of the "Favorites" family. Though  apart from traditional item context menu and buttons this plugin offers an extremely simple and intuitive way of structuring your favorites. The items definition is just a text document that can be freely edited with the changes reflected in the VSCode panel automatically after saving the file.
 
