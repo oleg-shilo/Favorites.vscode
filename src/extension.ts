@@ -106,15 +106,19 @@ function edit_list(element: FavoriteItem) {
 }
 
 function remove_list(element: FavoriteItem) {
-    if (element.context == Utils.fav_file) {
-        vscode.window.showErrorMessage("Error: you cannot delete the list that is currently loaded.");
-    }
-    else if (element.context.endsWith("Default.list.txt")) {
+    if (element.context.endsWith("Default.list.txt")) {
         vscode.window.showErrorMessage("Error: you can only delete non default favorites list.");
     }
     else {
-        fs.unlinkSync(element.context);
-        commands.executeCommand('favorites.refresh');
+
+        if (element.context == Utils.fav_file) {
+            Utils.setCurrentFavFile("Default.list.txt");
+            fs.unlinkSync(element.context);
+        }
+        else {
+            fs.unlinkSync(element.context);
+            commands.executeCommand('favorites.refresh');
+        }
     }
 }
 
@@ -272,7 +276,7 @@ class Utils {
 
     static createNewList(list_name: string): void {
         let file = path.join(Utils.user_dir, list_name + ".list.txt");
-        Utils.write_all_lines(file, ["# The line below is just a sample", file]);
+        Utils.write_all_lines(file, ["# The content below is just a Favorites list sample", "--- Section A ---", file]);
         Utils.setCurrentFavFile(file);
     }
 
