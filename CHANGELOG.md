@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.1
+
+- Improved error handling of the pseudo-documents (e.g. PDF or GIF viewer).
+
 ## 1.2.0
 
 - Implemented full support for multiple Favorites' lists.

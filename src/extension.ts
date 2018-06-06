@@ -34,8 +34,13 @@ function add_workspace(element: FavoriteItem) {
 }
 
 function add(element: FavoriteItem) {
-    let document = vscode.window.activeTextEditor.document.fileName;
-    _add(document);
+    if (!vscode.window.activeTextEditor) {
+        vscode.window.showErrorMessage('The path of the active document is not available.');
+    }
+    else {
+        let document = vscode.window.activeTextEditor.document.fileName;
+        _add(document);
+    }
 }
 
 function _add(document: string) {
@@ -253,9 +258,11 @@ class Utils {
 
     public static create_dir(dir: string): void {
         let mkdirp = require('mkdirp');
-        // fs.mkdirSync can only create the top level dir but mkdirp creates all child sub-dirs that do not exist  
-        const allRWEPermissions = parseInt("0777", 8);
-        mkdirp.sync(dir, allRWEPermissions);
+        // fs.mkdirSync can only create the top level dir but mkdirp creates all child sub-dirs that do not exist 
+        if (!fs.existsSync(dir)) {
+            const allRWEPermissions = parseInt("0777", 8);
+            mkdirp.sync(dir, allRWEPermissions);
+        }
     }
 
     // ----------------------------------------
