@@ -33,6 +33,10 @@ function add_workspace(element: FavoriteItem) {
         _add(vscode.workspace.rootPath);
 }
 
+function alt_cmd(element: FavoriteItem) {
+    vscode.window.showErrorMessage('alt_cmd');
+}
+
 function add(element: FavoriteItem) {
     if (!vscode.window.activeTextEditor) {
         vscode.window.showErrorMessage('The path of the active document is not available.');
@@ -195,6 +199,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider('favorites', treeViewProvider);
 
     vscode.commands.registerCommand('favorites.load', load);
+    vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);
     vscode.commands.registerCommand('favorites.new_list', new_list);
     vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh(false));
     vscode.commands.registerCommand('favorites.refresh_all', () => treeViewProvider.refresh(true));
@@ -253,7 +258,7 @@ class Utils {
     }
 
     public static write_all_text(file: string, text: string): void {
-        fs.writeFileSync(file, { encoding: 'utf8' });
+        fs.writeFileSync(file, text, { encoding: 'utf8' });
     }
 
     public static create_dir(dir: string): void {
@@ -300,7 +305,10 @@ class Utils {
         fs.watchFile(file, (curr: any, prev: any) =>
             commands.executeCommand('favorites.refresh'));
 
-        Utils._fav_file = file;;
+        Utils._fav_file = file;
+
+        let config = JSON.stringify({ "current": list_name });
+        Utils.write_all_text(path.join(Utils.user_dir, 'config.json'), config);
     }
 
     static ensure_fav_file(): string {
@@ -333,7 +341,11 @@ class Utils {
 
         try {
             let config = JSON.parse(Utils.read_all_text(config_file));
-            return path.join(Utils.user_dir, config.current);
+            if (path.isAbsolute(config.current))
+                return config.current;
+            else
+                return path.join(Utils.user_dir, config.current);
+
         } catch (error) {
             return default_list;
         }
