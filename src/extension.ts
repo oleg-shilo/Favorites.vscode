@@ -190,10 +190,26 @@ function new_list() {
         });
 }
 
+function get_user_dir(): string {
 
+    // ext_context.storagePath cannot be used as it is undefined if no workspace loaded
+
+    // vscode:
+    // Windows %appdata%\Code\User\settings.json
+    // Mac $HOME/Library/Application Support/Code/User/settings.json
+    // Linux $HOME/.config/Code/User/settings.json
+
+    if (os.platform() == 'win32')
+        return path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
+    else if (os.platform() == 'darwin')
+        return path.join(process.env.HOME, 'Library', 'Application Support', 'Code', 'User', 'favorites.user');
+    else
+        return path.join(process.env.HOME, '.config', 'Code', 'User', 'favorites.user');
+}
 
 export function activate(context: vscode.ExtensionContext) {
 
+    FavoritesTreeProvider.user_dir = get_user_dir();
     const treeViewProvider = new FavoritesTreeProvider(get_favorites_items, get_favorites_lists, get_current_list_name);
 
     vscode.window.registerTreeDataProvider('favorites', treeViewProvider);
@@ -312,20 +328,8 @@ class Utils {
     }
 
     static ensure_fav_file(): string {
-        // ext_context.storagePath cannot be used as it is undefined if no workspace loaded
 
-        // vscode:
-        // Windows %appdata%\Code\User\settings.json
-        // Mac $HOME/Library/Application Support/Code/User/settings.json
-        // Linux $HOME/.config/Code/User/settings.json
-
-        if (os.platform() == 'win32')
-            Utils.user_dir = path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
-        else if (os.platform() == 'darwin')
-            Utils.user_dir = path.join(process.env.HOME, 'Library', 'Application Support', 'Code', 'User', 'favorites.user');
-        else
-            Utils.user_dir = path.join(process.env.HOME, '.config', 'Code', 'User', 'favorites.user');
-
+        Utils.user_dir = get_user_dir();
 
         Utils.create_dir(Utils.user_dir);
 

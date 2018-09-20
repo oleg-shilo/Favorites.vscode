@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.2.2
+
+- Changed the extension display name "Favorites" -> "Favorites Manager"
+- Fixed loading the last opened favorites list at startup
+
 ## 1.2.1
 
 - Improved error handling of the pseudo-documents (e.g. PDF or GIF viewer).
