@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.2.2
+
+- Added element menu for opening all files from the current list.
+
 ## 1.2.1
 
 - Improved error handling of the pseudo-documents (e.g. PDF or GIF viewer).

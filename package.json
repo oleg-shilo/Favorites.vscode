@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites",
     "description": "Manage and quickly access frequently used documents",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "publisher": "oleg-shilo",
     "engines": {
         "vscode": "^1.20.0"
@@ -85,6 +85,10 @@
                 "title": "Move down"
             },
             {
+                "command": "favorites.open_all_files",
+                "title": "Open all files from the list"
+            },
+            {
                 "command": "favorites.refresh",
                 "title": "Reload Favorites",
                 "icon": {
@@ -156,15 +160,23 @@
             "view/item/context": [
                 {
                     "command": "favorites.remove",
-                    "when": "view == favorites && viewItem == file"
+                    "when": "view == favorites && viewItem == file",
+                    "group": "navigation@0"
                 },
                 {
                     "command": "favorites.move_up",
-                    "when": "view == favorites && viewItem == file"
+                    "when": "view == favorites && viewItem == file",
+                    "group": "navigation@0"
+                },
+                {
+                    "command": "favorites.open_all_files",
+                    "when": "view == favorites && viewItem == file",
+                    "group": "navigation@1"
                 },
                 {
                     "command": "favorites.move_down",
-                    "when": "view == favorites && viewItem == file"
+                    "when": "view == favorites && viewItem == file",
+                    "group": "navigation@0"
                 },
                 {
                     "command": "favorites.remove_list",
@@ -197,7 +209,6 @@
     },
     "dependencies": {
         "mkdirp": "^0.5.1",
-        "vscode": "^1.0.0",
         "expandenv": "^1.0.0"
     }
 }

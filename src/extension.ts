@@ -127,6 +127,21 @@ function remove_list(element: FavoriteItem) {
     }
 }
 
+function open_all_files(element: FavoriteItem) {
+
+    try {
+        let lines: string[] = Utils.read_all_lines(Utils.fav_file);
+
+        lines.forEach(file => {
+            if (fs.existsSync(file) && Utils.is_file(file)) {
+                commands.executeCommand('vscode.open', Uri.file(file));
+            }
+        });
+    } catch (error) {
+
+    }
+}
+
 function file_name_sanatize(text: string): string {
     return text.replace(/[\/\?<>\\:\*\|":]/g, "_");
 }
@@ -205,6 +220,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.remove', remove);
     vscode.commands.registerCommand('favorites.remove_list', remove_list);
     vscode.commands.registerCommand('favorites.rename_list', rename_list);
+    vscode.commands.registerCommand('favorites.open_all_files', open_all_files);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
 }
@@ -263,6 +279,12 @@ class Utils {
             const allRWEPermissions = parseInt("0777", 8);
             mkdirp.sync(dir, allRWEPermissions);
         }
+    }
+
+    public static is_file(path: string): boolean {
+        var fs = require('fs');
+        var stats = fs.statSync(path);
+        return stats.isFile();
     }
 
     // ----------------------------------------
@@ -333,7 +355,10 @@ class Utils {
 
         try {
             let config = JSON.parse(Utils.read_all_text(config_file));
-            return path.join(Utils.user_dir, config.current);
+            if (path.isAbsolute(config.current))
+                return config.current;
+            else
+                return path.join(Utils.user_dir, config.current);
         } catch (error) {
             return default_list;
         }
