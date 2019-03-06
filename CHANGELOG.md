@@ -1,8 +1,14 @@
 # Change Log
 
-## 1.2.2
+## 1.2.3
 
 - Added element menu for opening all files from the current list.
+- Issue #7: Possibility to add a command to open files in the favorite list?
+
+## 1.2.2
+
+- Changed the extension display name "Favorites" -> "Favorites Manager"
+- Fixed loading the last opened favorites list at startup
 
 ## 1.2.1
 

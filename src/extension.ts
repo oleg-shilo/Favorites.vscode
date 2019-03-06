@@ -33,6 +33,10 @@ function add_workspace(element: FavoriteItem) {
         _add(vscode.workspace.rootPath);
 }
 
+function alt_cmd(element: FavoriteItem) {
+    vscode.window.showErrorMessage('alt_cmd');
+}
+
 function add(element: FavoriteItem) {
     if (!vscode.window.activeTextEditor) {
         vscode.window.showErrorMessage('The path of the active document is not available.');
@@ -201,15 +205,32 @@ function new_list() {
         });
 }
 
+function get_user_dir(): string {
 
+    // ext_context.storagePath cannot be used as it is undefined if no workspace loaded
+
+    // vscode:
+    // Windows %appdata%\Code\User\settings.json
+    // Mac $HOME/Library/Application Support/Code/User/settings.json
+    // Linux $HOME/.config/Code/User/settings.json
+
+    if (os.platform() == 'win32')
+        return path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
+    else if (os.platform() == 'darwin')
+        return path.join(process.env.HOME, 'Library', 'Application Support', 'Code', 'User', 'favorites.user');
+    else
+        return path.join(process.env.HOME, '.config', 'Code', 'User', 'favorites.user');
+}
 
 export function activate(context: vscode.ExtensionContext) {
 
+    FavoritesTreeProvider.user_dir = get_user_dir();
     const treeViewProvider = new FavoritesTreeProvider(get_favorites_items, get_favorites_lists, get_current_list_name);
 
     vscode.window.registerTreeDataProvider('favorites', treeViewProvider);
 
     vscode.commands.registerCommand('favorites.load', load);
+    vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);
     vscode.commands.registerCommand('favorites.new_list', new_list);
     vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh(false));
     vscode.commands.registerCommand('favorites.refresh_all', () => treeViewProvider.refresh(true));
@@ -269,7 +290,7 @@ class Utils {
     }
 
     public static write_all_text(file: string, text: string): void {
-        fs.writeFileSync(file, { encoding: 'utf8' });
+        fs.writeFileSync(file, text, { encoding: 'utf8' });
     }
 
     public static create_dir(dir: string): void {
@@ -322,24 +343,15 @@ class Utils {
         fs.watchFile(file, (curr: any, prev: any) =>
             commands.executeCommand('favorites.refresh'));
 
-        Utils._fav_file = file;;
+        Utils._fav_file = file;
+
+        let config = JSON.stringify({ "current": list_name });
+        Utils.write_all_text(path.join(Utils.user_dir, 'config.json'), config);
     }
 
     static ensure_fav_file(): string {
-        // ext_context.storagePath cannot be used as it is undefined if no workspace loaded
 
-        // vscode:
-        // Windows %appdata%\Code\User\settings.json
-        // Mac $HOME/Library/Application Support/Code/User/settings.json
-        // Linux $HOME/.config/Code/User/settings.json
-
-        if (os.platform() == 'win32')
-            Utils.user_dir = path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
-        else if (os.platform() == 'darwin')
-            Utils.user_dir = path.join(process.env.HOME, 'Library', 'Application Support', 'Code', 'User', 'favorites.user');
-        else
-            Utils.user_dir = path.join(process.env.HOME, '.config', 'Code', 'User', 'favorites.user');
-
+        Utils.user_dir = get_user_dir();
 
         Utils.create_dir(Utils.user_dir);
 
@@ -359,6 +371,7 @@ class Utils {
                 return config.current;
             else
                 return path.join(Utils.user_dir, config.current);
+
         } catch (error) {
             return default_list;
         }

@@ -5,9 +5,12 @@ import { Uri, commands } from "vscode";
 
 export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteItem> {
 
+	public static user_dir: string;
+
 	private _onDidChangeTreeData: vscode.EventEmitter<FavoriteItem | undefined> = new vscode.EventEmitter<FavoriteItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<FavoriteItem | undefined> = this._onDidChangeTreeData.event;
 
+	private rootItem: FavoriteItem;
 	constructor(
 		private aggregateItems: () => string[],
 		private aggregateLists: () => string[],
@@ -25,7 +28,37 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 		if (collapseLists) {
 			this.list_root_state = vscode.TreeItemCollapsibleState.Collapsed;
 		}
+
+		if (this.rootItem != null) {
+			//this.noteNodeStates();
+		}
+
 		this._onDidChangeTreeData.fire();
+	}
+
+	noteNodeStates(): void {
+
+		// not ready yet. 
+		// VSCode API does not allow exploring vscode.TreeItem state, parent nor children :o(
+		if (this.rootItem != null) {
+			try {
+
+				let config_file = path.join(FavoritesTreeProvider.user_dir, 'nodes_states.json');
+
+				let openNodes = [];
+
+				this.rootItem.children.forEach(node => {
+					// var collapsed = node.collapsibleState;
+
+				});
+
+				let config = { "current": 'Default.list.txt' };
+				fs.writeFileSync(config_file, JSON.stringify(config), { encoding: 'utf8' });
+				// if (node.)
+			} catch (error) {
+				// do nothing; doesn't matter why we failed
+			}
+		}
 	}
 
 	getTreeItem(element: FavoriteItem): vscode.TreeItem {
@@ -33,6 +66,10 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 	}
 
 	getChildren(element?: FavoriteItem): Thenable<FavoriteItem[]> {
+
+		if (this.rootItem == null)
+			this.rootItem = element;
+
 		return new Promise(resolve => {
 			if (element) {
 				if (element.contextValue == 'list_root') {
