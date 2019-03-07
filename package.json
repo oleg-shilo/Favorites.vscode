@@ -2,10 +2,10 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.2.4",
+    "version": "1.2.3",
     "publisher": "oleg-shilo",
     "engines": {
-        "vscode": "^1.20.0"
+        "vscode": "^1.13.0"
     },
     "categories": [
         "Other"
@@ -203,9 +203,9 @@
         "postinstall": "node ./node_modules/vscode/bin/install"
     },
     "devDependencies": {
-        "@types/node": "*",
         "typescript": "^2.1.4",
-        "vscode": "^1.1.30"
+        "vscode": "^1.0.0",
+        "@types/node": "*"
     },
     "dependencies": {
         "mkdirp": "^0.5.1",
