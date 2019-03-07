@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.2.4
+## 1.3.1
 
 - Added element menu for opening all files from the current list.
 - Issue #7: Possibility to add a command to open files in the favorite list?
