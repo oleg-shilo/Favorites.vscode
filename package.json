@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.2.3",
+    "version": "1.2.4",
     "publisher": "oleg-shilo",
     "engines": {
         "vscode": "^1.20.0"
