@@ -255,6 +255,7 @@ class Utils {
         fs.readdirSync(Utils.user_dir)
             .forEach(fileName => {
                 let file = path.join(Utils.user_dir, fileName);
+
                 if (fs.lstatSync(file).isFile() && file.endsWith(".list.txt")) {
                     files.push(file);
                 }
@@ -333,6 +334,7 @@ class Utils {
     static setCurrentFavFile(list_name: string): void {
 
         let file = list_name;
+
         if (!path.isAbsolute(file))
             file = path.join(Utils.user_dir, list_name);
 
@@ -345,7 +347,9 @@ class Utils {
 
         Utils._fav_file = file;
 
-        let config = JSON.stringify({ "current": list_name });
+        let list_short_name = list_name.replace(Utils.user_dir + path.sep, "");
+        let config = JSON.stringify({ "current": list_short_name });
+
         Utils.write_all_text(path.join(Utils.user_dir, 'config.json'), config);
     }
 

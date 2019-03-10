@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.3.2
+
+- Issue #8: Cross-platform usage.
+  Extension config.json now stores file names only instead of the full path
+
 ## 1.3.1
 
 - Added element menu for opening all files from the current list.
