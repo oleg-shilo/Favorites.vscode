@@ -2,10 +2,11 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.3.2",
+    "version": "1.3.3",
+    "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
-        "vscode": "^1.13.0"
+        "vscode": "^1.40.0"
     },
     "categories": [
         "Other"
@@ -23,16 +24,34 @@
         "url": "https://github.com/oleg-shilo/Favorites.vscode.git"
     },
     "activationEvents": [
-        "onView:favorites"
+        "onView:favorites",
+        "onView:favorites-bar"
     ],
     "main": "./out/src/extension",
     "icon": "media/fav.png",
     "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "favorites-bar",
+                    "title": "Favorites Explorer",
+                    "icon": "resources/light/favorite.svg"
+                }
+            ]
+        },
         "views": {
             "explorer": [
                 {
                     "id": "favorites",
-                    "name": "Favorites"
+                    "name": "Favorites",
+                    "when": "config.favorites.ownExplorer == false"
+                }
+            ],
+            "favorites-bar": [
+                {
+                    "id": "favorites-bar",
+                    "name": "Favorites",
+                    "when": "config.favorites.ownExplorer == true"
                 }
             ]
         },
@@ -44,6 +63,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Show favorite's folder item content (sub-folders and files). \nThis feature is heavily affected by the VSCode treeView item bug (#34130 and #24) which always triggers node selection when you try to expand it."
+                },
+                "favorites.ownExplorer": {
+                    "type": "boolean",
+                    "default": "false",
+                    "markdownDescription": "Specifies if the _Favorites_ view should be placed in its own explorer (on activity bar) or in the root Explorer."
                 }
             }
         },
@@ -204,7 +228,7 @@
     },
     "devDependencies": {
         "typescript": "^2.1.4",
-        "vscode": "^1.0.0",
+        "vscode": "^1.1.10",
         "@types/node": "*"
     },
     "dependencies": {

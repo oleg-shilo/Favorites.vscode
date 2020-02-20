@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.3 (20 Feb, 2020)
+
+- Added option to place _Favorites_ view in its own explorer (on activity bar).
+
 ## 1.3.2
 
 - Issue #8: Cross-platform usage.
