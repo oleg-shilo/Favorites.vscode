@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.3.3",
+    "version": "1.3.4",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -157,27 +157,27 @@
             "view/title": [
                 {
                     "command": "favorites.new_list",
-                    "when": "view == favorites",
+                    "when": "view == favorites || view == favorites-bar",
                     "group": "navigation@0"
                 },
                 {
                     "command": "favorites.add",
-                    "when": "view == favorites",
+                    "when": "view == favorites || view == favorites-bar",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.add_workspace",
-                    "when": "view == favorites",
+                    "when": "view == favorites || view == favorites-bar",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.refresh_all",
-                    "when": "view == favorites",
+                    "when": "view == favorites || view == favorites-bar",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.edit",
-                    "when": "view == favorites",
+                    "when": "view == favorites || view == favorites-bar",
                     "group": "navigation@3"
                 }
             ],

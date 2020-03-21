@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.4 (21 Mar, 2020)
+
+- Fixed hidden command icons of the view toolbar when view is hosted in it's own activity bar.
+
 ## 1.3.3 (20 Feb, 2020)
 
 - Added option to place _Favorites_ view in its own explorer (on activity bar).
