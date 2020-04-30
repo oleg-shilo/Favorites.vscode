@@ -66,7 +66,7 @@
                 },
                 "favorites.ownExplorer": {
                     "type": "boolean",
-                    "default": "false",
+                    "default": false,
                     "markdownDescription": "Specifies if the _Favorites_ view should be placed in its own explorer (on activity bar) or in the root Explorer."
                 }
             }
