@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.5 (30 Apr, 2020)
+
+- Issue #11: Default value for "favorites.ownExplorer" is incorrectly defined.
+
 ## 1.3.4 (21 Mar, 2020)
 
 - Fixed hidden command icons of the view toolbar when view is hosted in it's own activity bar.
