@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.3.5",
+    "version": "1.3.6",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -24,8 +24,8 @@
         "url": "https://github.com/oleg-shilo/Favorites.vscode.git"
     },
     "activationEvents": [
-        "onView:favorites",
-        "onView:favorites-bar"
+        "onView:favorites-explorer-view",
+        "onView:favorites-own-view"
     ],
     "main": "./out/src/extension",
     "icon": "media/fav.png",
@@ -33,7 +33,7 @@
         "viewsContainers": {
             "activitybar": [
                 {
-                    "id": "favorites-bar",
+                    "id": "favorites-explorer",
                     "title": "Favorites Explorer",
                     "icon": "resources/light/favorite.svg"
                 }
@@ -42,14 +42,14 @@
         "views": {
             "explorer": [
                 {
-                    "id": "favorites",
+                    "id": "favorites-explorer-view",
                     "name": "Favorites",
                     "when": "config.favorites.ownExplorer == false"
                 }
             ],
-            "favorites-bar": [
+            "favorites-explorer": [
                 {
-                    "id": "favorites-bar",
+                    "id": "favorites-own-view",
                     "name": "Favorites",
                     "when": "config.favorites.ownExplorer == true"
                 }
@@ -110,7 +110,7 @@
             },
             {
                 "command": "favorites.open_all_files",
-                "title": "Open all files from the list"
+                "title": "Open all files from the selected Favorites list"
             },
             {
                 "command": "favorites.refresh",
@@ -157,66 +157,60 @@
             "view/title": [
                 {
                     "command": "favorites.new_list",
-                    "when": "view == favorites || view == favorites-bar",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@0"
                 },
                 {
                     "command": "favorites.add",
-                    "when": "view == favorites || view == favorites-bar",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.add_workspace",
-                    "when": "view == favorites || view == favorites-bar",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.refresh_all",
-                    "when": "view == favorites || view == favorites-bar",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.edit",
-                    "when": "view == favorites || view == favorites-bar",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@3"
+                },
+                {
+                    "command": "favorites.open_all_files",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "group": "custom@0"
+                },
+                {
+                    "command": "favorites.rename_list",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "group": "custom@1"
+                },
+                {
+                    "command": "favorites.remove_list",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "group": "custom@1"
                 }
             ],
             "view/item/context": [
                 {
                     "command": "favorites.remove",
-                    "when": "view == favorites && viewItem == file",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@0"
                 },
                 {
                     "command": "favorites.move_up",
-                    "when": "view == favorites && viewItem == file",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@0"
-                },
-                {
-                    "command": "favorites.open_all_files",
-                    "when": "view == favorites && viewItem == file",
-                    "group": "navigation@1"
                 },
                 {
                     "command": "favorites.move_down",
-                    "when": "view == favorites && viewItem == file",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@0"
-                },
-                {
-                    "command": "favorites.remove_list",
-                    "when": "view == favorites && viewItem == list"
-                },
-                {
-                    "command": "favorites.edit_list",
-                    "when": "view == favorites && viewItem == list"
-                },
-                {
-                    "command": "favorites.rename_list",
-                    "when": "view == favorites && viewItem == list"
-                },
-                {
-                    "command": "favorites.new_list",
-                    "when": "view == favorites && viewItem == list_root"
                 }
             ]
         }

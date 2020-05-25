@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.3.6 (24 May, 2020)
+
+- Issue #15: Feature Request: option for alternate names.
+
 ## 1.3.5 (30 Apr, 2020)
 
 - Issue #11: Default value for "favorites.ownExplorer" is incorrectly defined.

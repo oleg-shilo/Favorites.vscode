@@ -227,8 +227,8 @@ export function activate(context: vscode.ExtensionContext) {
     FavoritesTreeProvider.user_dir = get_user_dir();
     const treeViewProvider = new FavoritesTreeProvider(get_favorites_items, get_favorites_lists, get_current_list_name);
 
-    vscode.window.registerTreeDataProvider("favorites-bar", treeViewProvider);
-    vscode.window.registerTreeDataProvider("favorites", treeViewProvider);
+    vscode.window.registerTreeDataProvider("favorites-own-view", treeViewProvider);
+    vscode.window.registerTreeDataProvider("favorites-explorer-view", treeViewProvider);
 
     vscode.commands.registerCommand('favorites.load', load);
     vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);

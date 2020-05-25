@@ -13,5 +13,6 @@
         "Galos",
         "oshilo"
     ],
-    "python.linting.pylintEnabled": false // we want to use the TS server from our node_modules folder to control its version
+    "python.linting.pylintEnabled": false,
+    "favorites.ownExplorer": false // we want to use the TS server from our node_modules folder to control its version
 }

@@ -5,303 +5,312 @@ import { Uri, commands } from "vscode";
 
 export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteItem> {
 
-	public static user_dir: string;
+    public static user_dir: string;
 
-	private _onDidChangeTreeData: vscode.EventEmitter<FavoriteItem | undefined> = new vscode.EventEmitter<FavoriteItem | undefined>();
-	readonly onDidChangeTreeData: vscode.Event<FavoriteItem | undefined> = this._onDidChangeTreeData.event;
+    private _onDidChangeTreeData: vscode.EventEmitter<FavoriteItem | undefined> = new vscode.EventEmitter<FavoriteItem | undefined>();
+    readonly onDidChangeTreeData: vscode.Event<FavoriteItem | undefined> = this._onDidChangeTreeData.event;
 
-	private rootItem: FavoriteItem;
-	constructor(
-		private aggregateItems: () => string[],
-		private aggregateLists: () => string[],
-		private currentListName: () => string) {
+    private rootItem: FavoriteItem;
+    constructor(
+        private aggregateItems: () => string[],
+        private aggregateLists: () => string[],
+        private currentListName: () => string) {
 
-		vscode.window.onDidChangeActiveTextEditor(editor => {
-			// no need to do it so often
-			// this._onDidChangeTreeData.fire();
-		});
-		vscode.workspace.onDidChangeTextDocument(e => {
-		})
-	}
+        vscode.window.onDidChangeActiveTextEditor(editor => {
+            // no need to do it so often
+            // this._onDidChangeTreeData.fire();
+        });
+        vscode.workspace.onDidChangeTextDocument(e => {
+        })
+    }
 
-	refresh(collapseLists: boolean): void {
-		if (collapseLists) {
-			this.list_root_state = vscode.TreeItemCollapsibleState.Collapsed;
-		}
+    refresh(collapseLists: boolean): void {
+        if (collapseLists) {
+            this.list_root_state = vscode.TreeItemCollapsibleState.Collapsed;
+        }
 
-		if (this.rootItem != null) {
-			//this.noteNodeStates();
-		}
+        if (this.rootItem != null) {
+            //this.noteNodeStates();
+        }
 
-		this._onDidChangeTreeData.fire();
-	}
+        this._onDidChangeTreeData.fire();
+    }
 
-	noteNodeStates(): void {
+    noteNodeStates(): void {
 
-		// not ready yet. 
-		// VSCode API does not allow exploring vscode.TreeItem state, parent nor children :o(
-		if (this.rootItem != null) {
-			try {
+        // not ready yet. 
+        // VSCode API does not allow exploring vscode.TreeItem state, parent nor children :o(
+        if (this.rootItem != null) {
+            try {
 
-				let config_file = path.join(FavoritesTreeProvider.user_dir, 'nodes_states.json');
+                let config_file = path.join(FavoritesTreeProvider.user_dir, 'nodes_states.json');
 
-				let openNodes = [];
+                let openNodes = [];
 
-				this.rootItem.children.forEach(node => {
-					// var collapsed = node.collapsibleState;
+                this.rootItem.children.forEach(node => {
+                    // var collapsed = node.collapsibleState;
 
-				});
+                });
 
-				let config = { "current": 'Default.list.txt' };
-				fs.writeFileSync(config_file, JSON.stringify(config), { encoding: 'utf8' });
-				// if (node.)
-			} catch (error) {
-				// do nothing; doesn't matter why we failed
-			}
-		}
-	}
+                let config = { "current": 'Default.list.txt' };
+                fs.writeFileSync(config_file, JSON.stringify(config), { encoding: 'utf8' });
+                // if (node.)
+            } catch (error) {
+                // do nothing; doesn't matter why we failed
+            }
+        }
+    }
 
-	getTreeItem(element: FavoriteItem): vscode.TreeItem {
-		return element;
-	}
+    getTreeItem(element: FavoriteItem): vscode.TreeItem {
+        return element;
+    }
 
-	getChildren(element?: FavoriteItem): Thenable<FavoriteItem[]> {
+    getChildren(element?: FavoriteItem): Thenable<FavoriteItem[]> {
 
-		if (this.rootItem == null)
-			this.rootItem = element;
+        if (this.rootItem == null)
+            this.rootItem = element;
 
-		return new Promise(resolve => {
-			if (element) {
-				if (element.contextValue == 'list_root') {
-					this.list_root_state = vscode.TreeItemCollapsibleState.Expanded; // to prevent collapsing on refresh
-					resolve(this.getFavoriteLists());
-				}
-				else {
-					let dir = element.context;
-					resolve(this.getFolderItems(dir));
-				}
-			} else {
-				resolve(this.getFavoriteItems());
-			}
-		});
-	}
+        return new Promise(resolve => {
+            if (element) {
+                if (element.contextValue == 'list_root') {
+                    this.list_root_state = vscode.TreeItemCollapsibleState.Expanded; // to prevent collapsing on refresh
+                    resolve(this.getFavoriteLists());
+                }
+                else {
+                    let dir = element.context;
+                    resolve(this.getFolderItems(dir));
+                }
+            } else {
+                resolve(this.getFavoriteItems());
+            }
+        });
+    }
 
-	private getFolderItems(dir: string): FavoriteItem[] {
-		let fileNodes = [];
-		let dirNodes = [];
+    private getFolderItems(dir: string): FavoriteItem[] {
+        let fileNodes = [];
+        let dirNodes = [];
 
-		fs.readdirSync(dir).forEach(fileName => {
-			var file = path.join(dir, fileName);
-			if (fs.lstatSync(file).isFile()) {
-				let node = new FavoriteItem(
-					fileName,
-					vscode.TreeItemCollapsibleState.None,
-					{
-						command: 'vscode.open',
-						title: '',
-						tooltip: file,
-						arguments: [Uri.file(file)],
-					},
-					null,
-					file
-				);
-				fileNodes.push(node);
-			}
-			else if (fs.lstatSync(file).isDirectory()) {
-				let node = new FavoriteItem(
-					fileName,
-					vscode.TreeItemCollapsibleState.Collapsed,
-					{
-						command: '',
-						title: '',
-						tooltip: file,
-						arguments: [],
-					},
-					null,
-					file
-				);
-				node.iconPath = {
-					light: path.join(__filename, '..', '..', '..', 'resources', 'light', "folder.svg"),
-					dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', "folder.svg")
-				};
-				dirNodes.push(node);
-			}
-		});
+        fs.readdirSync(dir).forEach(fileName => {
+            var file = path.join(dir, fileName);
+            if (fs.lstatSync(file).isFile()) {
+                let node = new FavoriteItem(
+                    fileName,
+                    vscode.TreeItemCollapsibleState.None,
+                    {
+                        command: 'vscode.open',
+                        title: '',
+                        tooltip: file,
+                        arguments: [Uri.file(file)],
+                    },
+                    null,
+                    file
+                );
+                fileNodes.push(node);
+            }
+            else if (fs.lstatSync(file).isDirectory()) {
+                let node = new FavoriteItem(
+                    fileName,
+                    vscode.TreeItemCollapsibleState.Collapsed,
+                    {
+                        command: '',
+                        title: '',
+                        tooltip: file,
+                        arguments: [],
+                    },
+                    null,
+                    file
+                );
+                node.iconPath = {
+                    light: path.join(__filename, '..', '..', '..', 'resources', 'light', "folder.svg"),
+                    dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', "folder.svg")
+                };
+                dirNodes.push(node);
+            }
+        });
 
-		let nodes = [];
+        let nodes = [];
 
-		let commandNode = new FavoriteItem(
-			"<Open folder>",
-			vscode.TreeItemCollapsibleState.None,
-			{
-				command: 'vscode.openFolder',
-				title: '',
-				tooltip: path.basename(dir),
-				arguments: [Uri.file(dir)],
-			},
-			null,
-			dir);
-		commandNode.iconPath = null;
+        let commandNode = new FavoriteItem(
+            "<Open folder>",
+            vscode.TreeItemCollapsibleState.None,
+            {
+                command: 'vscode.openFolder',
+                title: '',
+                tooltip: path.basename(dir),
+                arguments: [Uri.file(dir)],
+            },
+            null,
+            dir);
+        commandNode.iconPath = null;
 
-		nodes.push(commandNode);
-		dirNodes.forEach(item => nodes.push(item));
-		fileNodes.forEach(item => nodes.push(item));
+        nodes.push(commandNode);
+        dirNodes.forEach(item => nodes.push(item));
+        fileNodes.forEach(item => nodes.push(item));
 
-		return nodes;
-	}
+        return nodes;
+    }
 
-	list_root_state = vscode.TreeItemCollapsibleState.Collapsed;
+    list_root_state = vscode.TreeItemCollapsibleState.Collapsed;
 
-	private getFavoriteItems(): FavoriteItem[] {
+    private getFavoriteItems(): FavoriteItem[] {
 
-		let nodes = [];
+        let nodes = [];
 
-		let items = this.aggregateItems();
-		let active_list_node = new FavoriteItem(
-			'< ' + this.currentListName() + " >",
-			this.list_root_state,
-			{
-				command: '',
-				title: '',
-				tooltip: "Select Favorites predefined list",
-				arguments: null,
-			},
-			null,
-			null
-		);
+        let items = this.aggregateItems();
+        let active_list_node = new FavoriteItem(
+            '< ' + this.currentListName() + " >",
+            this.list_root_state,
+            {
+                command: '',
+                title: '',
+                tooltip: "Select Favorites predefined list",
+                arguments: null,
+            },
+            null,
+            null
+        );
 
-		active_list_node.contextValue = "list_root";
+        active_list_node.contextValue = "list_root";
 
-		active_list_node.iconPath = {
-			light: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg'),
-			dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg')
-		};
+        active_list_node.iconPath = {
+            light: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg'),
+            dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg')
+        };
 
-		nodes.push(active_list_node);
+        nodes.push(active_list_node);
 
-		items.forEach(file => {
-			if (file != '') {
+        items.forEach(item => {
+            if (item != '') {
 
-				let commandValue = 'vscode.open';
-				let iconName = 'document.svg';
-				let collapsableState = vscode.TreeItemCollapsibleState.None;
-				let showFolderFiles = vscode.workspace.getConfiguration("favorites").get('showFolderFiles', false);
+                let file = item;
+                let displayName = path.basename(file);
 
-				try {
-					if (path.isAbsolute(file) && fs.lstatSync(file).isDirectory()) {
-						commandValue = 'vscode.openFolder';
-						iconName = 'folder.svg';
-						if (showFolderFiles) {
-							collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
-							commandValue = '';
-						}
-					}
-				} catch (error) {
-				}
+                let tokens = item.split('|');
+                if (tokens.length > 1) {
+                    file = tokens[0];
+                    displayName = tokens[1];
+                }
 
-				let node = new FavoriteItem(
-					path.basename(file),
-					collapsableState,
-					{
-						command: commandValue,
-						title: '',
-						tooltip: file,
-						arguments: [Uri.file(file)],
-					},
-					null,
-					file
-				);
+                let commandValue = 'vscode.open';
+                let iconName = 'document.svg';
+                let collapsableState = vscode.TreeItemCollapsibleState.None;
+                let showFolderFiles = vscode.workspace.getConfiguration("favorites").get('showFolderFiles', false);
 
-				if (!path.isAbsolute(file))
-					node.command = null;
+                try {
+                    if (path.isAbsolute(file) && fs.lstatSync(file).isDirectory()) {
+                        commandValue = 'vscode.openFolder';
+                        iconName = 'folder.svg';
+                        if (showFolderFiles) {
+                            collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
+                            commandValue = '';
+                        }
+                    }
+                } catch (error) {
+                }
 
-				if (fs.existsSync(file)) {
-					node.iconPath = {
-						light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
-						dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
-					};
-				}
-				else
-					node.iconPath = null;
+                let node = new FavoriteItem(
+                    displayName,
+                    collapsableState,
+                    {
+                        command: commandValue,
+                        title: '',
+                        tooltip: file,
+                        arguments: [Uri.file(file)],
+                    },
+                    null,
+                    file
+                );
 
-				nodes.push(node);
-			}
-		});
+                if (!path.isAbsolute(file))
+                    node.command = null;
 
-		return nodes;
-	}
+                if (fs.existsSync(file)) {
+                    node.iconPath = {
+                        light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
+                        dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
+                    };
+                }
+                else
+                    node.iconPath = null;
 
-	private getFavoriteLists(): FavoriteItem[] {
+                nodes.push(node);
+            }
+        });
 
-		let nodes = [];
+        return nodes;
+    }
 
-		let items = this.aggregateLists();
+    private getFavoriteLists(): FavoriteItem[] {
 
-		items.forEach(file => {
-			if (file != '') {
+        let nodes = [];
 
-				let short_name = path.basename(file).replace(".list.txt", "");
+        let items = this.aggregateLists();
 
-				let commandValue = 'favorites.load';
-				let iconName = '';
+        items.forEach(file => {
+            if (file != '') {
 
-				if (short_name == this.currentListName())
-					iconName = 'tick.svg';
+                let short_name = path.basename(file).replace(".list.txt", "");
 
-				let collapsableState = vscode.TreeItemCollapsibleState.None;
+                let commandValue = 'favorites.load';
+                let iconName = '';
 
-				let node = new FavoriteItem(
-					short_name,
-					collapsableState,
-					{
-						command: commandValue,
-						title: '',
-						tooltip: file,
-						arguments: [file],
-					},
-					null,
-					file
-				);
+                if (short_name == this.currentListName())
+                    iconName = 'tick.svg';
 
-				if (fs.existsSync(file)) {
-					node.iconPath = {
-						light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
-						dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
-					};
-				}
-				else
-					node.iconPath = null;
+                let collapsableState = vscode.TreeItemCollapsibleState.None;
 
-				node.contextValue = "list";
-				nodes.push(node);
-			}
-		});
+                let node = new FavoriteItem(
+                    short_name,
+                    collapsableState,
+                    {
+                        command: commandValue,
+                        title: '',
+                        tooltip: file,
+                        arguments: [file],
+                    },
+                    null,
+                    file
+                );
 
-		return nodes;
-	}
+                if (fs.existsSync(file)) {
+                    node.iconPath = {
+                        light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
+                        dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
+                    };
+                }
+                else
+                    node.iconPath = null;
+
+                node.contextValue = "list";
+                nodes.push(node);
+            }
+        });
+
+        return nodes;
+    }
 }
 
 export class FavoriteItem extends vscode.TreeItem {
 
-	constructor(
-		public readonly label: string,
-		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		public command?: vscode.Command,
-		public readonly children?: string[],
-		public readonly context?: string,
-	) {
-		super(label, collapsibleState);
-	}
+    constructor(
+        public readonly label: string,
+        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        public command?: vscode.Command,
+        public readonly children?: string[],
+        public readonly context?: string,
+    ) {
+        super(label, collapsibleState);
+    }
 
-	iconPath = {
-		light: path.join(__filename, '..', '..', '..', 'resources', 'light', 'document.svg'),
-		dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'document.svg')
-	};
+    iconPath = {
+        light: path.join(__filename, '..', '..', '..', 'resources', 'light', 'document.svg'),
+        dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'document.svg')
+    };
 
-	// this is the value that is foing to be evaluated in the "view/item/context" from the packae.json
-	// possible values are:
-	// - file
-	// - list
-	// - list_root
-	contextValue = 'file';
+    // this is the value that is foing to be evaluated in the "view/item/context" from the packae.json
+    // possible values are:
+    // - file
+    // - list
+    // - list_root
+    contextValue = 'file';
 }
