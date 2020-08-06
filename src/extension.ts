@@ -9,6 +9,8 @@ import { Uri, commands } from 'vscode';
 import { ExecSyncOptionsWithBufferEncoding } from 'child_process';
 let expandenv = require('expandenv');
 
+let outputChannel = vscode.window.createOutputChannel("CS-Script3");
+
 function get_favorites_items() {
     if (fs.existsSync(Utils.fav_file)) {
         return Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
@@ -214,6 +216,21 @@ function get_user_dir(): string {
     // Mac $HOME/Library/Application Support/Code/User/settings.json
     // Linux $HOME/.config/Code/User/settings.json
 
+    let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>');
+
+    if (dataLocation != '<default>') {
+
+        try {
+            fs.mkdirSync(dataLocation);
+        } catch (error) {
+            if (error.code != 'EEXIST') {
+                vscode.window.showErrorMessage("Custom data directory ('" + dataLocation + "') cannot be accessed/created. Falling back to the default data location.");
+            }
+        }
+
+        return dataLocation;
+    }
+
     if (os.platform() == 'win32')
         return path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
     else if (os.platform() == 'darwin')
@@ -225,6 +242,7 @@ function get_user_dir(): string {
 export function activate(context: vscode.ExtensionContext) {
 
     FavoritesTreeProvider.user_dir = get_user_dir();
+
     const treeViewProvider = new FavoritesTreeProvider(get_favorites_items, get_favorites_lists, get_current_list_name);
 
     vscode.window.registerTreeDataProvider("favorites-own-view", treeViewProvider);

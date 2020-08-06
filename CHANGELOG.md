@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.4.0 (6 Aug, 2020)
+
+- Issue #16: Feature request: Configurable Setting for Favorites Storage
+  Implemented as config setting `dataLocation`.
+
 ## 1.3.6 (24 May, 2020)
 
 - Issue #15: Feature Request: option for alternate names.
