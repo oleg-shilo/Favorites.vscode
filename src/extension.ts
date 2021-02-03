@@ -31,8 +31,8 @@ function get_favorites_lists() {
 }
 
 function add_workspace(element: FavoriteItem) {
-    if (vscode.workspace.rootPath)
-        _add(vscode.workspace.rootPath);
+    if (vscode.workspace.workspaceFolders)
+        _add(vscode.workspace.workspaceFolders[0].name);
 }
 
 function alt_cmd(element: FavoriteItem) {

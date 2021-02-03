@@ -14,5 +14,10 @@
         "oshilo"
     ],
     "python.linting.pylintEnabled": false,
-    "favorites.ownExplorer": false // we want to use the TS server from our node_modules folder to control its version
+    "favorites.ownExplorer": false,
+    "cSpell.ignoreWords": [
+        "collapsable",
+        "expandenv",
+        "sanatize"
+    ] // we want to use the TS server from our node_modules folder to control its version
 }

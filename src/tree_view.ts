@@ -307,7 +307,7 @@ export class FavoriteItem extends vscode.TreeItem {
         dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'document.svg')
     };
 
-    // this is the value that is foing to be evaluated in the "view/item/context" from the packae.json
+    // this is the value that is holding to be evaluated in the "view/item/context" from the package.json
     // possible values are:
     // - file
     // - list
