@@ -192,17 +192,25 @@ function load(list: string) {
 }
 
 function open(path: string) {
+    open_path(path, false);
+}
+
+function open_path(path: string, newWindow: boolean) {
     if (fs.lstatSync(path).isDirectory()) {
         let workspace = Utils.get_workspace_file(path);
 
         if (workspace)
-            commands.executeCommand('vscode.openFolder', Uri.file(workspace))
+            commands.executeCommand('vscode.openFolder', Uri.file(workspace), newWindow)
         else
-            commands.executeCommand('vscode.openFolder', Uri.file(path))
+            commands.executeCommand('vscode.openFolder', Uri.file(path), newWindow)
     }
     else {
-        commands.executeCommand('vscode.open', Uri.file(path));
+        commands.executeCommand('vscode.open', Uri.file(path), newWindow);
     }
+}
+
+function open_in_new_window(item: FavoriteItem) {
+    open_path(item.context, true);
 }
 
 function new_list() {
@@ -262,6 +270,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider("favorites-own-view", treeViewProvider);
     vscode.window.registerTreeDataProvider("favorites-explorer-view", treeViewProvider);
 
+    vscode.commands.registerCommand('favorites.open_new_window', open_in_new_window);
     vscode.commands.registerCommand('favorites.open', open);
     vscode.commands.registerCommand('favorites.load', load);
     vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);

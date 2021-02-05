@@ -116,6 +116,10 @@
                 "title": "Move down"
             },
             {
+                "command": "favorites.open_new_window",
+                "title": "Open in new window"
+            },
+            {
                 "command": "favorites.open_all_files",
                 "title": "Open all files from the selected Favorites list"
             },
@@ -205,19 +209,24 @@
             ],
             "view/item/context": [
                 {
-                    "command": "favorites.remove",
+                    "command": "favorites.open_new_window",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@0"
+                },
+                {
+                    "command": "favorites.remove",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "group": "navigation@1"
                 },
                 {
                     "command": "favorites.move_up",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
-                    "group": "navigation@0"
+                    "group": "navigation@1"
                 },
                 {
                     "command": "favorites.move_down",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
-                    "group": "navigation@0"
+                    "group": "navigation@1"
                 }
             ]
         }
