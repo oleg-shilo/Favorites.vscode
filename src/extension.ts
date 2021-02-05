@@ -191,6 +191,20 @@ function load(list: string) {
     commands.executeCommand('favorites.refresh');
 }
 
+function open(path: string) {
+    if (fs.lstatSync(path).isDirectory()) {
+        let workspace = Utils.get_workspace_file(path);
+
+        if (workspace)
+            commands.executeCommand('vscode.openFolder', Uri.file(workspace))
+        else
+            commands.executeCommand('vscode.openFolder', Uri.file(path))
+    }
+    else {
+        commands.executeCommand('vscode.open', Uri.file(path));
+    }
+}
+
 function new_list() {
     let options: vscode.InputBoxOptions = {
         prompt: "Enter the file name of the new Favorites list",
@@ -248,6 +262,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.window.registerTreeDataProvider("favorites-own-view", treeViewProvider);
     vscode.window.registerTreeDataProvider("favorites-explorer-view", treeViewProvider);
 
+    vscode.commands.registerCommand('favorites.open', open);
     vscode.commands.registerCommand('favorites.load', load);
     vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);
     vscode.commands.registerCommand('favorites.new_list', new_list);
@@ -268,6 +283,15 @@ export function activate(context: vscode.ExtensionContext) {
 class Utils {
     private static _fav_file: string = null;
     static user_dir: string;
+
+    static get_workspace_file(folder: string): string {
+        let result = null;
+        fs.readdirSync(folder).forEach(fileName => {
+            if (result == null && fileName.endsWith(".code-workspace"))
+                result = path.join(folder, fileName);
+        });
+        return result;
+    }
 
     static get fav_lists(): string[] {
         let files: string[] = [];

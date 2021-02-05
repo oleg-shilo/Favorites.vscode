@@ -33,7 +33,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
             //this.noteNodeStates();
         }
 
-        this._onDidChangeTreeData.fire();
+        this._onDidChangeTreeData.fire(null);
     }
 
     noteNodeStates(): void {
@@ -134,10 +134,10 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
             "<Open folder>",
             vscode.TreeItemCollapsibleState.None,
             {
-                command: 'vscode.openFolder',
+                command: 'favorites.open',
                 title: '',
                 tooltip: path.basename(dir),
-                arguments: [Uri.file(dir)],
+                arguments: [dir],
             },
             null,
             dir);
