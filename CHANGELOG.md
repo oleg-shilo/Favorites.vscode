@@ -1,5 +1,15 @@
 # Change Log
 
+## 1.5.1 (6 Feb, 2021)
+
+- Issue #21: Add Icon
+- Updated view panel icon to address misalignment on the activity bar
+
+## 1.5.0 (5 Feb, 2021)
+
+- Issue #19: Open in new window
+- Issue #20: Automatically open Workspace
+
 ## 1.4.0 (6 Aug, 2020)
 
 - Issue #16: Feature request: Configurable Setting for Favorites Storage
@@ -64,14 +74,14 @@
 This feature is not a substitution of the Workspace explorer view, which does by far superior job. It's just a convenience measure for a quick access of the top level folder files.  The feature can be enabled/disabled with `favorites.showFolderFiles` setting.
 
 Note, the feature overall experience is subject to the limitations/defects of the VSCode tree view. These defects are officially reported and being dealt with by the VSCode team:
-https://github.com/Microsoft/vscode/issues/34130
-https://github.com/patrys/vscode-code-outline/issues/24
+<https://github.com/Microsoft/vscode/issues/34130>
+<https://github.com/patrys/vscode-code-outline/issues/24>
 
 ## 1.0.2
 
 - Added support for folders
 - Items icons reflect if file/folder exist or not
-- Added context menu for moving items up/down in the list 
+- Added context menu for moving items up/down in the list
 
 ## 1.0.1
 
