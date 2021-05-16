@@ -157,27 +157,31 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
         let nodes = [];
 
         let items = this.aggregateItems();
-        let active_list_node = new FavoriteItem(
-            '< ' + this.currentListName() + " >",
-            this.list_root_state,
-            {
-                command: '',
-                title: '',
-                tooltip: "Select Favorites predefined list",
-                arguments: null,
-            },
-            null,
-            null
-        );
 
-        active_list_node.contextValue = "list_root";
+        let singleListMode = vscode.workspace.getConfiguration("favorites").get('singleListMode', false);
+        if (!singleListMode) {
+            let active_list_node = new FavoriteItem(
+                '< ' + this.currentListName() + " >",
+                this.list_root_state,
+                {
+                    command: '',
+                    title: '',
+                    tooltip: "Select Favorites predefined list",
+                    arguments: null,
+                },
+                null,
+                null
+            );
 
-        active_list_node.iconPath = {
-            light: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg'),
-            dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg')
-        };
+            active_list_node.contextValue = "list_root";
 
-        nodes.push(active_list_node);
+            active_list_node.iconPath = {
+                light: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg'),
+                dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg')
+            };
+
+            nodes.push(active_list_node);
+        }
 
         items.forEach(item => {
             if (item != '') {

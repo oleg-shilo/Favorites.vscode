@@ -61,6 +61,11 @@
             "type": "object",
             "title": "Favorites configuration",
             "properties": {
+                "favorites.singleListMode": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Only ever show a single favorites list. \nIn this mode the top tree-view element with the name of the current list (e.g. `< Default >` ) is removed. \nThis mode is useful for users who only use a single list of favorite documents.."
+                },
                 "favorites.showFolderFiles": {
                     "type": "boolean",
                     "default": false,
@@ -168,7 +173,12 @@
             "view/title": [
                 {
                     "command": "favorites.new_list",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "!config.favorites.singleListMode && view == favorites-own-view",
+                    "group": "navigation@0"
+                },
+                {
+                    "command": "favorites.new_list",
+                    "when": "!config.favorites.singleListMode && view == favorites-explorer-view",
                     "group": "navigation@0"
                 },
                 {

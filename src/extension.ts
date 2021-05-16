@@ -287,6 +287,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.open_all_files', open_all_files);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
+
+    vscode.workspace.onDidChangeConfiguration(event => {
+        if (event.affectsConfiguration("favorites.singleListMode")) {
+            treeViewProvider.refresh(false);
+        }
+    })
 }
 
 class Utils {
