@@ -1,5 +1,7 @@
 # Change Log
 
+## 1.5.2 (16 May, 2021)
+
 ## 1.5.1 (6 Feb, 2021)
 
 - Issue #21: Add Icon

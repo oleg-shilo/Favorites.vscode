@@ -2,11 +2,11 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
-        "vscode": "^1.52.0"
+        "vscode": "^1.56.2"
     },
     "categories": [
         "Other"
