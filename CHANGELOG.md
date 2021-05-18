@@ -2,6 +2,10 @@
 
 ## 1.5.2 (16 May, 2021)
 
+- Issue #17: About hiding `<default>` list
+- Issue #23: Feature request: Configurable Favorites Storage
+  You can create grouped lists according this pattern: `[groupname.]<list_name>.list.txt`
+
 ## 1.5.1 (6 Feb, 2021)
 
 - Issue #21: Add Icon
