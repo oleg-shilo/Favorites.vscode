@@ -1,10 +1,11 @@
 # Change Log
 
-## 1.5.2 (16 May, 2021)
+## 1.5.2 (23 May, 2021)
 
-- Issue #17: About hiding `<default>` list
 - Issue #23: Feature request: Configurable Favorites Storage
+- Issue #22: Provide a way to have toggled lists
   You can create grouped lists according this pattern: `[groupname.]<list_name>.list.txt`
+- Issue #17: About hiding `<default>` list
 
 ## 1.5.1 (6 Feb, 2021)
 

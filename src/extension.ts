@@ -231,7 +231,7 @@ function new_list() {
 
 function associate_list_with_workspace(element: FavoriteItem, associate: boolean): void {
 
-    if (element.contextValue == 'file' && fs.existsSync(element.context)) {
+    if (element && element.contextValue == 'list' && fs.existsSync(element.context)) {
         if (associate) {
             let folder = GetCurrentWorkspaceFolder();
             if (folder) {
@@ -309,7 +309,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.remove', remove);
     vscode.commands.registerCommand('favorites.remove_list', remove_list);
     vscode.commands.registerCommand('favorites.rename_list', rename_list);
-    vscode.commands.registerCommand('favorites.associate_list_from_workspace', e => associate_list_with_workspace(e, true));
+    vscode.commands.registerCommand('favorites.associate_list_with_workspace', e => associate_list_with_workspace(e, true));
     vscode.commands.registerCommand('favorites.disassociate_list_from_workspace', e => associate_list_with_workspace(e, false));
     vscode.commands.registerCommand('favorites.open_all_files', open_all_files);
     vscode.commands.registerCommand('favorites.move_up', up);
@@ -344,20 +344,29 @@ class Utils {
     }
 
     static get fav_lists(): string[] {
-        let files: string[] = [];
-        let currentWorkspace = GetCurrentWorkspaceFolder();
+        let lists: string[] = [];
+        let lists_for_workspace: string[] = [];
+        let currentWorkspaceFolder = GetCurrentWorkspaceFolder();
 
         fs.readdirSync(Utils.user_dir)
             .forEach(fileName => {
                 let file = path.join(Utils.user_dir, fileName);
 
                 if (fs.lstatSync(file).isFile() && file.endsWith(".list.txt")) {
+                    let specificToFolder = Utils.read_all_lines(file).filter(x => x.startsWith("# workspace:"));
 
-                    files.push(file);
+                    if (specificToFolder.length == 0) {
+                        lists.push(file);
+                    }
+                    else if (specificToFolder[0].replace("# workspace:", "") == currentWorkspaceFolder)
+                        lists_for_workspace.push(file);
                 }
             });
 
-        return files;
+        if (lists_for_workspace.length > 0)
+            return lists_for_workspace;
+        else
+            return lists;
     }
 
     static get fav_file(): string {

@@ -158,11 +158,11 @@
             },
             {
                 "command": "favorites.associate_list_with_workspace",
-                "title": "Associate selected Favorites list with the current workspace."
+                "title": "Associate with current workspace."
             },
             {
                 "command": "favorites.disassociate_list_from_workspace",
-                "title": "Disassociate selected Favorites list from any workspace."
+                "title": "Disassociate from any workspace."
             },
             {
                 "command": "favorites.rename_list",
@@ -210,32 +210,32 @@
                     "group": "navigation@3"
                 },
                 {
+                    "command": "favorites.open_all_files",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "group": "custom@0"
+                }
+            ],
+            "view/item/context": [
+                {
                     "command": "favorites.associate_list_with_workspace",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
-                    "group": "navigation@3"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "favorites.disassociate_list_from_workspace",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
-                    "group": "navigation@3"
-                },
-                {
-                    "command": "favorites.open_all_files",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
-                    "group": "custom@0"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "favorites.rename_list",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
-                    "group": "custom@1"
+                    "group": "navigation@2"
                 },
                 {
                     "command": "favorites.remove_list",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
-                    "group": "custom@1"
-                }
-            ],
-            "view/item/context": [
+                    "group": "navigation@2"
+                },
                 {
                     "command": "favorites.open_new_window",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
