@@ -229,6 +229,31 @@ function new_list() {
         });
 }
 
+function associate_list_with_workspace(element: FavoriteItem, associate: boolean): void {
+
+    if (element.contextValue == 'file' && fs.existsSync(element.context)) {
+        if (associate) {
+            let folder = GetCurrentWorkspaceFolder();
+            if (folder) {
+                let lines = Utils.read_all_lines(element.context);
+                lines = lines.filter(x => !x.startsWith("# workspace:"));
+                lines.splice(0, 0, "# workspace:" + folder);
+                Utils.write_all_lines(element.context, lines.filter(x => x != ''));
+                commands.executeCommand('favorites.refresh');
+            }
+            else {
+                // show error message
+                vscode.window.showErrorMessage("You can only associate the Favorites list with the open workspace/folder and currently none is opened.");
+            }
+        }
+        else {
+            let lines = Utils.read_all_lines(element.context);
+            Utils.write_all_lines(element.context, lines.filter(x => !x.startsWith("# workspace:")).filter(x => x != ''));
+            commands.executeCommand('favorites.refresh');
+        }
+    }
+}
+
 function get_user_dir(): string {
 
     // ext_context.storagePath cannot be used as it is undefined if no workspace loaded
@@ -284,6 +309,8 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.remove', remove);
     vscode.commands.registerCommand('favorites.remove_list', remove_list);
     vscode.commands.registerCommand('favorites.rename_list', rename_list);
+    vscode.commands.registerCommand('favorites.associate_list_from_workspace', e => associate_list_with_workspace(e, true));
+    vscode.commands.registerCommand('favorites.disassociate_list_from_workspace', e => associate_list_with_workspace(e, false));
     vscode.commands.registerCommand('favorites.open_all_files', open_all_files);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
@@ -293,6 +320,14 @@ export function activate(context: vscode.ExtensionContext) {
             treeViewProvider.refresh(false);
         }
     })
+}
+
+function GetCurrentWorkspaceFolder(): string {
+    let folders = vscode.workspace.workspaceFolders;
+    if (folders && folders.length > 0)
+        return folders[0].uri.fsPath;
+    else
+        return null;
 }
 
 class Utils {
@@ -310,11 +345,14 @@ class Utils {
 
     static get fav_lists(): string[] {
         let files: string[] = [];
+        let currentWorkspace = GetCurrentWorkspaceFolder();
+
         fs.readdirSync(Utils.user_dir)
             .forEach(fileName => {
                 let file = path.join(Utils.user_dir, fileName);
 
                 if (fs.lstatSync(file).isFile() && file.endsWith(".list.txt")) {
+
                     files.push(file);
                 }
             });

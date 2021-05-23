@@ -157,6 +157,14 @@
                 "title": "Remove selected Favorites list"
             },
             {
+                "command": "favorites.associate_list_with_workspace",
+                "title": "Associate selected Favorites list with the current workspace."
+            },
+            {
+                "command": "favorites.disassociate_list_from_workspace",
+                "title": "Disassociate selected Favorites list from any workspace."
+            },
+            {
                 "command": "favorites.rename_list",
                 "title": "Rename selected Favorites list"
             },
@@ -198,6 +206,16 @@
                 },
                 {
                     "command": "favorites.edit",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "favorites.associate_list_with_workspace",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "group": "navigation@3"
+                },
+                {
+                    "command": "favorites.disassociate_list_from_workspace",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@3"
                 },
