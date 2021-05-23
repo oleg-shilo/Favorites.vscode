@@ -53,7 +53,11 @@ You can group some lists that somewhat logically related. The groping is based o
 
 ![](resources/images/favorites_grouping.png)
 
+There is another type of customization that helps managing excessive amount lists. Thus some lists can be workspace/folder specific. Meaning that if you have a workspace/folder is opened and some of the configured lists are marked as folder specific (associated with teh folder) then only these lits will be shown in the lists tree.
 
+You can associate or disassociate a list by selecting the list selecting the desired action from the context (right-click) menu.
+
+![](resources/images/folder_specific.png)
 
 ## Limitations
 
