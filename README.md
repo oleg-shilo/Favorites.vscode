@@ -2,7 +2,7 @@
 
 Manage and quickly access frequently used files, folders and favorites' lists.
 
-https://vsmarketplacebadge.apphb.com/installs-short/oleg-shilo.favorites.svg
+[![Github All Releases](https://vsmarketplacebadge.apphb.com/installs-short/oleg-shilo.favorites.svg)]()
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](http://www.csscript.net/Donation.html)
 
