@@ -59,6 +59,19 @@ You can associate or disassociate a list by selecting the list selecting the des
 
 ![](resources/images/folder_specific.png)
 
+### Experimental features
+
+From v1.5.3 you can use workspace local list `local.list.txt` in the workspace folder `<workspace>\.fav\`. This list can only be added, removed and edited manually.
+
+This list can contain both absolute and relative paths. All relative paths are resolved at runtime against the workspace folder.
+The simplest content of the `<workspace>\.fav\local.list.txt`:
+
+```txt 
+.\.fav\local.list.txt 
+```
+
+
+
 ## Limitations
 
 * _ShowFolderFiles_ feature overall experience is subject to the limitations/defects of the VSCode tree view. Thus TreeView node always triggers node selection when you try to expand it. This defect is officially reported and being dealt with by the VSCode team:<br/>
