@@ -13,7 +13,26 @@ let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 
 function get_favorites_items() {
     if (fs.existsSync(Utils.fav_file)) {
-        return Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
+        {
+            let defaultItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
+
+            let localDir = GetCurrentWorkspaceFolder();
+            let localList = path.join(GetCurrentWorkspaceFolder(), ".fav", "local.list.txt");
+            if (fs.existsSync(localList) && fs.lstatSync(localList).isFile()) {
+                var localListItems = Utils
+                    .read_all_lines(localList)
+                    .filter(x => x != '' && !x.startsWith("#"))
+                    .map(x => expandenv(x))
+                    .map(x => {
+                        if (path.isAbsolute(x))
+                            return x;
+                        else
+                            return path.join(localDir, x);
+                    });
+                return defaultItems.concat(localListItems);
+            }
+            return defaultItems;
+        }
     }
     else {
         vscode.window.showErrorMessage(`The list ${path.basename(Utils.fav_file)} is not found. Loading the default Favorites list instead.`);
@@ -32,7 +51,7 @@ function get_favorites_lists() {
 
 function add_workspace(element: FavoriteItem) {
     if (vscode.workspace.workspaceFolders)
-        _add(vscode.workspace.workspaceFolders[0].name);
+        _add(vscode.workspace.workspaceFolders[0].uri.fsPath);
 }
 
 function alt_cmd(element: FavoriteItem) {

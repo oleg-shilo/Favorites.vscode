@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.5.3 (18 Sep, 2021)
+
+- Fixed problem with adding workspaces to a list.
+- Issue #23: Feature request: Configurable Favorites Storage (extra)
+Added support for workspace local list `local.list.txt` in the workspace folder `<workspace>\.fav\`
+This list can contain both absolute and relative paths. All relative paths are to be resolved against the workspace folder.
+The simplest content of the `<workspace>\.fav\local.list.txt`:
+
+```txt
+.\.fav\local.list.txt
+```
+
 ## 1.5.2 (23 May, 2021)
 
 - Issue #23: Feature request: Configurable Favorites Storage
