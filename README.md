@@ -2,6 +2,8 @@
 
 Manage and quickly access frequently used files, folders and favorites' lists.
 
+[![Github All Releases](https://vsmarketplacebadge.apphb.com/installs-short/oleg-shilo.favorites.svg)]()
+
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](http://www.csscript.net/Donation.html)
 
 ## Overview
@@ -58,6 +60,19 @@ There is another type of customization that helps managing excessive amount list
 You can associate or disassociate a list by selecting the list selecting the desired action from the context (right-click) menu.
 
 ![](resources/images/folder_specific.png)
+
+### _Experimental features_
+
+From v1.5.3 you can use workspace local list `local.list.txt` in the workspace folder `<workspace>\.fav\`. This list can only be added, removed and edited manually.
+
+This list can contain both absolute and relative paths. All relative paths are resolved at runtime against the workspace folder.
+The simplest content of the `<workspace>\.fav\local.list.txt`:
+
+```txt 
+.\.fav\local.list.txt 
+```
+
+
 
 ## Limitations
 
