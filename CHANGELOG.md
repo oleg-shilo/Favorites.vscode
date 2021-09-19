@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.4 (19 Sep, 2021)
+
+- Fixed "The "path" argument must be of type string..."  startup error when VSCode has no Folder/Workspace open
+
 ## 1.5.3 (18 Sep, 2021)
 
 - Fixed problem with adding workspaces to a list.

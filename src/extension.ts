@@ -17,19 +17,21 @@ function get_favorites_items() {
             let defaultItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
 
             let localDir = GetCurrentWorkspaceFolder();
-            let localList = path.join(GetCurrentWorkspaceFolder(), ".fav", "local.list.txt");
-            if (fs.existsSync(localList) && fs.lstatSync(localList).isFile()) {
-                var localListItems = Utils
-                    .read_all_lines(localList)
-                    .filter(x => x != '' && !x.startsWith("#"))
-                    .map(x => expandenv(x))
-                    .map(x => {
-                        if (path.isAbsolute(x))
-                            return x;
-                        else
-                            return path.join(localDir, x);
-                    });
-                return defaultItems.concat(localListItems);
+            if (localDir) {
+                let localList = path.join(localDir, ".fav", "local.list.txt");
+                if (fs.existsSync(localList) && fs.lstatSync(localList).isFile()) {
+                    var localListItems = Utils
+                        .read_all_lines(localList)
+                        .filter(x => x != '' && !x.startsWith("#"))
+                        .map(x => expandenv(x))
+                        .map(x => {
+                            if (path.isAbsolute(x))
+                                return x;
+                            else
+                                return path.join(localDir, x);
+                        });
+                    return defaultItems.concat(localListItems);
+                }
             }
             return defaultItems;
         }
