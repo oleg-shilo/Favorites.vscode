@@ -18,21 +18,28 @@ function get_favorites_items() {
 
             let localDir = GetCurrentWorkspaceFolder();
             if (localDir) {
-                let localList = path.join(localDir, ".fav", "local.list.txt");
-                if (fs.existsSync(localList) && fs.lstatSync(localList).isFile()) {
-                    var localListItems = Utils
-                        .read_all_lines(localList)
-                        .filter(x => x != '' && !x.startsWith("#"))
-                        .map(x => expandenv(x))
-                        .map(x => {
-                            if (path.isAbsolute(x))
-                                return x;
-                            else
-                                return path.join(localDir, x);
-                        });
-                    return defaultItems.concat(localListItems);
+
+                function read_list(file: string) {
+                    if (fs.existsSync(file) && fs.lstatSync(file).isFile()) {
+                        var localListItems = Utils
+                            .read_all_lines(file)
+                            .filter(x => x != '' && !x.startsWith("#"))
+                            .map(x => expandenv(x))
+                            .map(x => {
+                                if (path.isAbsolute(x))
+                                    return x;
+                                else
+                                    return path.join(localDir, x);
+                            });
+
+                        defaultItems = defaultItems.concat(localListItems);
+                    }
                 }
+
+                read_list(path.join(localDir, ".fav", "local.list.txt"));
+                read_list(path.join(localDir, ".vscode", "fav.local.list.txt"));
             }
+
             return defaultItems;
         }
     }

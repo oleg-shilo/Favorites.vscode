@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.5.5 (21 Sep, 2021)
+
+- Workspace/folder local list support is extended to process the list `.\.vscode\fav.local.list.txt`
+
+
 ## 1.5.4 (19 Sep, 2021)
 
 - Fixed "The "path" argument must be of type string..."  startup error when VSCode has no Folder/Workspace open
