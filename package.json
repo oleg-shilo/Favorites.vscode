@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.5.5",
+    "version": "1.5.6",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -80,6 +80,11 @@
                     "type": "string",
                     "default": "<default>",
                     "markdownDescription": "Specifies the directory where the all user data is stored. Useful for portable VSCode deployment."
+                },
+                "favorites.showListSeparator": {
+                    "type": "boolean",
+                    "default": true,
+                    "markdownDescription": "Specifies if the root node (active/selected list) should be visually separated from the active list items. Plays pure aesthetic role."
                 }
             }
         },

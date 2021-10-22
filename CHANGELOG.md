@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.5.6 (23 Oct, 2021)
+
+- Issue #26: The workspace folder gets deleted on renaming of the favorite list
+- Added visual separation between root node (active list) and the list items. It is controlled via `favorites.showListSeparator` setting.
+
 ## 1.5.5 (21 Sep, 2021)
 
 - Workspace/folder local list support is extended to process the list `.\.vscode\fav.local.list.txt`

@@ -145,18 +145,25 @@ function edit_list(element: FavoriteItem) {
 }
 
 function remove_list(element: FavoriteItem) {
-    if (element.context.endsWith("Default.list.txt")) {
-        vscode.window.showErrorMessage("Error: you can only delete non default favorites list.");
+    if (!element.context.endsWith(".list.txt")) {
+        vscode.window.showErrorMessage(
+            "Error: you can only perform this operation on the list itself.\n" +
+            "It looks like you are trying to do it for the list item instead.");
     }
     else {
-
-        if (element.context == Utils.fav_file) {
-            Utils.setCurrentFavFile("Default.list.txt");
-            fs.unlinkSync(element.context);
+        if (element.context.endsWith("Default.list.txt")) {
+            vscode.window.showErrorMessage("Error: you can only delete non default favorites list.");
         }
         else {
-            fs.unlinkSync(element.context);
-            commands.executeCommand('favorites.refresh');
+
+            if (element.context == Utils.fav_file) {
+                Utils.setCurrentFavFile("Default.list.txt");
+                fs.unlinkSync(element.context);
+            }
+            else {
+                fs.unlinkSync(element.context);
+                commands.executeCommand('favorites.refresh');
+            }
         }
     }
 }
@@ -182,29 +189,37 @@ function file_name_sanatize(text: string): string {
 
 function rename_list(element: FavoriteItem) {
 
-    if (element.context.endsWith("Default.list.txt")) {
-        vscode.window.showErrorMessage("Error: you can only rename non default favorites list.");
+    if (!element.context.endsWith(".list.txt")) {
+        vscode.window.showErrorMessage(
+            "Error: you can only perform this operation on the list itself.\n" +
+            "It looks like you are trying to do it for the list item instead.");
     }
     else {
-        let options: vscode.InputBoxOptions = {
-            prompt: "Enter the new file name for the selected Favorites list",
-            placeHolder: "ex.: Test scripts",
-        };
+        if (element.context.endsWith("Default.list.txt")) {
+            vscode.window.showErrorMessage("Error: you can only rename non default favorites list.");
+        }
+        else {
 
-        vscode.window.showInputBox(options)
-            .then(value => {
-                if (value) {
-                    value = file_name_sanatize(value);
-                    let new_file = path.join(Utils.user_dir, value + ".list.txt");
+            let options: vscode.InputBoxOptions = {
+                prompt: "Enter the new file name for the selected Favorites list",
+                placeHolder: "ex.: Test scripts",
+            };
 
-                    try {
-                        fs.renameSync(element.context, new_file);
-                        commands.executeCommand('favorites.refresh');
-                    } catch (error) {
-                        vscode.window.showErrorMessage(error.message);
+            vscode.window.showInputBox(options)
+                .then(value => {
+                    if (value) {
+                        value = file_name_sanatize(value);
+                        let new_file = path.join(Utils.user_dir, value + ".list.txt");
+
+                        try {
+                            fs.renameSync(element.context, new_file);
+                            commands.executeCommand('favorites.refresh');
+                        } catch (error) {
+                            vscode.window.showErrorMessage(error.message);
+                        }
                     }
-                }
-            });
+                });
+        }
     }
 }
 

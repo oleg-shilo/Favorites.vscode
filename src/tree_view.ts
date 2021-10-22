@@ -186,6 +186,25 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
             };
 
             nodes.push(active_list_node);
+
+            let showSeparator = vscode.workspace.getConfiguration("favorites").get('showListSeparator', true);
+            if (showSeparator) {
+                let separator = new FavoriteItem(
+                    '¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯¯',
+                    vscode.TreeItemCollapsibleState.None,
+                    {
+                        command: '',
+                        title: '',
+                        tooltip: "Items above are available lists. Items below are the items of the active/selected list",
+                        arguments: null,
+                    },
+                    null,
+                    null
+                );
+                separator.iconPath = null;
+                nodes.push(separator);
+            }
+
         }
 
         items.forEach(item => {
