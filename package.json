@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.5.6",
+    "version": "1.5.7",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {

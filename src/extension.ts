@@ -243,7 +243,7 @@ function open_path(path: string, newWindow: boolean) {
         let workspace = Utils.get_workspace_file(path);
 
         if (workspace)
-            commands.executeCommand('vscode.openFolder', Uri.file(workspace), newWindow)
+            commands.executeCommand('vscode.open', Uri.file(workspace), newWindow)
         else
             commands.executeCommand('vscode.openFolder', Uri.file(path), newWindow)
     }
