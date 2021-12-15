@@ -9,6 +9,8 @@ import { Uri, commands } from 'vscode';
 import { ExecSyncOptionsWithBufferEncoding } from 'child_process';
 let expandenv = require('expandenv');
 
+export let default_list_file_name = 'Default.list.txt';
+
 let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 
 function get_favorites_items() {
@@ -365,6 +367,7 @@ export function activate(context: vscode.ExtensionContext) {
     })
 }
 
+
 function GetCurrentWorkspaceFolder(): string {
     let folders = vscode.workspace.workspaceFolders;
     if (folders && folders.length > 0)
@@ -372,7 +375,6 @@ function GetCurrentWorkspaceFolder(): string {
     else
         return null;
 }
-
 class Utils {
     private static _fav_file: string = null;
     static user_dir: string;
@@ -386,7 +388,7 @@ class Utils {
         return result;
     }
 
-    static get fav_lists(): string[] {
+    public static get fav_lists(): string[] {
         let lists: string[] = [];
         let lists_for_workspace: string[] = [];
         let currentWorkspaceFolder = GetCurrentWorkspaceFolder();
@@ -418,9 +420,15 @@ class Utils {
         return Utils._fav_file;
     }
     static get fav_default_file(): string {
-        let default_list = path.join(Utils.user_dir, 'Default.list.txt');
-        if (!fs.existsSync(default_list))
-            Utils.write_all_lines(default_list, []);
+        let default_list = path.join(Utils.user_dir, default_list_file_name);
+        if (!fs.existsSync(default_list)) {
+            if (Utils.fav_lists.length == 0) {
+                Utils.write_all_lines(default_list, []);
+            }
+            else {
+                default_list = Utils.fav_lists[0];
+            }
+        }
         return default_list;
     }
 
@@ -461,7 +469,7 @@ class Utils {
     static migrate_old_version_to(): void {
         let old_user_dir = Utils.user_dir.replace('favorites.user', 'cs-script.user');
 
-        let file = path.join(Utils.user_dir, 'default.list.txt');
+        let file = path.join(Utils.user_dir, default_list_file_name);
         let old_file = path.join(old_user_dir, 'favorites.txt');
 
         if (fs.existsSync(old_file)) {
@@ -513,7 +521,7 @@ class Utils {
 
         let config_file = path.join(Utils.user_dir, 'config.json');
         if (!fs.existsSync(config_file)) {
-            let config = { "current": 'Default.list.txt' };
+            let config = { "current": default_list_file_name };
             Utils.write_all_text(config_file, JSON.stringify(config));
         }
 

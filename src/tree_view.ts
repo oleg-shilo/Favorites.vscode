@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
 import { Uri, commands } from "vscode";
+import { default_list_file_name } from './extension'
+// import { utils } from 'mocha';
 
 export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteItem> {
 
@@ -52,7 +54,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
                 });
 
-                let config = { "current": 'Default.list.txt' };
+                let config = { "current": default_list_file_name };
                 fs.writeFileSync(config_file, JSON.stringify(config), { encoding: 'utf8' });
                 // if (node.)
             } catch (error) {
@@ -207,7 +209,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
         }
 
-        items.forEach(item => {
+        items?.forEach(item => {
             if (item != '') {
 
                 let file = item;
