@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.5.7 (15 Dec, 2021)
+
+- Issue #27: Enhancement: Ability to Remove the Default List
+- Issue #28: Loading a Workspace from Favorites loads the folder and not the VS Code Workspace
+
 ## 1.5.6 (23 Oct, 2021)
 
 - Issue #26: The workspace folder gets deleted on renaming of the favorite list
@@ -8,7 +13,6 @@
 ## 1.5.5 (21 Sep, 2021)
 
 - Workspace/folder local list support is extended to process the list `.\.vscode\fav.local.list.txt`
-
 
 ## 1.5.4 (19 Sep, 2021)
 
