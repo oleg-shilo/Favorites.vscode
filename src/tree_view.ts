@@ -5,6 +5,17 @@ import { Uri, commands } from "vscode";
 import { default_list_file_name } from './extension'
 // import { utils } from 'mocha';
 
+function truncatePath(path: string, length?: number): string {
+    let maxLength =  length ?? vscode.workspace.getConfiguration("favorites").get('maxTooltipLength', 100);
+
+    if (path && path.length > maxLength){
+        let prefixLength = 10;
+        return path.substring(0, prefixLength) + "..." + path.substring(path.length-(maxLength-prefixLength-3));
+    }
+    else
+        return path;
+}
+
 export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteItem> {
 
     public static user_dir: string;
@@ -106,12 +117,13 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     {
                         command: 'vscode.open',
                         title: '',
-                        tooltip: file,
+                        tooltip: truncatePath(file),
                         arguments: [Uri.file(file)],
                     },
                     null,
                     file
                 );
+                node.tooltip = truncatePath(file);
                 fileNodes.push(node);
             }
             else if (fs.lstatSync(file).isDirectory()) {
@@ -121,12 +133,12 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     {
                         command: '',
                         title: '',
-                        tooltip: file,
                         arguments: [],
                     },
                     null,
                     file
                 );
+                node.tooltip = truncatePath(file);
                 node.iconPath = {
                     light: path.join(__filename, '..', '..', '..', 'resources', 'light', "folder.svg"),
                     dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', "folder.svg")
@@ -143,12 +155,13 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
             {
                 command: 'favorites.open',
                 title: '',
-                tooltip: path.basename(dir),
+                tooltip: dir,
                 arguments: [dir],
             },
             null,
             dir);
         commandNode.iconPath = null;
+        commandNode.tooltip = truncatePath(dir);
 
         nodes.push(commandNode);
         dirNodes.forEach(item => nodes.push(item));
@@ -173,7 +186,6 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 {
                     command: '',
                     title: '',
-                    tooltip: "Select Favorites predefined list",
                     arguments: null,
                 },
                 null,
@@ -181,6 +193,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
             );
 
             active_list_node.contextValue = "list_root";
+            active_list_node.tooltip = "Select Favorites predefined list";
 
             active_list_node.iconPath = {
                 light: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg'),
@@ -197,13 +210,13 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     {
                         command: '',
                         title: '',
-                        tooltip: "Items above are available lists. Items below are the items of the active/selected list",
                         arguments: null,
                     },
                     null,
                     null
                 );
                 separator.iconPath = null;
+                separator.tooltip = "Items above are available lists. Items below are the items of the active/selected list";
                 nodes.push(separator);
             }
 
@@ -251,6 +264,8 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     file
                 );
 
+                node.tooltip = truncatePath(file);
+
                 if (!path.isAbsolute(file))
                     node.command = null;
 
@@ -297,6 +312,8 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 },
                 [],
                 file);
+
+            node.tooltip = truncatePath(file);
 
             if (fs.existsSync(file)) {
                 node.iconPath = {
@@ -362,6 +379,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                             null
                         );
 
+                        node.tooltip = truncatePath(file);
                         node.iconPath = null;
                         node.contextValue = "list";
                         nodes.push(node);
@@ -389,6 +407,8 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                         [],
                         file
                     );
+
+                    node.tooltip = truncatePath(file);
 
                     if (fs.existsSync(file)) {
                         node.iconPath = {

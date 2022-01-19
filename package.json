@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.5.7",
+    "version": "1.5.8",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -80,6 +80,11 @@
                     "type": "string",
                     "default": "<default>",
                     "markdownDescription": "Specifies the directory where the all user data is stored. Useful for portable VSCode deployment."
+                },
+                "favorites.maxTooltipLength": {
+                    "type": "number",
+                    "default": "100",
+                    "markdownDescription": "Maximum length of the favorite item tooltip. Typically file path. If the path length exceeds the maximum value it is displayed truncated."
                 },
                 "favorites.showListSeparator": {
                     "type": "boolean",
