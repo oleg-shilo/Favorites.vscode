@@ -1,11 +1,16 @@
 # Change Log
 
+## 1.5.9 (20 Jan, 2022)
+
+- Issue #29: folders in .dav/local.list.txt should not be opened in a new window
+- Added auto revealing the folder opened from Favorites
+
 ## 1.5.8 (20 Jan, 2022)
 
 - Issue #30: Show full path on hover (feature request)
 - Added `favorites.maxTooltipLength` configuration value.
   _Maximum length of the favorite item tooltip. Typically file path. If the path length exceeds the maximum value it is displayed truncated._
- 
+
 ## 1.5.7 (15 Dec, 2021)
 
 - Issue #27: Enhancement: Ability to Remove the Default List

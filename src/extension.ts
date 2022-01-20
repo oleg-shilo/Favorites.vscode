@@ -244,10 +244,25 @@ function open_path(path: string, newWindow: boolean) {
     if (fs.lstatSync(path).isDirectory()) {
         let workspace = Utils.get_workspace_file(path);
 
-        if (workspace)
-            commands.executeCommand('vscode.openFolder', Uri.file(workspace), newWindow)
-        else
-            commands.executeCommand('vscode.openFolder', Uri.file(path), newWindow)
+        if (workspace) {
+            if (workspace != vscode.workspace?.workspaceFile?.fsPath) {
+                commands.executeCommand('vscode.openFolder', Uri.file(workspace), newWindow);
+
+                if (vscode.workspace?.workspaceFolders) {
+                    commands.executeCommand('revealInExplorer', Uri.file(vscode.workspace.workspaceFolders[0].uri.fsPath));
+                }
+            }
+        }
+        else {
+            if (vscode.workspace?.workspaceFolders) {
+                if (path.includes(vscode.workspace.workspaceFolders[0].uri.fsPath)) {
+                    commands.executeCommand('revealInExplorer', Uri.file(path));
+                    return; // child of already opened folder
+                }
+            }
+            commands.executeCommand('vscode.openFolder', Uri.file(path), newWindow);
+            commands.executeCommand('revealInExplorer', Uri.file(path));
+        }
     }
     else {
         commands.executeCommand('vscode.open', Uri.file(path), newWindow);
