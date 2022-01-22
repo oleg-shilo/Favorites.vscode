@@ -1,7 +1,8 @@
 # Change Log
 
-## 1.5.9 (20 Jan, 2022)
+## 1.5.10 (23 Jan, 2022)
 
+- Issue #31: Favorite local files in a remote session cannot be opened
 - Issue #29: folders in .dav/local.list.txt should not be opened in a new window
 - Added auto revealing the folder opened from Favorites
 

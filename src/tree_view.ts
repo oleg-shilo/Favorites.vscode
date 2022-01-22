@@ -6,11 +6,11 @@ import { default_list_file_name } from './extension'
 // import { utils } from 'mocha';
 
 function truncatePath(path: string, length?: number): string {
-    let maxLength =  length ?? vscode.workspace.getConfiguration("favorites").get('maxTooltipLength', 100);
+    let maxLength = length ?? vscode.workspace.getConfiguration("favorites").get('maxTooltipLength', 100);
 
-    if (path && path.length > maxLength){
+    if (path && path.length > maxLength) {
         let prefixLength = 10;
-        return path.substring(0, prefixLength) + "..." + path.substring(path.length-(maxLength-prefixLength-3));
+        return path.substring(0, prefixLength) + "..." + path.substring(path.length - (maxLength - prefixLength - 3));
     }
     else
         return path;
@@ -110,15 +110,18 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
         fs.readdirSync(dir).forEach(fileName => {
             var file = path.join(dir, fileName);
+
+
+
             if (fs.lstatSync(file).isFile()) {
                 let node = new FavoriteItem(
                     fileName,
                     vscode.TreeItemCollapsibleState.None,
                     {
-                        command: 'vscode.open',
+                        command: 'favorites.open',
                         title: '',
                         tooltip: truncatePath(file),
-                        arguments: [Uri.file(file)],
+                        arguments: [file],
                     },
                     null,
                     file
@@ -224,7 +227,6 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
         items?.forEach(item => {
             if (item != '') {
-
                 let file = item;
                 let displayName = path.basename(file);
 
@@ -234,14 +236,13 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     displayName = tokens[1];
                 }
 
-                let commandValue = 'vscode.open';
+                let commandValue = 'favorites.open';
                 let iconName = 'document.svg';
                 let collapsableState = vscode.TreeItemCollapsibleState.None;
                 let showFolderFiles = vscode.workspace.getConfiguration("favorites").get('showFolderFiles', false);
 
                 try {
                     if (path.isAbsolute(file) && fs.lstatSync(file).isDirectory()) {
-                        commandValue = 'vscode.openFolder';
                         iconName = 'folder.svg';
                         if (showFolderFiles) {
                             collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
@@ -258,16 +259,13 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                         command: commandValue,
                         title: '',
                         tooltip: file,
-                        arguments: [Uri.file(file)],
+                        arguments: [file],
                     },
                     null,
                     file
                 );
 
                 node.tooltip = truncatePath(file);
-
-                if (!path.isAbsolute(file))
-                    node.command = null;
 
                 if (fs.existsSync(file)) {
                     node.iconPath = {

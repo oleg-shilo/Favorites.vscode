@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import { FavoritesTreeProvider, FavoriteItem } from './tree_view';
 import { Uri, commands } from 'vscode';
 import { ExecSyncOptionsWithBufferEncoding } from 'child_process';
+import { env } from 'process';
 let expandenv = require('expandenv');
 
 export let default_list_file_name = 'Default.list.txt';
@@ -15,35 +16,33 @@ let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 
 function get_favorites_items() {
     if (fs.existsSync(Utils.fav_file)) {
-        {
-            let defaultItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
+        let defaultItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
 
-            let localDir = GetCurrentWorkspaceFolder();
-            if (localDir) {
+        let localDir = GetCurrentWorkspaceFolder();
+        if (localDir) {
 
-                function read_list(file: string) {
-                    if (fs.existsSync(file) && fs.lstatSync(file).isFile()) {
-                        var localListItems = Utils
-                            .read_all_lines(file)
-                            .filter(x => x != '' && !x.startsWith("#"))
-                            .map(x => expandenv(x))
-                            .map(x => {
-                                if (path.isAbsolute(x))
-                                    return x;
-                                else
-                                    return path.join(localDir, x);
-                            });
+            function read_list(file: string) {
+                if (fs.existsSync(file) && fs.lstatSync(file).isFile()) {
+                    var localListItems = Utils
+                        .read_all_lines(file)
+                        .filter(x => x != '' && !x.startsWith("#"))
+                        .map(x => expandenv(x))
+                        .map(x => {
+                            if (path.isAbsolute(x))
+                                return x;
+                            else
+                                return path.join(localDir, x);
+                        });
 
-                        defaultItems = defaultItems.concat(localListItems);
-                    }
+                    defaultItems = defaultItems.concat(localListItems);
                 }
-
-                read_list(path.join(localDir, ".fav", "local.list.txt"));
-                read_list(path.join(localDir, ".vscode", "fav.local.list.txt"));
             }
 
-            return defaultItems;
+            read_list(path.join(localDir, ".fav", "local.list.txt"));
+            read_list(path.join(localDir, ".vscode", "fav.local.list.txt"));
         }
+
+        return defaultItems;
     }
     else {
         vscode.window.showErrorMessage(`The list ${path.basename(Utils.fav_file)} is not found. Loading the default Favorites list instead.`);
@@ -75,6 +74,9 @@ function add(element: FavoriteItem) {
     }
     else {
         let document = vscode.window.activeTextEditor.document.fileName;
+        if (vscode.window.activeTextEditor?.document?.uri?.scheme != undefined) {
+            document = vscode.window.activeTextEditor.document.uri.toString();
+        }
         _add(document);
     }
 }
@@ -241,31 +243,58 @@ function open(path: string) {
 }
 
 function open_path(path: string, newWindow: boolean) {
-    if (fs.lstatSync(path).isDirectory()) {
-        let workspace = Utils.get_workspace_file(path);
 
-        if (workspace) {
-            if (workspace != vscode.workspace?.workspaceFile?.fsPath) {
+    // vscode.window.showErrorMessage("About to open :" + path);
+
+    let uri = Uri.parse(path);
+
+    if (!uri.scheme || uri.scheme.length <= 1) {
+        // use `vscode.env.remoteName` to check if remote channel is open
+        uri = Uri.file(path);
+    }
+
+    // as for VSCode v1.63.2 these are anomalies/peculiarities of `vscode.openFolder` and `vscode.open`
+    // `vscode.open` opens files OK but throws the exception on attempt to open folder
+    // `vscode.openFolder` opens files and folders OK
+    // `vscode.open` does not have option to open file in a new window `vscode.openFolder` does
+    // `vscode.openFolder` ignores the call if the folder (or workspace) is already open either in teh current window or a new one
+    // workspace file needs to be opened `vscode.openFolder`
+    // Amazing API :o(
+
+    if (fs.existsSync(uri.fsPath) && fs.lstatSync(uri.fsPath).isDirectory()) {
+
+        let workspace = Utils.get_workspace_file(uri.fsPath);
+
+        if (workspace) { // opening workspace file
+            if (!newWindow && workspace == vscode.workspace?.workspaceFile?.fsPath)
+                commands.executeCommand('revealInExplorer', Uri.file(vscode.workspace.workspaceFolders[0].uri.fsPath));
+            else {
                 commands.executeCommand('vscode.openFolder', Uri.file(workspace), newWindow);
-
-                if (vscode.workspace?.workspaceFolders) {
-                    commands.executeCommand('revealInExplorer', Uri.file(vscode.workspace.workspaceFolders[0].uri.fsPath));
-                }
             }
         }
-        else {
-            if (vscode.workspace?.workspaceFolders) {
-                if (path.includes(vscode.workspace.workspaceFolders[0].uri.fsPath)) {
-                    commands.executeCommand('revealInExplorer', Uri.file(path));
+        else { // opening folder
+
+            if (!newWindow && vscode.workspace?.workspaceFolders) {
+                if (uri.fsPath.includes(vscode.workspace.workspaceFolders[0].uri.fsPath)) {
+                    commands.executeCommand('revealInExplorer', uri);
                     return; // child of already opened folder
                 }
             }
-            commands.executeCommand('vscode.openFolder', Uri.file(path), newWindow);
-            commands.executeCommand('revealInExplorer', Uri.file(path));
+
+            if (newWindow)
+                commands.executeCommand('vscode.openFolder', uri, true);
+            else
+                commands.executeCommand('vscode.openFolder', uri);
         }
     }
-    else {
-        commands.executeCommand('vscode.open', Uri.file(path), newWindow);
+    else { // opening file or invalid path (let VSCode report the error)
+
+        // vscode.window.showInformationMessage("Opening: " + uri);
+
+        if (newWindow)
+            commands.executeCommand('vscode.openFolder', uri, true);
+        else
+            commands.executeCommand('vscode.open', uri);
     }
 }
 
