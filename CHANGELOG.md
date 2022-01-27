@@ -1,10 +1,13 @@
 # Change Log
 
-## 1.5.10 (23 Jan, 2022)
+## 1.5.11 (27 Jan, 2022)
 
 - Issue #31: Favorite local files in a remote session cannot be opened
 - Issue #29: folders in .dav/local.list.txt should not be opened in a new window
 - Added auto revealing the folder opened from Favorites
+- Added new config values:
+  - `favorites.disableOpeningSubfolderOfLoadedFolder` - Block opening a folder from the favorites list when its parent folder is already opened.
+  - `favorites.disableOpeningSubfolder`- Disable opening sub-folders of a folder from the favorites list (regardless if the parent folder is already opened or not). This configuration value controls presence of the `<Open folder>` menu item in the favorites tree.
 
 ## 1.5.8 (20 Jan, 2022)
 

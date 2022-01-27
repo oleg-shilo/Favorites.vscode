@@ -86,6 +86,16 @@
                     "default": "100",
                     "markdownDescription": "Maximum length of the favorite item tooltip. Typically file path. If the path length exceeds the maximum value it is displayed truncated."
                 },
+                "favorites.disableOpeningSubfolderOfLoadedFolder": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Block opening a folder from the favorites list when its parent folder is already opened in the same editor."
+                },
+                "favorites.disableOpeningSubfolder": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Disable opening sub-folders of a folder from the favorites list (regardless if the parent folder is already opened or not). This configuration value controls presence of the `<Open folder>` menu item in the favorites tree. Changing this setting takes effect after refreshing the favorites tree."
+                },
                 "favorites.showListSeparator": {
                     "type": "boolean",
                     "default": true,

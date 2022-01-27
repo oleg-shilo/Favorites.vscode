@@ -249,7 +249,7 @@ function open_path(path: string, newWindow: boolean) {
     let uri = Uri.parse(path);
 
     if (!uri.scheme || uri.scheme.length <= 1) {
-        // use `vscode.env.remoteName` to check if remote channel is open
+        // if required it's possible to use `vscode.env.remoteName` to check if remote channel is open 
         uri = Uri.file(path);
     }
 
@@ -268,16 +268,32 @@ function open_path(path: string, newWindow: boolean) {
         if (workspace) { // opening workspace file
             if (!newWindow && workspace == vscode.workspace?.workspaceFile?.fsPath)
                 commands.executeCommand('revealInExplorer', Uri.file(vscode.workspace.workspaceFolders[0].uri.fsPath));
-            else {
+            else
                 commands.executeCommand('vscode.openFolder', Uri.file(workspace), newWindow);
-            }
+
         }
         else { // opening folder
 
             if (!newWindow && vscode.workspace?.workspaceFolders) {
                 if (uri.fsPath.includes(vscode.workspace.workspaceFolders[0].uri.fsPath)) {
-                    commands.executeCommand('revealInExplorer', uri);
-                    return; // child of already opened folder
+
+                    if (uri.fsPath == vscode.workspace.workspaceFolders[0].uri.fsPath) {
+                        // is already opened folder
+                        commands.executeCommand('revealInExplorer', uri);
+                        return;
+
+                    } else {
+                        // child of already opened folder
+
+                        let disableOpeningSubfolderOfLoadedFolder = vscode.workspace
+                            .getConfiguration("favorites")
+                            .get('disableOpeningSubfolderOfLoadedFolder', false);
+
+                        if (disableOpeningSubfolderOfLoadedFolder) {
+                            vscode.window.showErrorMessage("The parent folder is already opened in VSCode.");
+                            return;
+                        }
+                    }
                 }
             }
 
