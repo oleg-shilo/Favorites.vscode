@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.12 (20 Feb, 2022)
+
+- Issue #32: Chinese file name is garbled, decodeURI() var document can solve the problem. Maybe other languages have this problem too.
+
 ## 1.5.11 (27 Jan, 2022)
 
 - Issue #31: Favorite local files in a remote session cannot be opened

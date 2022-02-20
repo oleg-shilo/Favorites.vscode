@@ -75,7 +75,7 @@ function add(element: FavoriteItem) {
     else {
         let document = vscode.window.activeTextEditor.document.fileName;
         if (vscode.window.activeTextEditor?.document?.uri?.scheme != undefined) {
-            document = vscode.window.activeTextEditor.document.uri.toString();
+            document = decodeURI(vscode.window.activeTextEditor.document.uri.toString())
         }
         _add(document);
     }

@@ -227,8 +227,14 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
         }
 
+        let showFolderFiles = vscode.workspace.getConfiguration("favorites").get('showFolderFiles', false);
+
+        // let i = 0;
         items?.forEach(item => {
             if (item != '') {
+
+                // console.log("> getFavoriteItems " + (i++).toString() + " " + item);
+
                 let file = item;
                 let displayName = path.basename(file);
 
@@ -241,7 +247,6 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 let commandValue = 'favorites.open';
                 let iconName = 'document.svg';
                 let collapsableState = vscode.TreeItemCollapsibleState.None;
-                let showFolderFiles = vscode.workspace.getConfiguration("favorites").get('showFolderFiles', false);
                 let rootFolder = false;;
 
                 try {
