@@ -369,7 +369,12 @@ function get_user_dir(): string {
     // Mac $HOME/Library/Application Support/Code/User/settings.json
     // Linux $HOME/.config/Code/User/settings.json
 
-    let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>').replace("${execPath}", process.execPath);
+    let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>');
+
+    if (dataLocation == '')
+        dataLocation = '<default>';
+    else
+        dataLocation = dataLocation.replace("${execPath}", process.execPath);
 
 
     if (dataLocation != '<default>') {
