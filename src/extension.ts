@@ -385,12 +385,22 @@ function get_user_dir(): string {
         return dataLocation;
     }
 
-    if (os.platform() == 'win32')
-        return path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
-    else if (os.platform() == 'darwin')
-        return path.join(process.env.HOME, 'Library', 'Application Support', 'Code', 'User', 'favorites.user');
-    else
-        return path.join(process.env.HOME, '.config', 'Code', 'User', 'favorites.user');
+
+    ///////////////////////////////////////
+    let extensionRoot = path.dirname(path.dirname(path.dirname(__dirname)));
+    let isPortable = path.basename(extensionRoot).toLowerCase() == "data" || path.basename(extensionRoot).toLowerCase() == "code-portable-data";
+    ///////////////////////////////////////
+
+    if (isPortable) {
+        return path.join(extensionRoot, 'user-data', 'User', 'favorites.user');
+    } else {
+        if (os.platform() == 'win32')
+            return path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
+        else if (os.platform() == 'darwin')
+            return path.join(process.env.HOME, 'Library', 'Application Support', 'Code', 'User', 'favorites.user');
+        else
+            return path.join(process.env.HOME, '.config', 'Code', 'User', 'favorites.user');
+    }
 }
 
 export function activate(context: vscode.ExtensionContext) {
