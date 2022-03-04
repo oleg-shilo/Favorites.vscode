@@ -8,6 +8,7 @@ import { FavoritesTreeProvider, FavoriteItem } from './tree_view';
 import { Uri, commands } from 'vscode';
 import { ExecSyncOptionsWithBufferEncoding } from 'child_process';
 import { env } from 'process';
+import { Console } from 'console';
 let expandenv = require('expandenv');
 
 export let default_list_file_name = 'Default.list.txt';
@@ -368,7 +369,8 @@ function get_user_dir(): string {
     // Mac $HOME/Library/Application Support/Code/User/settings.json
     // Linux $HOME/.config/Code/User/settings.json
 
-    let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>');
+    let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>').replace("${execPath}", process.execPath);
+
 
     if (dataLocation != '<default>') {
 
@@ -396,6 +398,7 @@ export function activate(context: vscode.ExtensionContext) {
     FavoritesTreeProvider.user_dir = get_user_dir();
 
     const treeViewProvider = new FavoritesTreeProvider(get_favorites_items, get_favorites_lists, get_current_list_name);
+
 
     vscode.window.registerTreeDataProvider("favorites-own-view", treeViewProvider);
     vscode.window.registerTreeDataProvider("favorites-explorer-view", treeViewProvider);
