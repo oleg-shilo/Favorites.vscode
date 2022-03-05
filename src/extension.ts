@@ -15,7 +15,7 @@ export let default_list_file_name = 'Default.list.txt';
 
 let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 
-function get_favorites_items() {
+function get_list_items() {
     if (fs.existsSync(Utils.fav_file)) {
         let defaultItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
 
@@ -412,7 +412,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     FavoritesTreeProvider.user_dir = get_user_dir();
 
-    const treeViewProvider = new FavoritesTreeProvider(get_favorites_items, get_favorites_lists, get_current_list_name);
+    const treeViewProvider = new FavoritesTreeProvider(get_list_items, get_favorites_lists, get_current_list_name);
 
 
     vscode.window.registerTreeDataProvider("favorites-own-view", treeViewProvider);

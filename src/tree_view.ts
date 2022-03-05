@@ -238,7 +238,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 let file = item;
                 let displayName = path.basename(file);
 
-                let tokens = item.split('|');
+                let tokens = item.split('|'); // extract a possible item alias 
                 if (tokens.length > 1) {
                     file = tokens[0];
                     displayName = tokens[1];
