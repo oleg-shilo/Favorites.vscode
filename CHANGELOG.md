@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.5.13 (5 Mar, 2022)
+
+- Added support fro stock vscode icons for TreeViewItems to better align with VSCode themes. It partially addresses #5.
+- Issue #34: Suggestion: If 'Data Location' setting is blank, parse it as `<default>` instead of "favorites.dataLocation": ""
+- Issue #33: Possible to set 'Data Location' path to subdirectory within VSCode portable (relative to `Code.exe`).
+  Changed to `DataLocation=<extensionRoot>/user-data/User/favorites.user` when it is portable VSCode deployment
+
 ## 1.5.12 (20 Feb, 2022)
 
 - Issue #32: Chinese file name is garbled, decodeURI() var document can solve the problem. Maybe other languages have this problem too.
