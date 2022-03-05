@@ -38,11 +38,15 @@ The functionality is self explanatory and includes following features:
 
 ## List definition rules
 
-The item definition (in "&lt;name&gt;.list.txt") can contain environment variables, which  are extended at runtime into a full path:
+The item definition (in "&lt;name&gt;.list.txt") may contain environment variables, which  are extended at runtime into a full path:
 
 ```txt
 $USERPROFILE\AppData\Roaming\Code\User\cs-script.user\new_script.cs
 ```
+
+In cases if an alternative display title (alias) for a file is desired you can use this simple sintax to achieve that: `<file path>|<file aliase>`
+
+![image](https://user-images.githubusercontent.com/16729806/156863567-e039de94-5a94-4c05-9b24-5e1d633c1e0a.png)
 
 The definition syntax also allows comments - any line that starts with '#'.
 
