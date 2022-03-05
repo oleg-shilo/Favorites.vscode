@@ -140,10 +140,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     file
                 );
                 node.tooltip = truncatePath(file);
-                node.iconPath = {
-                    light: path.join(__filename, '..', '..', '..', 'resources', 'light', "folder.svg"),
-                    dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', "folder.svg")
-                };
+                node.iconPath = new vscode.ThemeIcon("folder");
                 dirNodes.push(node);
             }
         });
@@ -199,11 +196,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
             active_list_node.contextValue = "list_root";
             active_list_node.tooltip = "Select Favorites predefined list";
-
-            active_list_node.iconPath = {
-                light: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg'),
-                dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'favorite.svg')
-            };
+            active_list_node.iconPath = new vscode.ThemeIcon("star-full");
 
             nodes.push(active_list_node);
 
@@ -245,18 +238,20 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 }
 
                 let commandValue = 'favorites.open';
-                let iconName = 'document.svg';
+                // let iconName = 'document.svg';
+                let iconPath = new vscode.ThemeIcon("file");
                 let collapsableState = vscode.TreeItemCollapsibleState.None;
                 let rootFolder = false;;
 
                 try {
                     if (path.isAbsolute(file) && fs.lstatSync(file).isDirectory()) {
                         rootFolder = true;
-                        iconName = 'folder.svg';
                         if (showFolderFiles) {
                             collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
                             commandValue = '';
                         }
+
+                        iconPath = new vscode.ThemeIcon("folder");
                     }
                 } catch (error) {
                 }
@@ -277,12 +272,9 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
                 node.tooltip = truncatePath(file);
 
-                if (fs.existsSync(file)) {
-                    node.iconPath = {
-                        light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
-                        dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
-                    };
-                }
+                if (fs.existsSync(file))
+
+                    node.iconPath = iconPath;
                 else
                     node.iconPath = null;
 
@@ -302,10 +294,11 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
             let collapsableState = vscode.TreeItemCollapsibleState.None;
             let commandValue = 'favorites.load';
             let iconName = '';
+            let iconPath: vscode.ThemeIcon;
 
-            if (short_name == this.currentListName())
-                iconName = 'tick.svg';
-
+            if (short_name == this.currentListName()) {
+                iconPath = new vscode.ThemeIcon("check");
+            }
             let group_name = short_name.split(".", 2)[0];
             short_name = short_name.substring(group_name.length + 1);
 
@@ -324,10 +317,12 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
             node.tooltip = truncatePath(file);
 
             if (fs.existsSync(file)) {
-                node.iconPath = {
-                    light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
-                    dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
-                };
+                // node.iconPath = {
+                //     light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
+                //     dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
+                // };
+
+                iconPath = new vscode.ThemeIcon("file");
             }
             else
                 node.iconPath = null;
@@ -396,11 +391,6 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 else {
 
                     let commandValue = 'favorites.load';
-                    let iconName = '';
-
-                    if (short_name == this.currentListName())
-                        iconName = 'tick.svg';
-
                     let collapsableState = vscode.TreeItemCollapsibleState.None;
 
                     let node = new FavoriteItem(
@@ -417,17 +407,10 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     );
 
                     node.tooltip = truncatePath(file);
-
-                    if (fs.existsSync(file)) {
-                        node.iconPath = {
-                            light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
-                            dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
-                        };
-                    }
-                    else
-                        node.iconPath = null;
-
                     node.contextValue = "list";
+                    if (short_name == this.currentListName() && fs.existsSync(file))
+                        node.iconPath = new vscode.ThemeIcon("check");
+
                     nodes.push(node);
                 }
             }
@@ -450,10 +433,10 @@ export class FavoriteItem extends vscode.TreeItem {
         super(label, collapsibleState);
     }
 
-    iconPath = {
-        light: path.join(__filename, '..', '..', '..', 'resources', 'light', 'document.svg'),
-        dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'document.svg')
-    };
+    // iconPath = {
+    //     light: path.join(__filename, '..', '..', '..', 'resources', 'light', 'document.svg'),
+    //     dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'document.svg')
+    // };
 
     // this is the value that is holding to be evaluated in the "view/item/context" from the package.json
     // possible values are:
