@@ -125,6 +125,8 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     file
                 );
                 node.tooltip = truncatePath(file);
+                node.resourceUri = vscode.Uri.parse(file);
+
                 fileNodes.push(node);
             }
             else if (fs.lstatSync(file).isDirectory()) {
@@ -139,8 +141,10 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     null,
                     file
                 );
+
+                node.resourceUri = vscode.Uri.parse(file);
                 node.tooltip = truncatePath(file);
-                node.iconPath = new vscode.ThemeIcon("folder");
+
                 dirNodes.push(node);
             }
         });
@@ -272,9 +276,9 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
                 node.tooltip = truncatePath(file);
 
-                if (fs.existsSync(file))
-
-                    node.iconPath = iconPath;
+                if (fs.existsSync(file)) {
+                    node.resourceUri = vscode.Uri.parse(file);
+                }
                 else
                     node.iconPath = null;
 
@@ -317,15 +321,12 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
             node.tooltip = truncatePath(file);
 
             if (fs.existsSync(file)) {
-                // node.iconPath = {
-                //     light: path.join(__filename, '..', '..', '..', 'resources', 'light', iconName),
-                //     dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', iconName)
-                // };
+                node.resourceUri = vscode.Uri.parse(file);
 
-                iconPath = new vscode.ThemeIcon("file");
+                // iconPath = new vscode.ThemeIcon("file"); // zos
             }
-            else
-                node.iconPath = null;
+
+            // node.iconPath = iconPath;
 
             node.contextValue = "list";
             nodes.push(node);
