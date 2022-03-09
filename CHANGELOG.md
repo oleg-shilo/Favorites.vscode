@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.14 (xx Mar, 2022)
+
+- Added context menu for setting alias (triggered by #35)
+
 ## 1.5.13 (5 Mar, 2022)
 
 - Added support fro stock vscode icons for TreeViewItems to better align with VSCode themes. It partially addresses #5.

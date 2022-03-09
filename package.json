@@ -133,6 +133,10 @@
                 "title": "Remove from the list"
             },
             {
+                "command": "favorites.set_alias",
+                "title": "Set alias for the selected item"
+            },
+            {
                 "command": "favorites.move_up",
                 "title": "Move up"
             },
@@ -263,6 +267,11 @@
                 },
                 {
                     "command": "favorites.remove",
+                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "favorites.set_alias",
                     "when": "view == favorites-own-view || view == favorites-explorer-view",
                     "group": "navigation@1"
                 },

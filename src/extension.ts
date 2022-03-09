@@ -143,6 +143,60 @@ function remove(element: FavoriteItem) {
     commands.executeCommand('favorites.refresh');
 }
 
+async function set_alias(element: FavoriteItem) {
+    let lines: string[] = [];
+
+    if (element.contextValue != 'file' || element.context == null || !fs.existsSync(element.context)) {
+        vscode.window.showInformationMessage(`You can set alias only to file or folder items.`);
+        return;
+    }
+
+    let current_item_spec = '';
+    let current_alias = '';
+
+    if (element.context.endsWith(element.label)) {
+        current_item_spec = element.context;
+        current_alias = null;
+    } else {
+        current_item_spec = `${element.context}|${element.label}`;
+        current_alias = element.label;
+    }
+
+    let input = await vscode.window.showInputBox({
+        prompt: 'Enter a new alias or an empty string to remove the existing alias.',
+        value: current_alias
+    });
+
+    if (input != null) {
+
+        let lines: string[] = [];
+
+        var currentItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
+        let currentPath = element.context;
+
+        if (input == "") { // removing 
+            currentItems.forEach(item_spec => {
+                if (item_spec == current_item_spec)
+                    lines.push(currentPath);
+                else
+                    lines.push(item_spec);
+            });
+        }
+        else { // adding
+            currentItems.forEach(item_spec => {
+                if (item_spec == current_item_spec)
+                    lines.push(`${currentPath}|${input}`);
+                else
+                    lines.push(item_spec);
+            });
+        }
+
+        Utils.write_all_lines(Utils.fav_file, lines);
+
+        commands.executeCommand('favorites.refresh');
+    }
+}
+
 function edit_list(element: FavoriteItem) {
     vscode.workspace
         .openTextDocument(Uri.file(element.context))
@@ -430,6 +484,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.add_workspace', add_workspace);
     vscode.commands.registerCommand('favorites.add', add);
     vscode.commands.registerCommand('favorites.remove', remove);
+    vscode.commands.registerCommand('favorites.set_alias', set_alias);
     vscode.commands.registerCommand('favorites.remove_list', remove_list);
     vscode.commands.registerCommand('favorites.rename_list', rename_list);
     vscode.commands.registerCommand('favorites.associate_list_with_workspace', e => associate_list_with_workspace(e, true));
