@@ -446,12 +446,12 @@ function get_user_dir(): string {
 
 
     ///////////////////////////////////////
-    let extensionRoot = path.dirname(path.dirname(path.dirname(__dirname)));
-    let isPortable = path.basename(extensionRoot).toLowerCase() == "data" || path.basename(extensionRoot).toLowerCase() == "code-portable-data";
+    let dataRoot = path.join(path.dirname(process.execPath), "data");
+    let isPortable = (fs.existsSync(dataRoot) && fs.lstatSync(dataRoot).isDirectory()); 
     ///////////////////////////////////////
 
     if (isPortable) {
-        return path.join(extensionRoot, 'user-data', 'User', 'favorites.user');
+        return path.join(dataRoot, 'user-data', 'User', 'globalStorage', 'favorites.user');
     } else {
         if (os.platform() == 'win32')
             return path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
