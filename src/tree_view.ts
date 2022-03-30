@@ -5,6 +5,14 @@ import { Uri, commands } from "vscode";
 import { default_list_file_name } from './extension'
 // import { utils } from 'mocha';
 
+export function uriToLocalPath(uri: Uri): string {
+
+    if (uri.scheme == "file" || uri.scheme == "vscode-local")
+        return uri.fsPath;
+    else
+        return uri.scheme + ':' + uri.fsPath;
+}
+
 function truncatePath(path: string, length?: number): string {
     let maxLength = length ?? vscode.workspace.getConfiguration("favorites").get('maxTooltipLength', 100);
 
@@ -232,14 +240,18 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
                 // console.log("> getFavoriteItems " + (i++).toString() + " " + item);
 
-                let file = item;
-                let displayName = path.basename(file);
+                // let file = item;
+                let item_path = item; ''//decodeURIComponent(vscode.Uri.parse(item).path)
+                let displayName = path.basename(item_path);
 
                 let tokens = item.split('|'); // extract a possible item alias 
                 if (tokens.length > 1) {
-                    file = tokens[0];
+                    item_path = tokens[0];
                     displayName = tokens[1];
                 }
+
+                let item_uri = vscode.Uri.parse(item_path);
+                let item_local_path = uriToLocalPath(item_uri);
 
                 let commandValue = 'favorites.open';
                 // let iconName = 'document.svg';
@@ -248,7 +260,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 let rootFolder = false;;
 
                 try {
-                    if (path.isAbsolute(file) && fs.lstatSync(file).isDirectory()) {
+                    if (path.isAbsolute(item_local_path) && fs.lstatSync(item_local_path).isDirectory()) {
                         rootFolder = true;
                         if (showFolderFiles) {
                             collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
@@ -266,21 +278,23 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     {
                         command: commandValue,
                         title: '',
-                        tooltip: file,
-                        arguments: [file],
+                        tooltip: decodeURI(item_path),
+                        arguments: [item_path],
                     },
                     null,
-                    file,
+                    item_path,
                     rootFolder
                 );
 
-                node.tooltip = truncatePath(file);
+                node.tooltip = truncatePath(item_path);
 
-                if (fs.existsSync(file)) {
-                    node.resourceUri = vscode.Uri.parse(file);
-                }
-                else
-                    node.iconPath = null;
+                // if (fs.existsSync(item_path)) {
+
+                node.resourceUri = vscode.Uri.parse(item_path);
+
+                // }
+                // else
+                node.iconPath = null;
 
                 nodes.push(node);
             }

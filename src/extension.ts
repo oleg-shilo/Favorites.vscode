@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
-import { FavoritesTreeProvider, FavoriteItem } from './tree_view';
+import { FavoritesTreeProvider, FavoriteItem, uriToLocalPath } from './tree_view';
 import { Uri, commands } from 'vscode';
 import { ExecSyncOptionsWithBufferEncoding } from 'child_process';
 import { env } from 'process';
@@ -75,7 +75,13 @@ function add(element: FavoriteItem) {
     }
     else {
         let document = vscode.window.activeTextEditor.document.fileName;
-        if (vscode.window.activeTextEditor?.document?.uri?.scheme != undefined) {
+        let isLocalPath = false;
+
+        if (vscode.window.activeTextEditor?.document) {
+            isLocalPath = fs.existsSync(uriToLocalPath(vscode.window.activeTextEditor?.document?.uri));
+        }
+        // if (vscode.window.activeTextEditor?.document?.uri?.scheme != undefined ||    
+        if (!isLocalPath) {
             document = decodeURI(vscode.window.activeTextEditor.document.uri.toString())
         }
         _add(document);
@@ -146,11 +152,6 @@ function remove(element: FavoriteItem) {
 async function set_alias(element: FavoriteItem) {
     let lines: string[] = [];
 
-    if (element.contextValue != 'file' || element.context == null || !fs.existsSync(element.context)) {
-        vscode.window.showInformationMessage(`You can set alias only to file or folder items.`);
-        return;
-    }
-
     let current_item_spec = '';
     let current_alias = '';
 
@@ -160,6 +161,16 @@ async function set_alias(element: FavoriteItem) {
     } else {
         current_item_spec = `${element.context}|${element.label}`;
         current_alias = element.label;
+    }
+
+    let item_uri = vscode.Uri.parse(element.context);
+    let current_item_local_path = uriToLocalPath(item_uri);
+
+    if (element.contextValue != 'file' ||
+        element.context == null ||
+        !fs.existsSync(current_item_local_path)) {
+        vscode.window.showInformationMessage(`You can set alias only to the existing local file or folder.`);
+        return;
     }
 
     let input = await vscode.window.showInputBox({
@@ -184,7 +195,8 @@ async function set_alias(element: FavoriteItem) {
         }
         else { // adding
             currentItems.forEach(item_spec => {
-                if (item_spec == current_item_spec)
+
+                if (uriToLocalPath(vscode.Uri.parse(item_spec)) == current_item_local_path)
                     lines.push(`${currentPath}|${input}`);
                 else
                     lines.push(item_spec);
@@ -447,7 +459,7 @@ function get_user_dir(): string {
 
     ///////////////////////////////////////
     let dataRoot = path.join(path.dirname(process.execPath), "data");
-    let isPortable = (fs.existsSync(dataRoot) && fs.lstatSync(dataRoot).isDirectory()); 
+    let isPortable = (fs.existsSync(dataRoot) && fs.lstatSync(dataRoot).isDirectory());
     ///////////////////////////////////////
 
     if (isPortable) {
@@ -670,3 +682,5 @@ class Utils {
         }
     }
 }
+
+

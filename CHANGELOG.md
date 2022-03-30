@@ -1,8 +1,8 @@
 # Change Log
 
+## 1.5.15 (30 Mar, 2022)
 
-## 1.5.14 (13 Mar, 2022)
-
+- Issue #43: Not working properly with ${execPath} to subdirectory within VSCode portable
 - Added context menu for setting alias (triggered by #35)
 - Fixed faulty `IsPortable` detection (part of #33).
 
