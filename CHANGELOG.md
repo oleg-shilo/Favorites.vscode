@@ -1,8 +1,13 @@
 # Change Log
 
+## 1.5.16 (16 May, 2022)
+
+- Issue #42: Non-path text not work
+- New syntax for item separators: `|<separator>`
+
 ## 1.5.15 (30 Mar, 2022)
 
-- Issue #43: Not working properly with ${execPath} to subdirectory within VSCode portable
+- Issue #33: Not working properly with ${execPath} to subdirectory within VSCode portable
 - Added context menu for setting alias (triggered by #35)
 - Fixed faulty `IsPortable` detection (part of #33).
 

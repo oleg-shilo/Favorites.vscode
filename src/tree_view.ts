@@ -234,28 +234,32 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
         let showFolderFiles = vscode.workspace.getConfiguration("favorites").get('showFolderFiles', false);
 
-        // let i = 0;
         items?.forEach(item => {
+
             if (item != '') {
 
                 // console.log("> getFavoriteItems " + (i++).toString() + " " + item);
 
-                // let file = item;
-                let item_path = item; ''//decodeURIComponent(vscode.Uri.parse(item).path)
+                let item_path = item;
                 let displayName = path.basename(item_path);
 
                 let tokens = item.split('|'); // extract a possible item alias 
                 if (tokens.length > 1) {
                     item_path = tokens[0];
                     displayName = tokens[1];
+
+                    if (item_path == "") {
+                        // a separator
+                        let node = new FavoriteItem(item.substring(1), vscode.TreeItemCollapsibleState.None);
+                        nodes.push(node);
+                        return nodes;
+                    }
                 }
 
                 let item_uri = vscode.Uri.parse(item_path);
                 let item_local_path = uriToLocalPath(item_uri);
 
                 let commandValue = 'favorites.open';
-                // let iconName = 'document.svg';
-                let iconPath = new vscode.ThemeIcon("file");
                 let collapsableState = vscode.TreeItemCollapsibleState.None;
                 let rootFolder = false;;
 
@@ -266,8 +270,6 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                             collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
                             commandValue = '';
                         }
-
-                        iconPath = new vscode.ThemeIcon("folder");
                     }
                 } catch (error) {
                 }
@@ -287,13 +289,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 );
 
                 node.tooltip = truncatePath(item_path);
-
-                // if (fs.existsSync(item_path)) {
-
                 node.resourceUri = vscode.Uri.parse(item_path);
-
-                // }
-                // else
                 node.iconPath = null;
 
                 nodes.push(node);
@@ -448,15 +444,5 @@ export class FavoriteItem extends vscode.TreeItem {
         super(label, collapsibleState);
     }
 
-    // iconPath = {
-    //     light: path.join(__filename, '..', '..', '..', 'resources', 'light', 'document.svg'),
-    //     dark: path.join(__filename, '..', '..', '..', 'resources', 'dark', 'document.svg')
-    // };
-
-    // this is the value that is holding to be evaluated in the "view/item/context" from the package.json
-    // possible values are:
-    // - file
-    // - list
-    // - list_root
     contextValue = 'file';
 }

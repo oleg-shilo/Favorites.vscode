@@ -44,13 +44,13 @@ The item definition (in "&lt;name&gt;.list.txt") may contain environment variabl
 $USERPROFILE\AppData\Roaming\Code\User\cs-script.user\new_script.cs
 ```
 
-In cases if an alternative display title (alias) for a file is desired you can use this simple syntax to achieve that: `<file path>|<file aliase>`
+In cases if an alternative display title (alias) for a file is desired you can use this simple syntax to achieve that: `<file path>|<file alias>`
 
 ![image](https://user-images.githubusercontent.com/16729806/156863567-e039de94-5a94-4c05-9b24-5e1d633c1e0a.png)
 
 The definition syntax also allows comments - any line that starts with '#'.
 
-And you can also use non-path text as an items' separator (e.g. `"-- Folders --"`).
+And you can also use non-path text as an items' separator (e.g. `"|-- Folders --"`). Any line that starts with `|` is interpreted as a separator. It makes sense as `|<separator>` is nothing else but a specific case of `<file path>|<file alias>` definition where file path is empty and the display name is just a text that you want to display on the non-clickable item.
 
 The extension also allows showing Favorite folder item content.
 This feature is not a substitution of the Workspace explorer view, which does by far superior job. It's just a convenience measure for a quick access of the top level folder files. The feature can be enabled/disabled with `favorites.showFolderFiles` setting.
