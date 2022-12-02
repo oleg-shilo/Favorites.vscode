@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.5.17 (2 December, 2022)
+
+- Incorporated GitHub suggested vulnerability patches
+
 ## 1.5.16 (16 May, 2022)
 
 - Issue #42: Non-path text not work
