@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.5.18 (15 October, 2023)
+
+- Issue #44: Closed Grouped Lists expand when switching to new favorites list
+- Added `favorites.expandListGroups` setting to control initial state of the list group after loading the lists tree.
+
 ## 1.5.17 (2 December, 2022)
 
 - Incorporated GitHub suggested vulnerability patches

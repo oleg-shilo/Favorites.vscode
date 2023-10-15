@@ -13,6 +13,9 @@ export function uriToLocalPath(uri: Uri): string {
         return uri.scheme + ':' + uri.fsPath;
 }
 
+function expandListGroups(): boolean {
+    return vscode.workspace.getConfiguration("favorites").get('expandListGroups', true);
+}
 function truncatePath(path: string, length?: number): string {
     let maxLength = length ?? vscode.workspace.getConfiguration("favorites").get('maxTooltipLength', 100);
 
@@ -345,6 +348,8 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
         return nodes;
     }
 
+    private theNode: FavoriteItem;
+
     private getFavoriteLists(): FavoriteItem[] {
 
         let nodes: FavoriteItem[] = [];
@@ -378,13 +383,17 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                             .filter(i => i.startsWith(group_name + '.'))
                             .map(i => path.join(path.dirname(file), i + ".list.txt"));
 
-                        let collapsableState = vscode.TreeItemCollapsibleState.Expanded;
+                        let collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
+
+                        if (expandListGroups()) {
+                            collapsableState = vscode.TreeItemCollapsibleState.Expanded;
+                        }
 
                         let node = new FavoriteItem(
                             group_name,
                             collapsableState,
                             {
-                                command: '',
+                                command: 'favorites.clickOnGroup',
                                 title: '',
                                 tooltip: file,
                                 arguments: [file],
@@ -392,6 +401,8 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                             children,
                             null
                         );
+
+                        this.theNode = node;
 
                         node.tooltip = truncatePath(file);
                         node.iconPath = null;

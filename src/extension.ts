@@ -304,6 +304,9 @@ function load(list: string) {
     Utils.setCurrentFavFile(list);
     commands.executeCommand('favorites.refresh');
 }
+function clickOnGroup() {
+    vscode.window.showInformationMessage("Expand the node before selecting the list.");
+}
 
 function open(path: string) {
     open_path(path, false);
@@ -487,6 +490,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.open_new_window', open_in_new_window);
     vscode.commands.registerCommand('favorites.open', open);
     vscode.commands.registerCommand('favorites.load', load);
+    vscode.commands.registerCommand('favorites.clickOnGroup', clickOnGroup);
     vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);
     vscode.commands.registerCommand('favorites.new_list', new_list);
     vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh(false));

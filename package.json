@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.5.17",
+    "version": "1.5.18",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -83,7 +83,7 @@
                 },
                 "favorites.maxTooltipLength": {
                     "type": "number",
-                    "default": "100",
+                    "default": 100,
                     "markdownDescription": "Maximum length of the favorite item tooltip. Typically file path. If the path length exceeds the maximum value it is displayed truncated."
                 },
                 "favorites.disableOpeningSubfolderOfLoadedFolder": {
@@ -100,6 +100,11 @@
                     "type": "boolean",
                     "default": true,
                     "markdownDescription": "Specifies if the root node (active/selected list) should be visually separated from the active list items. Plays pure aesthetic role."
+                },
+                "favorites.expandListGroups": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Do not expand list groups after loading all lists in teh list selection node (root). This mode can save some real estate.\nThis si all about the initial state of the list group as you can expand collapse it as normal regardless of this configuration value."
                 }
             }
         },
