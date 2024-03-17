@@ -71,7 +71,9 @@ function alt_cmd(element: FavoriteItem) {
 
 function add(element: FavoriteItem) {
     if (!vscode.window.activeTextEditor) {
-        vscode.window.showErrorMessage('The path of the active document is not available.');
+        vscode.window.showErrorMessage(
+            'The path of the active document is not available. If you are trying to add the document that is being ' +
+            'viewed in a custom editor (e.g. pdf, epub) then you need to add file path manually as VSCode does not allow accessing file path.');
     }
     else {
         let document = vscode.window.activeTextEditor.document.fileName;
