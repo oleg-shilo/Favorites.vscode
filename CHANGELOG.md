@@ -1,5 +1,12 @@
 # Change Log
 
+## 1.6.0 (19 March, 2024)
+
+- Added context menu "Add selected file to Favorites" to the active document and its tab.
+- Improved error message on adding document being opened by the custom editor 
+- Issue #46: Unable to bookmark pdf or epub files
+
+
 ## 1.5.18 (15 October, 2023)
 
 - Issue #44: Closed Grouped Lists expand when switching to new favorites list

@@ -69,24 +69,33 @@ function alt_cmd(element: FavoriteItem) {
     vscode.window.showErrorMessage('alt_cmd');
 }
 
-function add(element: FavoriteItem) {
-    if (!vscode.window.activeTextEditor) {
-        vscode.window.showErrorMessage(
-            'The path of the active document is not available. If you are trying to add the document that is being ' +
-            'viewed in a custom editor (e.g. pdf, epub) then you need to add file path manually as VSCode does not allow accessing file path.');
+function add_file(fileUri: vscode.Uri, list: any[]) {
+    add(fileUri.fsPath);
+}
+
+function add(fileName: string) {
+    if (fileName) {
+        _add(fileName);
     }
     else {
-        let document = vscode.window.activeTextEditor.document.fileName;
-        let isLocalPath = false;
+        if (!vscode.window.activeTextEditor) {
+            vscode.window.showErrorMessage(
+                'The path of the active document is not available. If you are trying to add the document that is being ' +
+                'viewed in a custom editor (e.g. pdf, epub) then you need to add the file via context menu of the active document tab');
+        }
+        else {
+            let document = vscode.window.activeTextEditor.document.fileName;
+            let isLocalPath = false;
 
-        if (vscode.window.activeTextEditor?.document) {
-            isLocalPath = fs.existsSync(uriToLocalPath(vscode.window.activeTextEditor?.document?.uri));
+            if (vscode.window.activeTextEditor?.document) {
+                isLocalPath = fs.existsSync(uriToLocalPath(vscode.window.activeTextEditor?.document?.uri));
+            }
+            // if (vscode.window.activeTextEditor?.document?.uri?.scheme != undefined ||    
+            if (!isLocalPath) {
+                document = decodeURI(vscode.window.activeTextEditor.document.uri.toString())
+            }
+            _add(document);
         }
-        // if (vscode.window.activeTextEditor?.document?.uri?.scheme != undefined ||    
-        if (!isLocalPath) {
-            document = decodeURI(vscode.window.activeTextEditor.document.uri.toString())
-        }
-        _add(document);
     }
 }
 
@@ -501,6 +510,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.edit_list', edit_list);
     vscode.commands.registerCommand('favorites.add_workspace', add_workspace);
     vscode.commands.registerCommand('favorites.add', add);
+    vscode.commands.registerCommand('favorites.add_file', add_file);
     vscode.commands.registerCommand('favorites.remove', remove);
     vscode.commands.registerCommand('favorites.set_alias', set_alias);
     vscode.commands.registerCommand('favorites.remove_list', remove_list);

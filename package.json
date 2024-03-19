@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.5.18",
+    "version": "1.6.0",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -126,6 +126,14 @@
                 }
             },
             {
+                "command": "favorites.add_file",
+                "title": "Add selected file to Favorites",
+                "icon": {
+                    "light": "resources/light/add.svg",
+                    "dark": "resources/dark/add.svg"
+                }
+            },
+            {
                 "command": "favorites.add_workspace",
                 "title": "Add active workspace/folder to Favorites",
                 "icon": {
@@ -207,6 +215,26 @@
             }
         ],
         "menus": {
+            "explorer/context": [
+                {
+                    "command": "favorites.add_file"
+                }
+            ],
+            "editor/title": [
+                {
+                    "command": "favorites.add_file"
+                }
+            ],
+            "editor/title/context": [
+                {
+                    "command": "favorites.add_file"
+                }
+            ],
+            "editor/context": [
+                {
+                    "command": "favorites.add_file"
+                }
+            ],
             "view/title": [
                 {
                     "command": "favorites.new_list",
