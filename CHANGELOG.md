@@ -1,11 +1,14 @@
 # Change Log
 
+## 1.6.1 (14 September, 2024)
+
+- Issue #49: Version 1.6.0 adds the [object Object] instead of the filename
+
 ## 1.6.0 (19 March, 2024)
 
 - Added context menu "Add selected file to Favorites" to the active document and its tab.
-- Improved error message on adding document being opened by the custom editor 
+- Improved error message on adding document being opened by the custom editor
 - Issue #46: Unable to bookmark pdf or epub files
-
 
 ## 1.5.18 (15 October, 2023)
 

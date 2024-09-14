@@ -74,7 +74,20 @@ function add_file(fileUri: vscode.Uri, list: any[]) {
 }
 
 function add(fileName: string) {
+
     if (fileName) {
+        let obj: any = fileName;
+        if (obj instanceof FavoriteItem) {
+            // There are the reports that sometimes `fileName` is FavoriteItem but it is not clear how it can happen
+            // https://github.com/oleg-shilo/Favorites.vscode/issues/49
+
+            try {
+                fileName = obj['resourceUri']['path'];
+            } catch (error) {
+                vscode.window.showErrorMessage("Error: " + error.message);
+            }
+        }
+
         _add(fileName);
     }
     else {
@@ -90,7 +103,7 @@ function add(fileName: string) {
             if (vscode.window.activeTextEditor?.document) {
                 isLocalPath = fs.existsSync(uriToLocalPath(vscode.window.activeTextEditor?.document?.uri));
             }
-            // if (vscode.window.activeTextEditor?.document?.uri?.scheme != undefined ||    
+
             if (!isLocalPath) {
                 document = decodeURI(vscode.window.activeTextEditor.document.uri.toString())
             }
