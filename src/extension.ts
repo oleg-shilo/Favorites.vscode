@@ -70,7 +70,7 @@ function alt_cmd(element: FavoriteItem) {
 }
 
 function add_file(fileUri: vscode.Uri, list: any[]) {
-    add(fileUri.fsPath);
+    add(fileUri?.fsPath);
 }
 
 function add(fileName: string) {
