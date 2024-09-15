@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.6.1 (15 September, 2024)
+
+- Issue #49: further workaround
+
 ## 1.6.1 (14 September, 2024)
 
 - Issue #49: Version 1.6.0 adds the [object Object] instead of the filename

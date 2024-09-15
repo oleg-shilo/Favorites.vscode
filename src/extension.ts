@@ -75,18 +75,12 @@ function add_file(fileUri: vscode.Uri, list: any[]) {
 
 function add(fileName: string) {
 
-    if (fileName) {
-        let obj: any = fileName;
-        if (obj instanceof FavoriteItem) {
-            // There are the reports that sometimes `fileName` is FavoriteItem but it is not clear how it can happen
-            // https://github.com/oleg-shilo/Favorites.vscode/issues/49
-
-            try {
-                fileName = obj['resourceUri']['path'];
-            } catch (error) {
-                vscode.window.showErrorMessage("Error: " + error.message);
-            }
-        }
+    let obj: any = fileName;
+    if (obj && obj instanceof String) {
+        // There are the reports that sometimes `fileName` is FavoriteItem but it is not clear how it can happen 
+        // (maybe it has something to do with the focus management)
+        // but it started from VSCode v1.93.1
+        // https://github.com/oleg-shilo/Favorites.vscode/issues/49
 
         _add(fileName);
     }
