@@ -76,7 +76,8 @@ function add_file(fileUri: vscode.Uri, list: any[]) {
 function add(fileName: string) {
 
     let obj: any = fileName;
-    if (obj && obj instanceof String) {
+    if (obj && (obj instanceof String || typeof obj === 'string')) {
+
         // There are the reports that sometimes `fileName` is FavoriteItem but it is not clear how it can happen 
         // (maybe it has something to do with the focus management)
         // but it started from VSCode v1.93.1
