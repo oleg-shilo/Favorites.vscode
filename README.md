@@ -88,4 +88,4 @@ The simplest content of the `<workspace>\.fav\local.list.txt`:
 * By default VSCode opens any file clicked from the  _Favorites_ list in the so called "preview mode". Thus the document tabs are reused and every new file is opened in the same tab. If you prefer to open a clicked _Favorites_ document in a new tab then you need to disable document the previewMode is the settings:
   1. Use _Command Palette_ to open your settings file ("Preferences: Open User Settings")
   2. Add the "workbench.editor.enablePreview" property, and set it's value to _false_.
-  3. Use "favorites.singleListMode" to disable support for multiple lists and hide the `<Default>` tree view item as well as the whole list selection UI elements.
+* Use "favorites.singleListMode" to disable support for multiple lists and hide the `<Default>` tree view item as well as the whole list selection UI elements.
