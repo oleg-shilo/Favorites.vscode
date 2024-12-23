@@ -335,11 +335,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
             if (fs.existsSync(file)) {
                 node.resourceUri = vscode.Uri.parse(file);
-
-                // iconPath = new vscode.ThemeIcon("file"); // zos
             }
-
-            // node.iconPath = iconPath;
 
             node.contextValue = "list";
             nodes.push(node);

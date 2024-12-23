@@ -328,6 +328,41 @@ function clickOnGroup() {
 }
 
 function open(path: string) {
+    // VSCode opens documents clicked in the Favorites tree in the preview mode if 
+    // workbench.editor.enablePreview enabled (VSCode default)
+    // interestingly enough opening documents from QuickPick does not have this issue
+
+    const configuration = vscode.workspace.getConfiguration();
+
+    let previewEnabled = vscode.workspace.getConfiguration("workbench").get('editor.enablePreview', true);
+    let disableWarning = vscode.workspace.getConfiguration("favorites").get('disablePreviewWarning', false);
+
+
+    let disablePreview = "Disable 'enablePreview' setting";
+    let doNotShowAgain = "Do not show this warning again";
+
+    let saveSetting = (name, value) => {
+        try {
+            configuration.update(name, value, vscode.ConfigurationTarget.Global); // Save to global settings
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to update setting: ${error.message}`);
+        }
+    };
+
+    if (previewEnabled && !disableWarning) {
+        vscode.window.showWarningMessage(
+            `VSCode opens Favorites documents in the 'preview mode'. If you want to open Favorites files normally then you need to disable the 'workbench.editor.enablePreview' setting.
+            Read more: https://github.com/oleg-shilo/Favorites.vscode?tab=readme-ov-file#hintstips`,
+            disablePreview, doNotShowAgain)
+            .then((selection) => {
+                if (selection === doNotShowAgain) {
+                    saveSetting('favorites.disablePreviewWarning', true);
+
+                } else if (selection === disablePreview) {
+                    saveSetting('workbench.editor.enablePreview', false);
+                }
+            });
+    }
     open_path(path, false);
 }
 
@@ -496,6 +531,34 @@ function get_user_dir(): string {
     }
 }
 
+function quick_pick() {
+
+    let map = new Map();
+    try {
+        let lines: string[] = Utils.read_all_lines(Utils.fav_file);
+
+        lines.forEach(file => {
+            if (fs.existsSync(file) && Utils.is_file(file)) {
+
+                // unfortunately showQuickPick does not support icons, so we need to use markdown
+                let icon = "$(symbol-file)";
+
+                let key = file;
+                if (file.length > 55)
+                    key = file.substring(0, 20) + "..." + file.substring(file.length - 30);
+
+                map.set(icon + key, () => open(file));
+            }
+        });
+    } catch (error) {
+
+    }
+
+    vscode.window
+        .showQuickPick(Array.from(map.keys()))
+        .then(selectedItem => map.get(selectedItem)());
+}
+
 export function activate(context: vscode.ExtensionContext) {
 
     FavoritesTreeProvider.user_dir = get_user_dir();
@@ -511,6 +574,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.load', load);
     vscode.commands.registerCommand('favorites.clickOnGroup', clickOnGroup);
     vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);
+    vscode.commands.registerCommand("favorites.quick_pick", quick_pick);
     vscode.commands.registerCommand('favorites.new_list', new_list);
     vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh(false));
     vscode.commands.registerCommand('favorites.refresh_all', () => treeViewProvider.refresh(true));

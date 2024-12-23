@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.6.3",
+    "version": "1.6.4",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -64,7 +64,12 @@
                 "favorites.singleListMode": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Only ever show a single favorites list. \nIn this mode the top tree-view element with the name of the current list (e.g. `< Default >` ) is removed. \nThis mode is useful for users who only use a single list of favorite documents.."
+                    "description": "Only ever show a single favorites list. \nIn this mode the top tree-view element with the name of the current list (e.g. `< Default >` ) is removed. \nThis mode is useful for users who only use a single list of favorite documents."
+                },
+                "favorites.disablePreviewWarning": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Controls showing the warning when VSCode is configured for preview mode on opening files. \nThis setting helps preventing VSCode from opening Favorites files always in the same tab (reusing the tabs)."
                 },
                 "favorites.showFolderFiles": {
                     "type": "boolean",
@@ -109,6 +114,14 @@
             }
         },
         "commands": [
+            {
+                "command": "favorites.quick_pick",
+                "title": "Favorites: Quick pick",
+                "icon": {
+                    "light": "resources/light/document.svg",
+                    "dark": "resources/dark/document.svg"
+                }
+            },
             {
                 "command": "favorites.new_list",
                 "title": "Creates and loads a new Favorites list",
