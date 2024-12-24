@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.6.5 (24 December, 2024)
+
+- #51: Rename tab name from Explorer to Favorites
+- Removed FavoritesOwnView feature. It's no longer needed since VSCode nt supports natively attaching the views to any view container.
+
 ## 1.6.4 (23 December, 2024)
 
 - Improvements triggered by #50: 'Add favourite files to "Go to File…" palette'

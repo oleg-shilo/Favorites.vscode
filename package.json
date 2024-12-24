@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.6.4",
+    "version": "1.6.5",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -23,10 +23,7 @@
         "type": "git",
         "url": "https://github.com/oleg-shilo/Favorites.vscode.git"
     },
-    "activationEvents": [
-        "onView:favorites-explorer-view",
-        "onView:favorites-own-view"
-    ],
+    "activationEvents": [],
     "main": "./out/src/extension",
     "icon": "media/fav.png",
     "contributes": {
@@ -34,25 +31,16 @@
             "activitybar": [
                 {
                     "id": "favorites-explorer",
-                    "title": "Favorites Explorer",
+                    "title": "Favorites",
                     "icon": "resources/light/favorite.svg"
                 }
             ]
         },
         "views": {
-            "explorer": [
+            "favorites-explorer": [
                 {
                     "id": "favorites-explorer-view",
                     "name": "Favorites",
-                    "when": "config.favorites.ownExplorer == false",
-                    "icon": "resources/light/favorite.svg"
-                }
-            ],
-            "favorites-explorer": [
-                {
-                    "id": "favorites-own-view",
-                    "name": "Favorites",
-                    "when": "config.favorites.ownExplorer == true",
                     "icon": "resources/light/favorite.svg"
                 }
             ]
@@ -75,11 +63,6 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Show favorite's folder item content (sub-folders and files). \nThis feature is heavily affected by the VSCode treeView item bug (#34130 and #24) which always triggers node selection when you try to expand it."
-                },
-                "favorites.ownExplorer": {
-                    "type": "boolean",
-                    "default": false,
-                    "markdownDescription": "Specifies if the _Favorites_ view should be placed in its own explorer (on activity bar) or in the root Explorer."
                 },
                 "favorites.dataLocation": {
                     "type": "string",
@@ -251,84 +234,79 @@
             "view/title": [
                 {
                     "command": "favorites.new_list",
-                    "when": "!config.favorites.singleListMode && view == favorites-own-view",
-                    "group": "navigation@0"
-                },
-                {
-                    "command": "favorites.new_list",
                     "when": "!config.favorites.singleListMode && view == favorites-explorer-view",
                     "group": "navigation@0"
                 },
                 {
                     "command": "favorites.add",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.add_workspace",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.refresh_all",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.edit",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@3"
                 },
                 {
                     "command": "favorites.open_all_files",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "custom@0"
                 }
             ],
             "view/item/context": [
                 {
                     "command": "favorites.associate_list_with_workspace",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.disassociate_list_from_workspace",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.rename_list",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.remove_list",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.open_new_window",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@0"
                 },
                 {
                     "command": "favorites.remove",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.set_alias",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.move_up",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.move_down",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 }
             ]

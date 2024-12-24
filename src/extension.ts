@@ -566,7 +566,6 @@ export function activate(context: vscode.ExtensionContext) {
     const treeViewProvider = new FavoritesTreeProvider(get_list_items, get_favorites_lists, get_current_list_name);
 
 
-    vscode.window.registerTreeDataProvider("favorites-own-view", treeViewProvider);
     vscode.window.registerTreeDataProvider("favorites-explorer-view", treeViewProvider);
 
     vscode.commands.registerCommand('favorites.open_new_window', open_in_new_window);

@@ -292,8 +292,9 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 );
 
                 node.tooltip = truncatePath(item_path);
-                node.resourceUri = vscode.Uri.parse(item_path);
-                node.iconPath = null;
+
+                node.resourceUri = vscode.Uri.parse(item_path); // the icon is not shown without this line
+
 
                 nodes.push(node);
             }
