@@ -16,6 +16,7 @@ export function uriToLocalPath(uri: Uri): string {
 function expandListGroups(): boolean {
     return vscode.workspace.getConfiguration("favorites").get('expandListGroups', true);
 }
+
 function truncatePath(path: string, length?: number): string {
     let maxLength = length ?? vscode.workspace.getConfiguration("favorites").get('maxTooltipLength', 100);
 

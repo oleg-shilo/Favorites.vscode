@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.6.6 (26 December, 2024)
+
+- #52: 'Favorites: Favorites' in Explorer Panel  
+   Fix in package.json: intentionally left empty to `name` avoid the double title in the view `<extension_name>:<view.name>`
+
 ## 1.6.5 (24 December, 2024)
 
 - #51: Rename tab name from Explorer to Favorites

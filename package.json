@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.6.5",
+    "version": "1.6.6",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -40,7 +40,8 @@
             "favorites-explorer": [
                 {
                     "id": "favorites-explorer-view",
-                    "name": "Favorites",
+                    "name": "",
+                    "dev_comment": "intentionally left empty to avoid the double title in the view `<extension_name>:<view.name>`",
                     "icon": "resources/light/favorite.svg"
                 }
             ]
@@ -61,7 +62,7 @@
                 },
                 "favorites.showFolderFiles": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "description": "Show favorite's folder item content (sub-folders and files). \nThis feature is heavily affected by the VSCode treeView item bug (#34130 and #24) which always triggers node selection when you try to expand it."
                 },
                 "favorites.dataLocation": {
