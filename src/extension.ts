@@ -535,15 +535,35 @@ function quick_pick() {
 
     let map = new Map();
     try {
-        let lines: string[] = Utils.read_all_lines(Utils.fav_file);
+        let lines: string[] = Utils
+            .read_all_lines(Utils.fav_file)
+            .map(x => expandenv(x));
 
-        lines.forEach(file => {
-            if (fs.existsSync(file) && Utils.is_file(file)) {
+        lines.forEach(fileSpec => {
+            let specParts = fileSpec.split('|');
+            let file = specParts[0];
+            let alias = specParts.length > 1 ? specParts[1] : file;
+
+            // if (fs.existsSync(file) && Utils.is_file(file)) 
+            {
 
                 // unfortunately showQuickPick does not support icons, so we need to use markdown
-                let icon = "$(symbol-file)";
+                // https://code.visualstudio.com/api/references/icons-in-labels
+                let icon = "$(symbol-file) ";
 
-                let key = file;
+                if (!fs.existsSync(file)) {
+                    if (file.startsWith("vscode-"))
+                        icon = "$(remote) "; // we cannot know if it exists for sure
+                    else
+                        icon = "$(warning) ";
+                }
+                else if (fs.existsSync(file) && !Utils.is_file(file)) {
+                    icon = "$(chevron-right) ";
+                    // icon = "$(symbol-folder) ";
+                }
+
+
+                let key = alias;
                 if (file.length > 55)
                     key = file.substring(0, 20) + "..." + file.substring(file.length - 30);
 

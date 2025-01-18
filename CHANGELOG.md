@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.6.7 (18 January, 2025)
+
+- Issue #50:
+  - Removed `FileExists` filter for files in QuickPick list.
+  - Added extending envars for files in QuickPick list.
+
 ## 1.6.6 (26 December, 2024)
 
 - #52: 'Favorites: Favorites' in Explorer Panel  
@@ -160,6 +166,7 @@ The simplest content of the `<workspace>\.fav\local.list.txt`:
 - Improved error handling of the pseudo-documents (e.g. PDF or GIF viewer).
 
 ## 1.2.0
+
 
 - Implemented full support for multiple Favorites' lists.
 
