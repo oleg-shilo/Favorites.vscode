@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.6.8 (23 January, 2025)
+
+- Issue #50:
+  - fixed problem with handling fav-list having empty lines
+  - added keeping raw envars in the QuickPick items display text
+
 ## 1.6.7 (18 January, 2025)
 
 - Issue #50:
