@@ -538,7 +538,6 @@ function quick_pick() {
         let lines: string[] = Utils
             .read_all_lines(Utils.fav_file)
             .filter(x => x != '');
-        // .map(x => expandenv(x));
 
         lines.forEach(fileSpec => {
             let specParts = fileSpec.split('|');
@@ -563,8 +562,8 @@ function quick_pick() {
 
 
             let key = alias;
-            if (file.length > 55)
-                key = file.substring(0, 20) + "..." + file.substring(file.length - 30);
+            if (key.length > 55)
+                key = key.substring(0, 20) + "..." + key.substring(file.length - 30);
 
             map.set(icon + key, () => open(expandenv(file)));
         });
@@ -574,8 +573,7 @@ function quick_pick() {
 
     vscode.window
         .showQuickPick(Array.from(map.keys()))
-        // .then(selectedItem => map.get(selectedItem)());
-        .then(selectedItem => map.get(null)());
+        .then(selectedItem => map.get(selectedItem)());
 }
 
 export function activate(context: vscode.ExtensionContext) {

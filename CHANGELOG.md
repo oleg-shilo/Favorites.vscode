@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.6.9 (25 January, 2025)
+
+- Issue #50:
+  - fixed problem with accidental test code in the release codebase
+   
 ## 1.6.8 (23 January, 2025)
 
 - Issue #50:
@@ -10,7 +15,7 @@
 
 - Issue #50:
   - Removed `FileExists` filter for files in QuickPick list.
-  - Added extending envars for files in QuickPick list.
+  - Added extending envars for files in QuickPick list.cls
 
 ## 1.6.6 (26 December, 2024)
 
