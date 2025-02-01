@@ -35,6 +35,27 @@ The functionality is self explanatory and includes following features:
 
 ![image](https://raw.githubusercontent.com/oleg-shilo/Favorites.vscode/master/resources/images/codemap.lists.gif)
 
+### _Using extension_
+
+Using the extension is stright forward. Just click the item in the Favourites list tree and the corresponding document will be opened in the current window.
+If you are dealing with the item that represents a folder then you can also click a command item to open the  folder in VSCode _as a folder_. This command item has an int=uiotive appearance:
+  
+![image](https://github.com/user-attachments/assets/2ae86a05-9f3d-4c4c-831b-7a20795cd9a1)
+
+If you are a "keyboard person" and prefer to open the documents from the Favorites list by using keystrokes only, then you can use VSCode QuickPick feature that is fully integrated with the extension:
+
+`Ctrl+Shift+P`
+
+![image](https://github.com/user-attachments/assets/daf86b50-c9bc-4aac-8cab-ffbf9d3294e2)
+
+Then select the item from the list that is a complete equivalent of the normal Favorites tree view and press `Enter`:
+
+![image](https://github.com/user-attachments/assets/9c7b8cd7-abfe-4fb3-9f4c-1c5499c14b18)
+
+
+
+
+
 ## List definition rules
 
 The item definition (in "&lt;name&gt;.list.txt") may contain environment variables, which  are extended at runtime into a full path:
