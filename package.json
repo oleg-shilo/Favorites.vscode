@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.6.9",
+    "version": "1.7.0",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -151,6 +151,10 @@
                 "title": "Move up"
             },
             {
+                "command": "favorites.copy_path",
+                "title": "Copy path to clipboard"
+            },
+            {
                 "command": "favorites.move_down",
                 "title": "Move down"
             },
@@ -161,6 +165,10 @@
             {
                 "command": "favorites.open_all_files",
                 "title": "Open all files from the selected Favorites list"
+            },
+            {
+                "command": "favorites.open_extension_homepage",
+                "title": "Open extension GitHub page"
             },
             {
                 "command": "favorites.refresh",
@@ -262,6 +270,11 @@
                     "command": "favorites.open_all_files",
                     "when": "view == favorites-explorer-view",
                     "group": "custom@0"
+                },
+                {
+                    "command": "favorites.open_extension_homepage",
+                    "when": "view == favorites-explorer-view",
+                    "group": "custom@0"
                 }
             ],
             "view/item/context": [
@@ -297,6 +310,11 @@
                 },
                 {
                     "command": "favorites.set_alias",
+                    "when": "view == favorites-explorer-view",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "favorites.copy_path",
                     "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },

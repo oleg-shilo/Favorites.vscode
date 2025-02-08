@@ -123,6 +123,15 @@ function _add(document: string) {
     }
 }
 
+function copy_path(element: FavoriteItem) {
+
+    let lines = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
+
+    let itemPath = element.context;
+    vscode.env.clipboard.writeText(itemPath);
+    // vscode.window.showInformationMessage("Copied to clipboard!");
+}
+
 function up(element: FavoriteItem) {
 
     let lines = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
@@ -256,6 +265,10 @@ function remove_list(element: FavoriteItem) {
             }
         }
     }
+}
+
+function open_extension_homepage(element: FavoriteItem) {
+    vscode.env.openExternal(vscode.Uri.parse("https://github.com/oleg-shilo/Favorites.vscode"));
 }
 
 function open_all_files(element: FavoriteItem) {
@@ -606,6 +619,8 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.associate_list_with_workspace', e => associate_list_with_workspace(e, true));
     vscode.commands.registerCommand('favorites.disassociate_list_from_workspace', e => associate_list_with_workspace(e, false));
     vscode.commands.registerCommand('favorites.open_all_files', open_all_files);
+    vscode.commands.registerCommand('favorites.open_extension_homepage', open_extension_homepage);
+    vscode.commands.registerCommand('favorites.copy_path', copy_path);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
 

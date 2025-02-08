@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.7.0 (8 February, 2025)
+
+- #54 (enhancements)
+  - Added `Copy path to clipboard` for selected item.
+  - Added `Open extension GitHub page`
+
 ## 1.6.9 (25 January, 2025)
 
 - Issue #50:
