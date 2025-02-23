@@ -87,7 +87,8 @@ You can associate or disassociate a list by selecting the list selecting the des
 
 ### _Experimental features_
 
-From v1.5.3 you can use workspace local list `local.list.txt` in the workspace folder `<workspace>\.fav\`. This list can only be added, removed and edited manually.
+From v1.5.3 you can use workspace local list `local.list.txt` in the workspace folder `<workspace>\.fav\` or `fav.local.list.txt` in `.vscode`. 
+This list can only be added, removed and edited manually.
 
 This list can contain both absolute and relative paths. All relative paths are resolved at runtime against the workspace folder.
 The simplest content of the `<workspace>\.fav\local.list.txt`:
@@ -95,8 +96,6 @@ The simplest content of the `<workspace>\.fav\local.list.txt`:
 ```txt 
 .\.fav\local.list.txt 
 ```
-
-
 
 ## Limitations
 
