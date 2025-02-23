@@ -52,10 +52,6 @@ Then select the item from the list that is a complete equivalent of the normal F
 
 ![image](https://github.com/user-attachments/assets/9c7b8cd7-abfe-4fb3-9f4c-1c5499c14b18)
 
-
-
-
-
 ## List definition rules
 
 The item definition (in "&lt;name&gt;.list.txt") may contain environment variables, which  are extended at runtime into a full path:
@@ -75,11 +71,11 @@ And you can also use non-path text as an items' separator (e.g. `"|-- Folders --
 The extension also allows showing Favorite folder item content.
 This feature is not a substitution of the Workspace explorer view, which does by far superior job. It's just a convenience measure for a quick access of the top level folder files. The feature can be enabled/disabled with `favorites.showFolderFiles` setting.
 
-You can group some lists that somewhat logically related. The groping is based on the naming convention: `[group_name.]<list_name>.list.txt`
+You can group some lists that are somewhat logically related. The groping is based on the naming convention: `[group_name.]<list_name>.list.txt`
 
 ![](resources/images/favorites_grouping.png)
 
-There is another type of customization that helps managing excessive amount lists. Thus some lists can be workspace/folder specific. Meaning that if you have a workspace/folder is opened and some of the configured lists are marked as folder specific (associated with teh folder) then only these lits will be shown in the lists tree.
+There is another type of customization that helps manage excessive amount lists. Thus some lists can be workspace/folder specific. This means that if you have a workspace/folder opened and some of the configured lists are marked as folder specific (associated with the folder) then only these lists will be shown in the lists tree.
 
 You can associate or disassociate a list by selecting the list selecting the desired action from the context (right-click) menu.
 
@@ -87,7 +83,9 @@ You can associate or disassociate a list by selecting the list selecting the des
 
 ### _Experimental features_
 
-From v1.5.3 you can use workspace local list `local.list.txt` in the workspace folder `<workspace>\.fav\` or `fav.local.list.txt` in `.vscode`. 
+From v1.5.3 you can use a workspace local list specific for the workspace location. There are two possible locations and file names for this type of list:
+ - `<workspace>/.fav/local.list.txt`
+ - `<workspace>/.vscode/fav.local.list.txt` 
 This list can only be added, removed and edited manually.
 
 This list can contain both absolute and relative paths. All relative paths are resolved at runtime against the workspace folder.
