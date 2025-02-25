@@ -81,6 +81,18 @@ You can associate or disassociate a list by selecting the list selecting the des
 
 ![](resources/images/folder_specific.png)
 
+### _Data Location_
+
+The default location of all Favorite lists folder depends on the host operating system:
+
+* **Windows:** %appdata%\Code\User\favorites.user
+* **Mac:** $HOME/Library/Application Support/Code/User/favorites.user
+* **Linux:** $HOME/.config/Code/User/favorites.user
+
+If for whatever reason you want to manage your lists in custom location then you can achieve it by seting Favorites `favorites.dataLocation` configuration value to your preferred folder path.
+
+This feature represents an interesting opportunity when you can spscify the location for the lists based on the workspace folder. Thus if you set the configuration to `${workspaceFolder}\.vscode` then all your lists will be managed from the workspace-specific folder `.vscode` if VSCode has workspace/folder opened. Otherwise the lists will be managed from the default location.
+
 ### _Experimental features_
 
 From v1.5.3 you can use a workspace local list specific for the workspace location. There are two possible locations and file names for this type of list:

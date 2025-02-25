@@ -40,7 +40,7 @@
 
 ## 1.6.4 (23 December, 2024)
 
-- Improvements triggered by #50: 'Add favourite files to "Go to File…" palette'
+- Improvements triggered by #50: 'Add favorite files to "Go to File…" palette'
   - Added `Favorites: Quick pick` command
   - Added user prompt if detected that VSCode have preview mode enabled which impacts the UX of opening the files from the favorites list. The prompt has option to fix the incompatible setting.
 
