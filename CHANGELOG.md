@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.8.0 (25 February, 2025)
+
+- #55: Local workspace data location
+  IE you can specify `${workspaceFolder}\.vscode` for to use default favorites list in the workspace specific folder.
+
 ## 1.7.0 (8 February, 2025)
 
 - #54 (enhancements)

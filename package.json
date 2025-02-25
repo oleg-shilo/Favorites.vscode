@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.7.0",
+    "version": "1.8.0",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -68,7 +68,7 @@
                 "favorites.dataLocation": {
                     "type": "string",
                     "default": "<default>",
-                    "markdownDescription": "Specifies the directory where the all user data is stored. Useful for portable VSCode deployment."
+                    "markdownDescription": "Specifies the directory where the all user data is stored. Useful for portable VSCode deployment. You can use `${workspaceFolder}\\.vscode` for storing the data in the workspace folder ."
                 },
                 "favorites.maxTooltipLength": {
                     "type": "number",

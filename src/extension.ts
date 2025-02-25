@@ -507,11 +507,26 @@ function get_user_dir(): string {
 
     let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>');
 
-    if (dataLocation == '')
+    // example: dataLocation = '${workspaceFolder}\\.vscode';
+
+    if (dataLocation == '') {
         dataLocation = '<default>';
-    else
+    } else {
         dataLocation = dataLocation.replace("${execPath}", process.execPath);
 
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        if (workspaceFolder != null) {// we are in the workspace
+            dataLocation = dataLocation.replace("${workspaceFolder}", workspaceFolder);
+        }
+        else if (dataLocation.indexOf("${workspaceFolder}") != -1) {
+            dataLocation = '<default>';
+        }
+    }
+
+    if (dataLocation != '<default>' && !fs.existsSync(dataLocation)) {
+        vscode.window.showErrorMessage("Custom data directory ('" + dataLocation + "') does not exist. Falling back to the default data location.");
+        dataLocation = '<default>';
+    }
 
     if (dataLocation != '<default>') {
 
