@@ -638,6 +638,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.copy_path', copy_path);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
+    vscode.commands.registerCommand('favorites.nullCommand', e => { });
 
     vscode.workspace.onDidChangeConfiguration(event => {
         if (event.affectsConfiguration("favorites.singleListMode")) {

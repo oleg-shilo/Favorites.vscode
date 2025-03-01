@@ -272,7 +272,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                         rootFolder = true;
                         if (showFolderFiles) {
                             collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
-                            commandValue = '';
+                            commandValue = "favorites.nullCommand";
                         }
                     }
                 } catch (error) {

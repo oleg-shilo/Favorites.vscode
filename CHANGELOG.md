@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.8.1 (1 March, 2025)
+
+- #56: Command '' Not Found
+
 ## 1.8.0 (25 February, 2025)
 
 - #55: Local workspace data location
