@@ -5,6 +5,8 @@ Manage and quickly access frequently used files, folders and favorites' lists.
 
 [![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.cs-script.net/cs-script/Donation.html)
 
+Visual Studio Marketplace: [Favorites Manager](https://marketplace.visualstudio.com/items?itemName=oleg-shilo.favorites) 
+
 ## Overview
 
 This simple extension allows adding, removing and managing documents in the globally maintained Favorites' list(s).
