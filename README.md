@@ -3,9 +3,9 @@
 
 Manage and quickly access frequently used files, folders and favorites' lists.
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.cs-script.net/cs-script/Donation.html)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.cs-script.net/cs-script/Donation.html)   <br>    Visual Studio Marketplace: [Favorites Manager](https://marketplace.visualstudio.com/items?itemName=oleg-shilo.favorites) 
 
-Visual Studio Marketplace: [Favorites Manager](https://marketplace.visualstudio.com/items?itemName=oleg-shilo.favorites) 
+--- 
 
 ## Overview
 
