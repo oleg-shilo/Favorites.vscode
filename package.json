@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.8.1",
+    "version": "1.9.0",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -54,6 +54,11 @@
                     "type": "boolean",
                     "default": false,
                     "description": "Only ever show a single favorites list. \nIn this mode the top tree-view element with the name of the current list (e.g. `< Default >` ) is removed. \nThis mode is useful for users who only use a single list of favorite documents."
+                },
+                "favorites.separateWorkspaceLists": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Controls what items to show in the favorites list if a workspace specific favorite list found (applicable for folders/workspaces only).\n If `false` then merge normal favorites list and the workspace spescific. Othersise show only favorite items for the workspace."
                 },
                 "favorites.disablePreviewWarning": {
                     "type": "boolean",

@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.9.0 (4 April, 2025)
+
+- #58: Is it possible to only show the favorites for the active/open repository?
+  The new setting `favorites.separateWorkspaceLists` now controls the separation of workspace lists from the default favitems
+
 ## 1.8.1 (1 March, 2025)
 
 - #56: Command '' Not Found

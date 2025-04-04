@@ -17,14 +17,17 @@ let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 
 function get_list_items() {
     if (fs.existsSync(Utils.fav_file)) {
-        let defaultItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
+        let favItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
 
         let localDir = GetCurrentWorkspaceFolder();
         if (localDir) {
 
+            let workspaceItems = [];
+            let separateWorkspaceLists = vscode.workspace.getConfiguration("favorites").get('separateWorkspaceLists', false);
+
             function read_list(file: string) {
                 if (fs.existsSync(file) && fs.lstatSync(file).isFile()) {
-                    var localListItems = Utils
+                    let localListItems = Utils
                         .read_all_lines(file)
                         .filter(x => x != '' && !x.startsWith("#"))
                         .map(x => expandenv(x))
@@ -34,16 +37,23 @@ function get_list_items() {
                             else
                                 return path.join(localDir, x);
                         });
-
-                    defaultItems = defaultItems.concat(localListItems);
+                    if (localListItems.length > 0)
+                        workspaceItems = workspaceItems.concat(localListItems);
                 }
             }
 
             read_list(path.join(localDir, ".fav", "local.list.txt"));
             read_list(path.join(localDir, ".vscode", "fav.local.list.txt"));
+
+            if (workspaceItems.length > 0) {
+                if (separateWorkspaceLists)
+                    favItems = workspaceItems;
+                else
+                    favItems = favItems.concat(workspaceItems);
+            }
         }
 
-        return defaultItems;
+        return favItems;
     }
     else {
         vscode.window.showErrorMessage(`The list ${path.basename(Utils.fav_file)} is not found. Loading the default Favorites list instead.`);
@@ -610,7 +620,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     const treeViewProvider = new FavoritesTreeProvider(get_list_items, get_favorites_lists, get_current_list_name);
 
-
     vscode.window.registerTreeDataProvider("favorites-explorer-view", treeViewProvider);
 
     vscode.commands.registerCommand('favorites.open_new_window', open_in_new_window);
@@ -641,7 +650,9 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.nullCommand', e => { });
 
     vscode.workspace.onDidChangeConfiguration(event => {
-        if (event.affectsConfiguration("favorites.singleListMode")) {
+        if (event.affectsConfiguration("favorites.singleListMode") ||
+            event.affectsConfiguration("favorites.separateWorkspaceLists")) {
+
             treeViewProvider.refresh(false);
         }
     })
