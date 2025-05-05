@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.1 (5 May, 2025)
+
+- #60: Editing an existing alias of an item has no effect
+
 ## 1.9.0 (4 April, 2025)
 
 - #58: Is it possible to only show the favorites for the active/open repository?

@@ -789,7 +789,7 @@ class Utils {
             fs.unwatchFile(file, (curr: any, prev: any) =>
                 commands.executeCommand('favorites.refresh'));
 
-        fs.watchFile(file, (curr: any, prev: any) =>
+        fs.watchFile(file, { interval: 1000 }, (curr: any, prev: any) =>
             commands.executeCommand('favorites.refresh'));
 
         Utils._fav_file = file;
