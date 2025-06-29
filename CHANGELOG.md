@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.2 (29 Jun, 2025)
+
+- Feature Request #61: Auto refresh folder item content
+
 ## 1.9.1 (5 May, 2025)
 
 - #60: Editing an existing alias of an item has no effect

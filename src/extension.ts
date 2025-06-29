@@ -15,6 +15,11 @@ export let default_list_file_name = 'Default.list.txt';
 
 let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 
+// Global storage for favorites folder watchers
+let favoritesFolderWatchers: Map<string, fs.FSWatcher> = new Map();
+// Global storage for workspace folder watchers
+let workspaceFolderWatchers: Map<string, fs.FSWatcher> = new Map();
+
 function get_list_items() {
     if (fs.existsSync(Utils.fav_file)) {
         let favItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
@@ -345,6 +350,7 @@ function edit() {
 function load(list: string) {
     Utils.setCurrentFavFile(list);
     commands.executeCommand('favorites.refresh');
+    setupFolderWatchers();
 }
 function clickOnGroup() {
     vscode.window.showInformationMessage("Expand the node before selecting the list.");
@@ -629,8 +635,14 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);
     vscode.commands.registerCommand("favorites.quick_pick", quick_pick);
     vscode.commands.registerCommand('favorites.new_list', new_list);
-    vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh(false));
-    vscode.commands.registerCommand('favorites.refresh_all', () => treeViewProvider.refresh(true));
+    vscode.commands.registerCommand('favorites.refresh', () => {
+        treeViewProvider.refresh(false);
+        setupFolderWatchers();
+    });
+    vscode.commands.registerCommand('favorites.refresh_all', () => {
+        treeViewProvider.refresh(true);
+        setupFolderWatchers();
+    });
     vscode.commands.registerCommand('favorites.edit', edit);
     vscode.commands.registerCommand('favorites.edit_list', edit_list);
     vscode.commands.registerCommand('favorites.add_workspace', add_workspace);
@@ -654,8 +666,11 @@ export function activate(context: vscode.ExtensionContext) {
             event.affectsConfiguration("favorites.separateWorkspaceLists")) {
 
             treeViewProvider.refresh(false);
+            setupFolderWatchers();
         }
     })
+
+    setupFolderWatchers();
 }
 
 
@@ -827,6 +842,82 @@ class Utils {
             return default_list;
         }
     }
+}
+
+// Watch the default favorites file for changes
+fs.watchFile(Utils.fav_file, { interval: 1000 }, (curr: any, prev: any) => {
+    commands.executeCommand('favorites.refresh');
+    setupFolderWatchers();
+});
+
+function setupFolderWatchers() {
+    // Clear existing watchers
+    clearFavoritesFolderWatchers();
+
+    const favItems = get_list_items();
+    if (!favItems) return;
+
+    favItems.forEach(item => {
+        let itemPath = item;
+
+        // Handle items with aliases (format: path|alias)
+        if (item.includes('|')) {
+            itemPath = item.split('|')[0];
+        }
+
+        // Expand environment variables
+        itemPath = expandenv(itemPath);
+
+        // Convert URI to local path if needed
+        try {
+            const uri = vscode.Uri.parse(itemPath);
+            itemPath = uriToLocalPath(uri);
+        } catch (error) {
+            // If parsing fails, assume it's already a local path
+        }
+
+        // Only watch directories that exist
+        if (fs.existsSync(itemPath) && fs.lstatSync(itemPath).isDirectory()) {
+            try {
+                const watcher = fs.watch(itemPath, { recursive: false }, (eventType, filename) => {
+                    if (filename) {
+                        // Debounce the refresh to avoid too many updates
+                        if (!favoritesFolderWatchers.has(itemPath + '_timeout')) {
+                            favoritesFolderWatchers.set(itemPath + '_timeout', setTimeout(() => {
+                                commands.executeCommand('favorites.refresh');
+                                favoritesFolderWatchers.delete(itemPath + '_timeout');
+                            }, 500) as any);
+                        }
+                    }
+                });
+
+                favoritesFolderWatchers.set(itemPath, watcher);
+            } catch (error) {
+                console.error(`Failed to watch folder ${itemPath}:`, error);
+            }
+        }
+    });
+}
+
+function clearFavoritesFolderWatchers() {
+    favoritesFolderWatchers.forEach((watcher, path) => {
+        if (path.endsWith('_timeout')) {
+            clearTimeout(watcher as any);
+        } else {
+            (watcher as fs.FSWatcher).close();
+        }
+    });
+    favoritesFolderWatchers.clear();
+}
+
+// Cleanup function called when extension is deactivated
+export function deactivate() {
+    clearFavoritesFolderWatchers();
+    // Clean up workspace folder watchers too
+    workspaceFolderWatchers.forEach((watcher) => {
+        watcher.close();
+    });
+    workspaceFolderWatchers.clear();
 }
 
 

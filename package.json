@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.9.1",
+    "version": "1.9.2",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -58,7 +58,7 @@
                 "favorites.separateWorkspaceLists": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Controls what items to show in the favorites list if a workspace specific favorite list found (applicable for folders/workspaces only).\n If `false` then merge normal favorites list and the workspace spescific. Othersise show only favorite items for the workspace."
+                    "description": "Controls what items to show in the favorites list if a workspace specific favorite list found (applicable for folders/workspaces only).\n If `false` then merge normal favorites list and the workspace specific. Otherwise show only favorite items for the workspace."
                 },
                 "favorites.disablePreviewWarning": {
                     "type": "boolean",
