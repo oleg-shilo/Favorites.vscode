@@ -673,7 +673,6 @@ export function activate(context: vscode.ExtensionContext) {
     setupFolderWatchers();
 }
 
-
 function GetCurrentWorkspaceFolder(): string {
     let folders = vscode.workspace.workspaceFolders;
     if (folders && folders.length > 0)
@@ -851,6 +850,15 @@ fs.watchFile(Utils.fav_file, { interval: 1000 }, (curr: any, prev: any) => {
 });
 
 function setupFolderWatchers() {
+
+    let monitorFavoriteFilderItems = vscode.workspace
+        .getConfiguration("favorites")
+        .get('monitorFavoriteFilderItems', false);
+
+    if (!monitorFavoriteFilderItems) {
+        return;
+    }
+
     // Clear existing watchers
     clearFavoritesFolderWatchers();
 

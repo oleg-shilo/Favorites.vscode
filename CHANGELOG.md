@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.3 (30 Jun, 2025)
+
+- Feature Request #61: Added  `monitorFavoriteFilderItems` setting to enable/disable the feature. It's disabled by default
+
 ## 1.9.2 (29 Jun, 2025)
 
 - Feature Request #61: Auto refresh folder item content
