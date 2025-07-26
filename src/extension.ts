@@ -851,11 +851,26 @@ fs.watchFile(Utils.fav_file, { interval: 1000 }, (curr: any, prev: any) => {
 
 function setupFolderWatchers() {
 
-    let monitorFavoriteFilderItems = vscode.workspace
+    let monitorFavoriteFolderItems_OldName = vscode.workspace
         .getConfiguration("favorites")
         .get('monitorFavoriteFilderItems', false);
 
-    if (!monitorFavoriteFilderItems) {
+    // monitorFavoriteFilderItems -> monitorFavoriteFolderItems
+    let monitorFavoriteFolderItems = vscode.workspace
+        .getConfiguration("favorites")
+        .get('monitorFavoriteFolderItems', monitorFavoriteFolderItems_OldName);
+
+    // If the old setting exists but the new one doesn't, migrate the value
+    if (monitorFavoriteFolderItems_OldName && !vscode.workspace.getConfiguration("favorites").has('monitorFavoriteFolderItems')) {
+        try {
+            vscode.workspace.getConfiguration("favorites").update('monitorFavoriteFolderItems', monitorFavoriteFolderItems_OldName, vscode.ConfigurationTarget.Global);
+            monitorFavoriteFolderItems = monitorFavoriteFolderItems_OldName;
+        } catch (error) {
+            console.error('Failed to migrate setting:', error);
+        }
+    }
+
+    if (!monitorFavoriteFolderItems) {
         return;
     }
 

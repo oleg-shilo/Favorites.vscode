@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.9.3",
+    "version": "1.9.4",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -90,7 +90,7 @@
                     "default": false,
                     "markdownDescription": "Disable opening sub-folders of a folder from the favorites list (regardless if the parent folder is already opened or not). This configuration value controls presence of the `<Open folder>` menu item in the favorites tree. Changing this setting takes effect after refreshing the favorites tree."
                 },
-                "favorites.monitorFavoriteFilderItems": {
+                "favorites.monitorFavoriteFolderItems": {
                     "type": "boolean",
                     "default": false,
                     "markdownDescription": "Monitor for the location of the folder item in the Favorites list and add/remove the items dynamically as they appear on teh file system. The setting change takes effect only after the favorites list is refreshed."

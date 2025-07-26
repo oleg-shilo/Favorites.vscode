@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.4 (26 Jul, 2025)
+
+- #61 related: Renamed config value `monitorFavoriteFilderItems` to `monitorFavoriteFolderItems`
+
 ## 1.9.3 (30 Jun, 2025)
 
 - Feature Request #61: Added  `monitorFavoriteFilderItems` setting to enable/disable the feature. It's disabled by default
