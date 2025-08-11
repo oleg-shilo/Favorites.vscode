@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.5 (12 Aug, 2025)
+
+- #62: Paths don't work with WSL
+
 ## 1.9.4 (26 Jul, 2025)
 
 - #61 related: Renamed config value `monitorFavoriteFilderItems` to `monitorFavoriteFolderItems`

@@ -98,6 +98,11 @@ function add(fileName: string) {
         // but it started from VSCode v1.93.1
         // https://github.com/oleg-shilo/Favorites.vscode/issues/49
 
+        // cases as \\wsl.localhost\Ubuntu\home\user\test.txt
+        if (fileName.startsWith('\\\\') && os.platform() == 'win32') {
+            fileName = "file:" + fileName.replace(/\\/g, '/');
+        }
+
         _add(fileName);
     }
     else {
@@ -117,6 +122,12 @@ function add(fileName: string) {
             if (!isLocalPath) {
                 document = decodeURI(vscode.window.activeTextEditor.document.uri.toString())
             }
+
+            // cases as \\wsl.localhost\Ubuntu\home\user\test.txt
+            if (document.startsWith('\\\\') && os.platform() == 'win32') {
+                document = "file:" + document.replace(/\\/g, '/');
+            }
+
             _add(document);
         }
     }
