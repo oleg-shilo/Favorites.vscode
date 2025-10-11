@@ -1,9 +1,10 @@
 # Change Log
 
-## Next
+## 1.9.6 (11 Oct, 2025)
 
 - #63: typos
 - #64: Allow quoted file names (enhancement)
+- #65: (enhancement) keep '<Default>' at top of list
 
 
 ## 1.9.5 (12 Aug, 2025)

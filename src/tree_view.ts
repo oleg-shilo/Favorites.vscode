@@ -260,14 +260,14 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     }
                 }
 
-                let item_uri = vscode.Uri.parse(item_path);
-                let item_local_path = uriToLocalPath(item_uri);
-
                 let commandValue = 'favorites.open';
                 let collapsableState = vscode.TreeItemCollapsibleState.None;
-                let rootFolder = false;;
+                let rootFolder = false;
 
                 try {
+                    let item_uri = vscode.Uri.parse(item_path);
+                    let item_local_path = uriToLocalPath(item_uri);
+
                     if (path.isAbsolute(item_local_path) && fs.lstatSync(item_local_path).isDirectory()) {
                         rootFolder = true;
                         if (showFolderFiles) {
@@ -353,7 +353,16 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
         let nodes: FavoriteItem[] = [];
 
         let items = this.aggregateLists();
-        items.sort();
+        // Sort with Default list always on top
+        items.sort((a, b) => {
+            let nameA = path.basename(a).replace(".list.txt", "");
+            let nameB = path.basename(b).replace(".list.txt", "");
+
+            if (nameA === "Default") return -1;
+            if (nameB === "Default") return 1;
+
+            return nameA.localeCompare(nameB);
+        });
 
         var short_names = [];
         items.forEach(file => {
