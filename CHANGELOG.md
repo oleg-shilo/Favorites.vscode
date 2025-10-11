@@ -1,5 +1,10 @@
 # Change Log
 
+## Next
+
+- typos #63
+
+
 ## 1.9.5 (12 Aug, 2025)
 
 - #62: Paths don't work with WSL

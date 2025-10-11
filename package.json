@@ -93,7 +93,7 @@
                 "favorites.monitorFavoriteFolderItems": {
                     "type": "boolean",
                     "default": false,
-                    "markdownDescription": "Monitor for the location of the folder item in the Favorites list and add/remove the items dynamically as they appear on teh file system. The setting change takes effect only after the favorites list is refreshed."
+                    "markdownDescription": "Monitor for the location of the folder item in the Favorites list and add/remove the items dynamically as they appear on the file system. The setting change takes effect only after the favorites list is refreshed."
                 },
                 "favorites.showListSeparator": {
                     "type": "boolean",
@@ -103,7 +103,7 @@
                 "favorites.expandListGroups": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Do not expand list groups after loading all lists in teh list selection node (root). This mode can save some real estate.\nThis si all about the initial state of the list group as you can expand collapse it as normal regardless of this configuration value."
+                    "description": "Do not expand list groups after loading all lists in the list selection node (root). This mode can save some real estate.\nThis is all about the initial state of the list group as you can expand collapse it as normal regardless of this configuration value."
                 }
             }
         },
