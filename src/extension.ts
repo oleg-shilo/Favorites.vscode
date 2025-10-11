@@ -421,7 +421,7 @@ function open_path(path: string, newWindow: boolean) {
     // `vscode.open` opens files OK but throws the exception on attempt to open folder
     // `vscode.openFolder` opens files and folders OK
     // `vscode.open` does not have option to open file in a new window `vscode.openFolder` does
-    // `vscode.openFolder` ignores the call if the folder (or workspace) is already open either in the current window or a new one
+    // `vscode.openFolder` ignores the call if the folder (or workspace) is already open either in th current window or a new one
     // workspace file needs to be opened `vscode.openFolder`
     // Amazing API :o(
 

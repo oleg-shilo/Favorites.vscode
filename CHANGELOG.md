@@ -2,7 +2,8 @@
 
 ## Next
 
-- typos #63
+- #63: typos
+- #64: Allow quoted file names (enhancement)
 
 
 ## 1.9.5 (12 Aug, 2025)

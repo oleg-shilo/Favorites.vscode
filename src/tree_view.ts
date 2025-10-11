@@ -249,7 +249,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
                 let tokens = item.split('|'); // extract a possible item alias 
                 if (tokens.length > 1) {
-                    item_path = tokens[0];
+                    item_path = tokens[0].replace(/^["']|["']$/g, ''); // Trim quotation marks from item_path
                     displayName = tokens[1];
 
                     if (item_path == "") {
