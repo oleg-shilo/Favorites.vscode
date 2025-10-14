@@ -17,6 +17,10 @@ function expandListGroups(): boolean {
     return vscode.workspace.getConfiguration("favorites").get('expandListGroups', true);
 }
 
+function trimQuotes(text: string): string {
+    return text.replace(/^["']|["']$/g, ''); // Trim quotation marks from item_path
+}
+
 function truncatePath(path: string, length?: number): string {
     let maxLength = length ?? vscode.workspace.getConfiguration("favorites").get('maxTooltipLength', 100);
 
@@ -244,12 +248,12 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
                 // console.log("> getFavoriteItems " + (i++).toString() + " " + item);
 
-                let item_path = item;
+                let item_path = trimQuotes(item);
                 let displayName = path.basename(item_path);
 
                 let tokens = item.split('|'); // extract a possible item alias 
                 if (tokens.length > 1) {
-                    item_path = tokens[0].replace(/^["']|["']$/g, ''); // Trim quotation marks from item_path
+                    item_path = trimQuotes(tokens[0]);
                     displayName = tokens[1];
 
                     if (item_path == "") {

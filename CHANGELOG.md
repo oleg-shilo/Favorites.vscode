@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.7 (15 Oct, 2025)
+
+- Fixed missed regression test failure for #64
+
 ## 1.9.6 (11 Oct, 2025)
 
 - #63: typos
