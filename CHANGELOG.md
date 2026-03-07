@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.8 (7 Mar, 2026)
+
+- #66: SSH Remote favorite issue with a remote path
+
 ## 1.9.7 (15 Oct, 2025)
 
 - Fixed missed regression test failure for #64
@@ -8,8 +12,7 @@
 
 - #63: typos
 - #64: Allow quoted file names (enhancement)
-- #65: (enhancement) keep '<Default>' at top of list
-
+- #65: (enhancement) keep `<Default>` at top of list
 
 ## 1.9.5 (12 Aug, 2025)
 

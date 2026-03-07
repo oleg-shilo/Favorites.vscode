@@ -409,7 +409,6 @@ function open(path: string) {
 function open_path(path: string, newWindow: boolean) {
 
     // vscode.window.showErrorMessage("About to open :" + path);
-
     let uri = Uri.parse(path);
 
     if (!uri.scheme || uri.scheme.length <= 1) {
@@ -467,9 +466,16 @@ function open_path(path: string, newWindow: boolean) {
                 commands.executeCommand('vscode.openFolder', uri);
         }
     }
-    else { // opening file or invalid path (let VSCode report the error)
-
+    else { 
+        // opening file or invalid path (let VSCode report the error) or opening remote path
+        
         // vscode.window.showInformationMessage("Opening: " + uri);
+
+        // if uri is a remote VSCode force opening it in a new window as `vscode.open` does not support 
+        // opening remote files and just throws an error in this case while `vscode.openFolder` opens them just fine
+        if (uri.scheme && uri.scheme != 'file') {
+            newWindow = true;
+        }
 
         if (newWindow)
             commands.executeCommand('vscode.openFolder', uri, true);
