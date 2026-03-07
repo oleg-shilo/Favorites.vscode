@@ -473,7 +473,17 @@ function open_path(path: string, newWindow: boolean) {
 
         // if uri is a remote VSCode force opening it in a new window as `vscode.open` does not support 
         // opening remote files and just throws an error in this case while `vscode.openFolder` opens them just fine
+        // ChatGPT insists that vscode.openFolder should not be used for opening both files and folders.
+        // But as of March 2026 it only works for folders. Leaving no options for opening a remote file in a new window
         if (uri.scheme && uri.scheme != 'file') {
+
+            // | Context       | URI format                              |
+            // | ------------- | --------------------------------------- |
+            // | Local file    | `file:///c:/...`                        |
+            // | WSL file      | `vscode-remote://wsl+Ubuntu/...`        |
+            // | SSH remote    | `vscode-remote://ssh-remote+host/...`   |
+            // | Dev container | `vscode-remote://dev-container+.../...` |
+
             newWindow = true;
         }
 
