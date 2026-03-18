@@ -880,9 +880,8 @@ function setupFolderWatchers() {
 
     let monitorFavoriteFolderItems_OldName = vscode.workspace
         .getConfiguration("favorites")
-        .get('monitorFavoriteFilderItems', false);
+        .get('monitorFavoriteFolderItems', false);
 
-    // monitorFavoriteFilderItems -> monitorFavoriteFolderItems
     let monitorFavoriteFolderItems = vscode.workspace
         .getConfiguration("favorites")
         .get('monitorFavoriteFolderItems', monitorFavoriteFolderItems_OldName);

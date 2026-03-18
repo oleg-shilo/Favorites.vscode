@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.9 (18 Mar, 2026)
+
+- #67: Q: Remove context menu item?
+
 ## 1.9.8 (7 Mar, 2026)
 
 - #66: SSH Remote favorite issue with a remote path

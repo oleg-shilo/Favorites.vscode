@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.9.8",
+    "version": "1.9.9",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -104,6 +104,12 @@
                     "type": "boolean",
                     "default": true,
                     "description": "Do not expand list groups after loading all lists in the list selection node (root). This mode can save some real estate.\nThis is all about the initial state of the list group as you can expand collapse it as normal regardless of this configuration value."
+                }
+                ,
+                "favorites.showContextMenu": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show the Add selected file to Favorites context menu entries in Explorer and editor menus."
                 }
             }
         },
@@ -232,22 +238,26 @@
         "menus": {
             "explorer/context": [
                 {
-                    "command": "favorites.add_file"
+                    "command": "favorites.add_file",
+                    "when": "config.favorites.showContextMenu"
                 }
             ],
             "editor/title": [
                 {
-                    "command": "favorites.add_file"
+                    "command": "favorites.add_file",
+                    "when": "config.favorites.showContextMenu"
                 }
             ],
             "editor/title/context": [
                 {
-                    "command": "favorites.add_file"
+                    "command": "favorites.add_file",
+                    "when": "config.favorites.showContextMenu"
                 }
             ],
             "editor/context": [
                 {
-                    "command": "favorites.add_file"
+                    "command": "favorites.add_file",
+                    "when": "config.favorites.showContextMenu"
                 }
             ],
             "view/title": [
