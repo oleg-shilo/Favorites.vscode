@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.10 (19 Apr, 2026)
+
+- Bump mocha dependency to 11.3.0.
+
 ## 1.9.9 (18 Mar, 2026)
 
 - #67: Q: Remove context menu item?
