@@ -1,5 +1,10 @@
 # Change Log
 
+
+## 1.9.11 (7 May, 2026)
+
+- #68: [Question] Compatible with Cursor?
+
 ## 1.9.10 (19 Apr, 2026)
 
 - Bump mocha dependency to 11.3.0.

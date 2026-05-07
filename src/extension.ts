@@ -19,6 +19,8 @@ let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 let favoritesFolderWatchers: Map<string, fs.FSWatcher> = new Map();
 // Global storage for workspace folder watchers
 let workspaceFolderWatchers: Map<string, fs.FSWatcher> = new Map();
+// Cache user dir for the current extension host process.
+let cachedUserDir: string | undefined;
 
 function get_list_items() {
     if (fs.existsSync(Utils.fav_file)) {
@@ -541,6 +543,15 @@ function associate_list_with_workspace(element: FavoriteItem, associate: boolean
 
 function get_user_dir(): string {
 
+    if (cachedUserDir) {
+        return cachedUserDir;
+    }
+
+    let cacheAndReturn = (dir: string): string => {
+        cachedUserDir = dir;
+        return dir;
+    };
+
     // ext_context.storagePath cannot be used as it is undefined if no workspace loaded
 
     // vscode:
@@ -581,7 +592,7 @@ function get_user_dir(): string {
             }
         }
 
-        return dataLocation;
+        return cacheAndReturn(dataLocation);
     }
 
 
@@ -591,15 +602,67 @@ function get_user_dir(): string {
     ///////////////////////////////////////
 
     if (isPortable) {
-        return path.join(dataRoot, 'user-data', 'User', 'globalStorage', 'favorites.user');
-    } else {
-        if (os.platform() == 'win32')
-            return path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
-        else if (os.platform() == 'darwin')
-            return path.join(process.env.HOME, 'Library', 'Application Support', 'Code', 'User', 'favorites.user');
-        else
-            return path.join(process.env.HOME, '.config', 'Code', 'User', 'favorites.user');
+        return cacheAndReturn(path.join(dataRoot, 'user-data', 'User', 'globalStorage', 'favorites.user'));
     }
+
+    // Resolve the IDE-specific data folder (e.g. Code, Code - Insiders, Cursor) from product metadata.
+    let productDataFolder = 'Code';
+    try {
+        const productJsonFile = path.join(vscode.env.appRoot, 'product.json');
+        if (fs.existsSync(productJsonFile)) {
+            const productJson = JSON.parse(fs.readFileSync(productJsonFile, 'utf8'));
+            const platform = os.platform();
+            const dataFolderName = typeof productJson?.dataFolderName === 'string' ? productJson.dataFolderName.trim() : '';
+
+            const fromDataFolderName = (name: string): string => {
+                if (!name)
+                    return '';
+
+                const normalized = name.toLowerCase();
+                const winMap: { [key: string]: string } = {
+                    '.vscode': 'Code',
+                    '.vscode-insiders': 'Code - Insiders',
+                    '.cursor': 'Cursor',
+                    '.cursor-insiders': 'Cursor - Insiders'
+                };
+
+                if (winMap[normalized])
+                    return winMap[normalized];
+
+                const cleaned = normalized.startsWith('.') ? normalized.substring(1) : normalized;
+                if (cleaned.endsWith('-insiders')) {
+                    const base = cleaned.substring(0, cleaned.length - '-insiders'.length);
+                    return base.charAt(0).toUpperCase() + base.slice(1) + ' - Insiders';
+                }
+                return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+            };
+
+            if (platform == 'win32' && dataFolderName != '') {
+                // On Windows, map data folder names (e.g. '.vscode') to roaming folder names (e.g. 'Code').
+                productDataFolder = fromDataFolderName(dataFolderName);
+            }
+            else if (platform == 'win32' && typeof productJson?.win32DirName === 'string' && productJson.win32DirName.trim() != '') {
+                // Last-resort fallback for Windows products that do not provide dataFolderName.
+                productDataFolder = productJson.win32DirName;
+            }
+            else if (platform == 'darwin' && typeof productJson?.darwinDirName === 'string' && productJson.darwinDirName.trim() != '') {
+                // Some products expose a dedicated macOS dir name.
+                productDataFolder = productJson.darwinDirName;
+            }
+            else if (dataFolderName != '') {
+                productDataFolder = dataFolderName;
+            }
+        }
+    } catch {
+        // Keep default for backwards compatibility.
+    }
+
+    if (os.platform() == 'win32') // win
+        return cacheAndReturn(path.join(process.env.APPDATA, productDataFolder, 'User', 'favorites.user'));
+    else if (os.platform() == 'darwin') // mac
+        return cacheAndReturn(path.join(process.env.HOME, 'Library', 'Application Support', productDataFolder, 'User', 'favorites.user'));
+    else // linux and others
+        return cacheAndReturn(path.join(process.env.HOME, '.config', productDataFolder, 'User', 'favorites.user'));
 }
 
 function quick_pick() {
