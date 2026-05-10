@@ -73,7 +73,7 @@
                 "favorites.dataLocation": {
                     "type": "string",
                     "default": "<default>",
-                    "markdownDescription": "Specifies the directory where the all user data is stored. Useful for portable VSCode deployment. You can use `${workspaceFolder}\\.vscode` for storing the data in the workspace folder ."
+                    "markdownDescription": "Specifies the directory where the all user data is stored. Useful for portable VSCode deployment. You can use `${workspaceFolder}\\.vscode` for storing the data in the workspace folder. Specify '&lt;default&gt;' or leave it empty if you want to switch to the default location"
                 },
                 "favorites.maxTooltipLength": {
                     "type": "number",

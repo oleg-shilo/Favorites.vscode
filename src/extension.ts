@@ -20,7 +20,7 @@ let favoritesFolderWatchers: Map<string, fs.FSWatcher> = new Map();
 // Global storage for workspace folder watchers
 let workspaceFolderWatchers: Map<string, fs.FSWatcher> = new Map();
 // Cache user dir for the current extension host process.
-let cachedUserDir: string | undefined;
+let defaultUserDir: string;
 
 function get_list_items() {
     if (fs.existsSync(Utils.fav_file)) {
@@ -468,9 +468,9 @@ function open_path(path: string, newWindow: boolean) {
                 commands.executeCommand('vscode.openFolder', uri);
         }
     }
-    else { 
+    else {
         // opening file or invalid path (let VSCode report the error) or opening remote path
-        
+
         // vscode.window.showInformationMessage("Opening: " + uri);
 
         // if uri is a remote VSCode force opening it in a new window as `vscode.open` does not support 
@@ -541,128 +541,78 @@ function associate_list_with_workspace(element: FavoriteItem, associate: boolean
     }
 }
 
-function get_user_dir(): string {
-
-    if (cachedUserDir) {
-        return cachedUserDir;
-    }
-
-    let cacheAndReturn = (dir: string): string => {
-        cachedUserDir = dir;
-        return dir;
-    };
-
-    // ext_context.storagePath cannot be used as it is undefined if no workspace loaded
-
+function InitUserDataDir(context: vscode.ExtensionContext): string {
     // vscode:
     // Windows %appdata%\Code\User\settings.json
     // Mac $HOME/Library/Application Support/Code/User/settings.json
     // Linux $HOME/.config/Code/User/settings.json
 
+    ///////////////////////////////////////
+    let dataRoot = path.join(path.dirname(process.execPath), "data");
+    let isPortable = (fs.existsSync(dataRoot) && fs.lstatSync(dataRoot).isDirectory());
+
+    if (isPortable) {
+        defaultUserDir = path.join(dataRoot, 'user-data', 'User', 'globalStorage', 'favorites.user');
+        return defaultUserDir;
+    }
+    else if (context.globalStorageUri) {        // globalStorageUri is the modern API (Uri)
+
+        // globalStorageUri points to: <user-data-dir>/globalStorage/<publisher>.<extension>
+        const globalStoragePath = context.globalStorageUri.fsPath;
+
+        defaultUserDir = path.resolve(globalStoragePath, '../../favorites.user/');   // go up 2 levels + favorites.user
+        return defaultUserDir;
+    }
+
+    throw new Error('Cannot determine user data directory');
+}
+
+function get_user_dir(): string {
+
     let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>');
 
     // example: dataLocation = '${workspaceFolder}\\.vscode';
 
-    if (dataLocation == '') {
-        dataLocation = '<default>';
-    } else {
+    if (dataLocation == '<default>') 
+        dataLocation = '';
+    
+    if (dataLocation != '') {
         dataLocation = dataLocation.replace("${execPath}", process.execPath);
 
         const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
         if (workspaceFolder != null) {// we are in the workspace
             dataLocation = dataLocation.replace("${workspaceFolder}", workspaceFolder);
         }
-        else if (dataLocation.indexOf("${workspaceFolder}") != -1) {
-            dataLocation = '<default>';
+        if (dataLocation.indexOf("${workspaceFolder}") != -1) { // we failed to replace ${workspaceFolder} (e.g. no workspace is opened). 
+            dataLocation = '';
         }
     }
 
-    if (dataLocation != '<default>' && !fs.existsSync(dataLocation)) {
-        vscode.window.showErrorMessage("Custom data directory ('" + dataLocation + "') does not exist. Falling back to the default data location.");
-        dataLocation = '<default>';
+    if (dataLocation != '') {
+        if (fs.existsSync(dataLocation) && !fs.lstatSync(dataLocation).isDirectory()) {
+            vscode.window.showErrorMessage("Custom data directory ('" + dataLocation + "') is not a directory. Falling back to the default data location.");
+            dataLocation = '';
+        }
     }
 
-    if (dataLocation != '<default>') {
-
+    if (dataLocation == '') {
+        // save defaultUserDir to the user settings now
+        vscode.workspace.getConfiguration("favorites").update('dataLocation', defaultUserDir, vscode.ConfigurationTarget.Global);
+        return defaultUserDir;
+    } else {
         try {
-            fs.mkdirSync(dataLocation);
+            if (!fs.existsSync(dataLocation))
+                fs.mkdirSync(dataLocation, { recursive: true });
+            return dataLocation;
         } catch (error) {
-            if (error.code != 'EEXIST') {
+            if (error.code == 'EEXIST') {
+                return dataLocation;
+            } else {
                 vscode.window.showErrorMessage("Custom data directory ('" + dataLocation + "') cannot be accessed/created. Falling back to the default data location.");
+                return defaultUserDir;
             }
         }
-
-        return cacheAndReturn(dataLocation);
     }
-
-
-    ///////////////////////////////////////
-    let dataRoot = path.join(path.dirname(process.execPath), "data");
-    let isPortable = (fs.existsSync(dataRoot) && fs.lstatSync(dataRoot).isDirectory());
-    ///////////////////////////////////////
-
-    if (isPortable) {
-        return cacheAndReturn(path.join(dataRoot, 'user-data', 'User', 'globalStorage', 'favorites.user'));
-    }
-
-    // Resolve the IDE-specific data folder (e.g. Code, Code - Insiders, Cursor) from product metadata.
-    let productDataFolder = 'Code';
-    try {
-        const productJsonFile = path.join(vscode.env.appRoot, 'product.json');
-        if (fs.existsSync(productJsonFile)) {
-            const productJson = JSON.parse(fs.readFileSync(productJsonFile, 'utf8'));
-            const platform = os.platform();
-            const dataFolderName = typeof productJson?.dataFolderName === 'string' ? productJson.dataFolderName.trim() : '';
-
-            const fromDataFolderName = (name: string): string => {
-                if (!name)
-                    return '';
-
-                const normalized = name.toLowerCase();
-                const winMap: { [key: string]: string } = {
-                    '.vscode': 'Code',
-                    '.vscode-insiders': 'Code - Insiders',
-                    '.cursor': 'Cursor',
-                    '.cursor-insiders': 'Cursor - Insiders'
-                };
-
-                if (winMap[normalized])
-                    return winMap[normalized];
-
-                const cleaned = normalized.startsWith('.') ? normalized.substring(1) : normalized;
-                if (cleaned.endsWith('-insiders')) {
-                    const base = cleaned.substring(0, cleaned.length - '-insiders'.length);
-                    return base.charAt(0).toUpperCase() + base.slice(1) + ' - Insiders';
-                }
-                return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
-            };
-
-            if (platform == 'win32' && dataFolderName != '') {
-                // On Windows, map data folder names (e.g. '.vscode') to roaming folder names (e.g. 'Code').
-                productDataFolder = fromDataFolderName(dataFolderName);
-            }
-            else if (platform == 'win32' && typeof productJson?.win32DirName === 'string' && productJson.win32DirName.trim() != '') {
-                // Last-resort fallback for Windows products that do not provide dataFolderName.
-                productDataFolder = productJson.win32DirName;
-            }
-            else if (platform == 'darwin' && typeof productJson?.darwinDirName === 'string' && productJson.darwinDirName.trim() != '') {
-                // Some products expose a dedicated macOS dir name.
-                productDataFolder = productJson.darwinDirName;
-            }
-            else if (dataFolderName != '') {
-                productDataFolder = dataFolderName;
-            }
-        }
-    } catch {
-        // Keep default for backwards compatibility.
-    }
-
-    if (os.platform() == 'win32') // win
-        return cacheAndReturn(path.join(process.env.APPDATA, productDataFolder, 'User', 'favorites.user'));
-    else if (os.platform() == 'darwin') // mac
-        return cacheAndReturn(path.join(process.env.HOME, 'Library', 'Application Support', productDataFolder, 'User', 'favorites.user'));
-    else // linux and others
-        return cacheAndReturn(path.join(process.env.HOME, '.config', productDataFolder, 'User', 'favorites.user'));
 }
 
 function quick_pick() {
@@ -711,6 +661,14 @@ function quick_pick() {
 }
 
 export function activate(context: vscode.ExtensionContext) {
+
+    InitUserDataDir(context);
+
+    // Watch the default favorites file for changes
+    fs.watchFile(Utils.fav_file, { interval: 1000 }, (curr: any, prev: any) => {
+        commands.executeCommand('favorites.refresh');
+        setupFolderWatchers();
+    });
 
     FavoritesTreeProvider.user_dir = get_user_dir();
 
@@ -770,6 +728,7 @@ function GetCurrentWorkspaceFolder(): string {
     else
         return null;
 }
+
 class Utils {
     private static _fav_file: string = null;
     static user_dir: string;
@@ -932,12 +891,6 @@ class Utils {
         }
     }
 }
-
-// Watch the default favorites file for changes
-fs.watchFile(Utils.fav_file, { interval: 1000 }, (curr: any, prev: any) => {
-    commands.executeCommand('favorites.refresh');
-    setupFolderWatchers();
-});
 
 function setupFolderWatchers() {
 
