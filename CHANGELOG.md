@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.9.12 (10 May, 2026)
+
+- #68: [Question] Compatible with Cursor? (v2)
+  Improved the reliability of the default user data location discovery.
+  The default data location is set to the default location to be displayed in the settings window.  
 
 ## 1.9.11 (7 May, 2026)
 
