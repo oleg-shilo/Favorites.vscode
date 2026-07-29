@@ -3,7 +3,9 @@
 
 Manage and quickly access frequently used files, folders and favorites' lists.
 
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.cs-script.net/cs-script/Donation.html)
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.cs-script.net/cs-script/Donation.html)   <br>    Visual Studio Marketplace: [Favorites Manager](https://marketplace.visualstudio.com/items?itemName=oleg-shilo.favorites) 
+
+--- 
 
 ## Overview
 
@@ -35,6 +37,23 @@ The functionality is self explanatory and includes following features:
 
 ![image](https://raw.githubusercontent.com/oleg-shilo/Favorites.vscode/master/resources/images/codemap.lists.gif)
 
+### _Using extension_
+
+Using the extension is stright forward. Just click the item in the Favourites list tree and the corresponding document will be opened in the current window.
+If you are dealing with the item that represents a folder then you can also click a command item to open the  folder in VSCode _as a folder_. This command item has an int=uiotive appearance:
+  
+![image](https://github.com/user-attachments/assets/2ae86a05-9f3d-4c4c-831b-7a20795cd9a1)
+
+If you are a "keyboard person" and prefer to open the documents from the Favorites list by using keystrokes only, then you can use VSCode QuickPick feature that is fully integrated with the extension:
+
+`Ctrl+Shift+P`
+
+![image](https://github.com/user-attachments/assets/daf86b50-c9bc-4aac-8cab-ffbf9d3294e2)
+
+Then select the item from the list that is a complete equivalent of the normal Favorites tree view and press `Enter`:
+
+![image](https://github.com/user-attachments/assets/9c7b8cd7-abfe-4fb3-9f4c-1c5499c14b18)
+
 ## List definition rules
 
 The item definition (in "&lt;name&gt;.list.txt") may contain environment variables, which  are extended at runtime into a full path:
@@ -54,19 +73,34 @@ And you can also use non-path text as an items' separator (e.g. `"|-- Folders --
 The extension also allows showing Favorite folder item content.
 This feature is not a substitution of the Workspace explorer view, which does by far superior job. It's just a convenience measure for a quick access of the top level folder files. The feature can be enabled/disabled with `favorites.showFolderFiles` setting.
 
-You can group some lists that somewhat logically related. The groping is based on the naming convention: `[group_name.]<list_name>.list.txt`
+You can group some lists that are somewhat logically related. The groping is based on the naming convention: `[group_name.]<list_name>.list.txt`
 
 ![](resources/images/favorites_grouping.png)
 
-There is another type of customization that helps managing excessive amount lists. Thus some lists can be workspace/folder specific. Meaning that if you have a workspace/folder is opened and some of the configured lists are marked as folder specific (associated with teh folder) then only these lits will be shown in the lists tree.
+There is another type of customization that helps manage excessive amount lists. Thus some lists can be workspace/folder specific. This means that if you have a workspace/folder opened and some of the configured lists are marked as folder specific (associated with the folder) then only these lists will be shown in the lists tree.
 
 You can associate or disassociate a list by selecting the list selecting the desired action from the context (right-click) menu.
 
 ![](resources/images/folder_specific.png)
 
+### _Data Location_
+
+The default location of all Favorite lists folder depends on the host operating system:
+
+* **Windows:** %appdata%\Code\User\favorites.user
+* **Mac:** $HOME/Library/Application Support/Code/User/favorites.user
+* **Linux:** $HOME/.config/Code/User/favorites.user
+
+If for whatever reason you want to manage your lists in custom location then you can achieve it by seting Favorites `favorites.dataLocation` configuration value to your preferred folder path.
+
+This feature represents an interesting opportunity when you can spscify the location for the lists based on the workspace folder. Thus if you set the configuration to `${workspaceFolder}\.vscode` then all your lists will be managed from the workspace-specific folder `.vscode` if VSCode has workspace/folder opened. Otherwise the lists will be managed from the default location.
+
 ### _Experimental features_
 
-From v1.5.3 you can use workspace local list `local.list.txt` in the workspace folder `<workspace>\.fav\`. This list can only be added, removed and edited manually.
+From v1.5.3 you can use a workspace local list specific for the workspace location. There are two possible locations and file names for this type of list:
+ - `<workspace>/.fav/local.list.txt`
+ - `<workspace>/.vscode/fav.local.list.txt` 
+This list can only be added, removed and edited manually.
 
 This list can contain both absolute and relative paths. All relative paths are resolved at runtime against the workspace folder.
 The simplest content of the `<workspace>\.fav\local.list.txt`:
@@ -74,8 +108,6 @@ The simplest content of the `<workspace>\.fav\local.list.txt`:
 ```txt 
 .\.fav\local.list.txt 
 ```
-
-
 
 ## Limitations
 
@@ -88,4 +120,4 @@ The simplest content of the `<workspace>\.fav\local.list.txt`:
 * By default VSCode opens any file clicked from the  _Favorites_ list in the so called "preview mode". Thus the document tabs are reused and every new file is opened in the same tab. If you prefer to open a clicked _Favorites_ document in a new tab then you need to disable document the previewMode is the settings:
   1. Use _Command Palette_ to open your settings file ("Preferences: Open User Settings")
   2. Add the "workbench.editor.enablePreview" property, and set it's value to _false_.
-  3. Use "favorites.singleListMode" to disable support for multiple lists and hide the `<Default>` tree view item as well as the whole list selection UI elements.
+* Use "favorites.singleListMode" to disable support for multiple lists and hide the `<Default>` tree view item as well as the whole list selection UI elements.

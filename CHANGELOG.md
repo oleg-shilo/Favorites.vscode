@@ -1,11 +1,119 @@
 # Change Log
 
+## 1.9.12 (10 May, 2026)
+
+- #68: [Question] Compatible with Cursor? (v2)
+  Improved the reliability of the default user data location discovery.
+  The default data location is set to the default location to be displayed in the settings window.  
+
+## 1.9.11 (7 May, 2026)
+
+- #68: [Question] Compatible with Cursor?
+
+## 1.9.10 (19 Apr, 2026)
+
+- Bump mocha dependency to 11.3.0.
+
+## 1.9.9 (18 Mar, 2026)
+
+- #67: Q: Remove context menu item?
+
+## 1.9.8 (7 Mar, 2026)
+
+- #66: SSH Remote favorite issue with a remote path
+
+## 1.9.7 (15 Oct, 2025)
+
+- Fixed missed regression test failure for #64
+
+## 1.9.6 (11 Oct, 2025)
+
+- #63: typos
+- #64: Allow quoted file names (enhancement)
+- #65: (enhancement) keep `<Default>` at top of list
+
+## 1.9.5 (12 Aug, 2025)
+
+- #62: Paths don't work with WSL
+
+## 1.9.4 (26 Jul, 2025)
+
+- #61 related: Renamed config value `monitorFavoriteFilderItems` to `monitorFavoriteFolderItems`
+
+## 1.9.3 (30 Jun, 2025)
+
+- Feature Request #61: Added  `monitorFavoriteFilderItems` setting to enable/disable the feature. It's disabled by default
+
+## 1.9.2 (29 Jun, 2025)
+
+- Feature Request #61: Auto refresh folder item content
+
+## 1.9.1 (5 May, 2025)
+
+- #60: Editing an existing alias of an item has no effect
+
+## 1.9.0 (4 April, 2025)
+
+- #58: Is it possible to only show the favorites for the active/open repository?
+  The new setting `favorites.separateWorkspaceLists` now controls the separation of workspace lists from the default favitems
+
+## 1.8.1 (1 March, 2025)
+
+- #56: Command '' Not Found
+
+## 1.8.0 (25 February, 2025)
+
+- #55: Local workspace data location
+  IE you can specify `${workspaceFolder}\.vscode` for to use default favorites list in the workspace specific folder.
+
+## 1.7.0 (8 February, 2025)
+
+- #54 (enhancements)
+  - Added `Copy path to clipboard` for selected item.
+  - Added `Open extension GitHub page`
+
+## 1.6.9 (25 January, 2025)
+
+- Issue #50:
+  - fixed problem with accidental test code in the release codebase
+   
+## 1.6.8 (23 January, 2025)
+
+- Issue #50:
+  - fixed problem with handling fav-list having empty lines
+  - added keeping raw envars in the QuickPick items display text
+
+## 1.6.7 (18 January, 2025)
+
+- Issue #50:
+  - Removed `FileExists` filter for files in QuickPick list.
+  - Added extending envars for files in QuickPick list.cls
+
+## 1.6.6 (26 December, 2024)
+
+- #52: 'Favorites: Favorites' in Explorer Panel  
+   Fix in package.json: intentionally left empty to `name` avoid the double title in the view `<extension_name>:<view.name>`
+
+## 1.6.5 (24 December, 2024)
+
+- #51: Rename tab name from Explorer to Favorites
+- Removed FavoritesOwnView feature. It's no longer needed since VSCode nt supports natively attaching the views to any view container.
+
+## 1.6.4 (23 December, 2024)
+
+- Improvements triggered by #50: 'Add favorite files to "Go to File…" palette'
+  - Added `Favorites: Quick pick` command
+  - Added user prompt if detected that VSCode have preview mode enabled which impacts the UX of opening the files from the favorites list. The prompt has option to fix the incompatible setting.
+
+## 1.6.3 (15 September, 2024)
+
+- Issue #49: Version 1.6.0 adds the [object Object] instead of the filename
+
 ## 1.6.0 (19 March, 2024)
 
 - Added context menu "Add selected file to Favorites" to the active document and its tab.
-- Improved error message on adding document being opened by the custom editor 
+- Improved error message on adding document being opened by the custom editor
 - Issue #46: Unable to bookmark pdf or epub files
-
 
 ## 1.5.18 (15 October, 2023)
 
@@ -141,6 +249,7 @@ The simplest content of the `<workspace>\.fav\local.list.txt`:
 - Improved error handling of the pseudo-documents (e.g. PDF or GIF viewer).
 
 ## 1.2.0
+
 
 - Implemented full support for multiple Favorites' lists.
 

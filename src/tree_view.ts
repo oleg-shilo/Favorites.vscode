@@ -16,6 +16,11 @@ export function uriToLocalPath(uri: Uri): string {
 function expandListGroups(): boolean {
     return vscode.workspace.getConfiguration("favorites").get('expandListGroups', true);
 }
+
+function trimQuotes(text: string): string {
+    return text.replace(/^["']|["']$/g, ''); // Trim quotation marks from item_path
+}
+
 function truncatePath(path: string, length?: number): string {
     let maxLength = length ?? vscode.workspace.getConfiguration("favorites").get('maxTooltipLength', 100);
 
@@ -243,12 +248,12 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
                 // console.log("> getFavoriteItems " + (i++).toString() + " " + item);
 
-                let item_path = item;
+                let item_path = trimQuotes(item);
                 let displayName = path.basename(item_path);
 
                 let tokens = item.split('|'); // extract a possible item alias 
                 if (tokens.length > 1) {
-                    item_path = tokens[0];
+                    item_path = trimQuotes(tokens[0]);
                     displayName = tokens[1];
 
                     if (item_path == "") {
@@ -259,19 +264,19 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     }
                 }
 
-                let item_uri = vscode.Uri.parse(item_path);
-                let item_local_path = uriToLocalPath(item_uri);
-
                 let commandValue = 'favorites.open';
                 let collapsableState = vscode.TreeItemCollapsibleState.None;
-                let rootFolder = false;;
+                let rootFolder = false;
 
                 try {
+                    let item_uri = vscode.Uri.parse(item_path);
+                    let item_local_path = uriToLocalPath(item_uri);
+
                     if (path.isAbsolute(item_local_path) && fs.lstatSync(item_local_path).isDirectory()) {
                         rootFolder = true;
                         if (showFolderFiles) {
                             collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
-                            commandValue = '';
+                            commandValue = "favorites.nullCommand";
                         }
                     }
                 } catch (error) {
@@ -292,8 +297,9 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 );
 
                 node.tooltip = truncatePath(item_path);
-                node.resourceUri = vscode.Uri.parse(item_path);
-                node.iconPath = null;
+
+                node.resourceUri = vscode.Uri.parse(item_path); // the icon is not shown without this line
+
 
                 nodes.push(node);
             }
@@ -335,11 +341,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
             if (fs.existsSync(file)) {
                 node.resourceUri = vscode.Uri.parse(file);
-
-                // iconPath = new vscode.ThemeIcon("file"); // zos
             }
-
-            // node.iconPath = iconPath;
 
             node.contextValue = "list";
             nodes.push(node);
@@ -355,7 +357,16 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
         let nodes: FavoriteItem[] = [];
 
         let items = this.aggregateLists();
-        items.sort();
+        // Sort with Default list always on top
+        items.sort((a, b) => {
+            let nameA = path.basename(a).replace(".list.txt", "");
+            let nameB = path.basename(b).replace(".list.txt", "");
+
+            if (nameA === "Default") return -1;
+            if (nameB === "Default") return 1;
+
+            return nameA.localeCompare(nameB);
+        });
 
         var short_names = [];
         items.forEach(file => {

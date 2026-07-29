@@ -15,16 +15,26 @@ export let default_list_file_name = 'Default.list.txt';
 
 let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 
+// Global storage for favorites folder watchers
+let favoritesFolderWatchers: Map<string, fs.FSWatcher> = new Map();
+// Global storage for workspace folder watchers
+let workspaceFolderWatchers: Map<string, fs.FSWatcher> = new Map();
+// Cache user dir for the current extension host process.
+let defaultUserDir: string;
+
 function get_list_items() {
     if (fs.existsSync(Utils.fav_file)) {
-        let defaultItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
+        let favItems = Utils.read_all_lines(Utils.fav_file).filter(x => x != '' && !x.startsWith("#")).map(x => expandenv(x));
 
         let localDir = GetCurrentWorkspaceFolder();
         if (localDir) {
 
+            let workspaceItems = [];
+            let separateWorkspaceLists = vscode.workspace.getConfiguration("favorites").get('separateWorkspaceLists', false);
+
             function read_list(file: string) {
                 if (fs.existsSync(file) && fs.lstatSync(file).isFile()) {
-                    var localListItems = Utils
+                    let localListItems = Utils
                         .read_all_lines(file)
                         .filter(x => x != '' && !x.startsWith("#"))
                         .map(x => expandenv(x))
@@ -34,16 +44,23 @@ function get_list_items() {
                             else
                                 return path.join(localDir, x);
                         });
-
-                    defaultItems = defaultItems.concat(localListItems);
+                    if (localListItems.length > 0)
+                        workspaceItems = workspaceItems.concat(localListItems);
                 }
             }
 
             read_list(path.join(localDir, ".fav", "local.list.txt"));
             read_list(path.join(localDir, ".vscode", "fav.local.list.txt"));
+
+            if (workspaceItems.length > 0) {
+                if (separateWorkspaceLists)
+                    favItems = workspaceItems;
+                else
+                    favItems = favItems.concat(workspaceItems);
+            }
         }
 
-        return defaultItems;
+        return favItems;
     }
     else {
         vscode.window.showErrorMessage(`The list ${path.basename(Utils.fav_file)} is not found. Loading the default Favorites list instead.`);
@@ -70,11 +87,24 @@ function alt_cmd(element: FavoriteItem) {
 }
 
 function add_file(fileUri: vscode.Uri, list: any[]) {
-    add(fileUri.fsPath);
+    add(fileUri?.fsPath);
 }
 
 function add(fileName: string) {
-    if (fileName) {
+
+    let obj: any = fileName;
+    if (obj && (obj instanceof String || typeof obj === 'string')) {
+
+        // There are the reports that sometimes `fileName` is FavoriteItem but it is not clear how it can happen 
+        // (maybe it has something to do with the focus management)
+        // but it started from VSCode v1.93.1
+        // https://github.com/oleg-shilo/Favorites.vscode/issues/49
+
+        // cases as \\wsl.localhost\Ubuntu\home\user\test.txt
+        if (fileName.startsWith('\\\\') && os.platform() == 'win32') {
+            fileName = "file:" + fileName.replace(/\\/g, '/');
+        }
+
         _add(fileName);
     }
     else {
@@ -90,10 +120,16 @@ function add(fileName: string) {
             if (vscode.window.activeTextEditor?.document) {
                 isLocalPath = fs.existsSync(uriToLocalPath(vscode.window.activeTextEditor?.document?.uri));
             }
-            // if (vscode.window.activeTextEditor?.document?.uri?.scheme != undefined ||    
+
             if (!isLocalPath) {
                 document = decodeURI(vscode.window.activeTextEditor.document.uri.toString())
             }
+
+            // cases as \\wsl.localhost\Ubuntu\home\user\test.txt
+            if (document.startsWith('\\\\') && os.platform() == 'win32') {
+                document = "file:" + document.replace(/\\/g, '/');
+            }
+
             _add(document);
         }
     }
@@ -113,6 +149,15 @@ function _add(document: string) {
 
         commands.executeCommand('favorites.refresh');
     }
+}
+
+function copy_path(element: FavoriteItem) {
+
+    let lines = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
+
+    let itemPath = element.context;
+    vscode.env.clipboard.writeText(itemPath);
+    // vscode.window.showInformationMessage("Copied to clipboard!");
 }
 
 function up(element: FavoriteItem) {
@@ -250,6 +295,10 @@ function remove_list(element: FavoriteItem) {
     }
 }
 
+function open_extension_homepage(element: FavoriteItem) {
+    vscode.env.openExternal(vscode.Uri.parse("https://github.com/oleg-shilo/Favorites.vscode"));
+}
+
 function open_all_files(element: FavoriteItem) {
 
     try {
@@ -314,19 +363,54 @@ function edit() {
 function load(list: string) {
     Utils.setCurrentFavFile(list);
     commands.executeCommand('favorites.refresh');
+    setupFolderWatchers();
 }
 function clickOnGroup() {
     vscode.window.showInformationMessage("Expand the node before selecting the list.");
 }
 
 function open(path: string) {
+    // VSCode opens documents clicked in the Favorites tree in the preview mode if 
+    // workbench.editor.enablePreview enabled (VSCode default)
+    // interestingly enough opening documents from QuickPick does not have this issue
+
+    const configuration = vscode.workspace.getConfiguration();
+
+    let previewEnabled = vscode.workspace.getConfiguration("workbench").get('editor.enablePreview', true);
+    let disableWarning = vscode.workspace.getConfiguration("favorites").get('disablePreviewWarning', false);
+
+
+    let disablePreview = "Disable 'enablePreview' setting";
+    let doNotShowAgain = "Do not show this warning again";
+
+    let saveSetting = (name, value) => {
+        try {
+            configuration.update(name, value, vscode.ConfigurationTarget.Global); // Save to global settings
+        } catch (error) {
+            vscode.window.showErrorMessage(`Failed to update setting: ${error.message}`);
+        }
+    };
+
+    if (previewEnabled && !disableWarning) {
+        vscode.window.showWarningMessage(
+            `VSCode opens Favorites documents in the 'preview mode'. If you want to open Favorites files normally then you need to disable the 'workbench.editor.enablePreview' setting.
+            Read more: https://github.com/oleg-shilo/Favorites.vscode?tab=readme-ov-file#hintstips`,
+            disablePreview, doNotShowAgain)
+            .then((selection) => {
+                if (selection === doNotShowAgain) {
+                    saveSetting('favorites.disablePreviewWarning', true);
+
+                } else if (selection === disablePreview) {
+                    saveSetting('workbench.editor.enablePreview', false);
+                }
+            });
+    }
     open_path(path, false);
 }
 
 function open_path(path: string, newWindow: boolean) {
 
     // vscode.window.showErrorMessage("About to open :" + path);
-
     let uri = Uri.parse(path);
 
     if (!uri.scheme || uri.scheme.length <= 1) {
@@ -338,7 +422,7 @@ function open_path(path: string, newWindow: boolean) {
     // `vscode.open` opens files OK but throws the exception on attempt to open folder
     // `vscode.openFolder` opens files and folders OK
     // `vscode.open` does not have option to open file in a new window `vscode.openFolder` does
-    // `vscode.openFolder` ignores the call if the folder (or workspace) is already open either in teh current window or a new one
+    // `vscode.openFolder` ignores the call if the folder (or workspace) is already open either in th current window or a new one
     // workspace file needs to be opened `vscode.openFolder`
     // Amazing API :o(
 
@@ -384,9 +468,26 @@ function open_path(path: string, newWindow: boolean) {
                 commands.executeCommand('vscode.openFolder', uri);
         }
     }
-    else { // opening file or invalid path (let VSCode report the error)
+    else {
+        // opening file or invalid path (let VSCode report the error) or opening remote path
 
         // vscode.window.showInformationMessage("Opening: " + uri);
+
+        // if uri is a remote VSCode force opening it in a new window as `vscode.open` does not support 
+        // opening remote files and just throws an error in this case while `vscode.openFolder` opens them just fine
+        // ChatGPT insists that vscode.openFolder should not be used for opening both files and folders.
+        // But as of March 2026 it only works for folders. Leaving no options for opening a remote file in a new window
+        if (uri.scheme && uri.scheme != 'file') {
+
+            // | Context       | URI format                              |
+            // | ------------- | --------------------------------------- |
+            // | Local file    | `file:///c:/...`                        |
+            // | WSL file      | `vscode-remote://wsl+Ubuntu/...`        |
+            // | SSH remote    | `vscode-remote://ssh-remote+host/...`   |
+            // | Dev container | `vscode-remote://dev-container+.../...` |
+
+            newWindow = true;
+        }
 
         if (newWindow)
             commands.executeCommand('vscode.openFolder', uri, true);
@@ -440,62 +541,139 @@ function associate_list_with_workspace(element: FavoriteItem, associate: boolean
     }
 }
 
-function get_user_dir(): string {
-
-    // ext_context.storagePath cannot be used as it is undefined if no workspace loaded
-
+function InitUserDataDir(context: vscode.ExtensionContext): string {
     // vscode:
     // Windows %appdata%\Code\User\settings.json
     // Mac $HOME/Library/Application Support/Code/User/settings.json
     // Linux $HOME/.config/Code/User/settings.json
 
-    let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>');
-
-    if (dataLocation == '')
-        dataLocation = '<default>';
-    else
-        dataLocation = dataLocation.replace("${execPath}", process.execPath);
-
-
-    if (dataLocation != '<default>') {
-
-        try {
-            fs.mkdirSync(dataLocation);
-        } catch (error) {
-            if (error.code != 'EEXIST') {
-                vscode.window.showErrorMessage("Custom data directory ('" + dataLocation + "') cannot be accessed/created. Falling back to the default data location.");
-            }
-        }
-
-        return dataLocation;
-    }
-
-
     ///////////////////////////////////////
     let dataRoot = path.join(path.dirname(process.execPath), "data");
     let isPortable = (fs.existsSync(dataRoot) && fs.lstatSync(dataRoot).isDirectory());
-    ///////////////////////////////////////
 
     if (isPortable) {
-        return path.join(dataRoot, 'user-data', 'User', 'globalStorage', 'favorites.user');
+        defaultUserDir = path.join(dataRoot, 'user-data', 'User', 'globalStorage', 'favorites.user');
+        return defaultUserDir;
+    }
+    else if (context.globalStorageUri) {        // globalStorageUri is the modern API (Uri)
+
+        // globalStorageUri points to: <user-data-dir>/globalStorage/<publisher>.<extension>
+        const globalStoragePath = context.globalStorageUri.fsPath;
+
+        defaultUserDir = path.resolve(globalStoragePath, '../../favorites.user/');   // go up 2 levels + favorites.user
+        return defaultUserDir;
+    }
+
+    throw new Error('Cannot determine user data directory');
+}
+
+function get_user_dir(): string {
+
+    let dataLocation = vscode.workspace.getConfiguration("favorites").get('dataLocation', '<default>');
+
+    // example: dataLocation = '${workspaceFolder}\\.vscode';
+
+    if (dataLocation == '<default>') 
+        dataLocation = '';
+    
+    if (dataLocation != '') {
+        dataLocation = dataLocation.replace("${execPath}", process.execPath);
+
+        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+        if (workspaceFolder != null) {// we are in the workspace
+            dataLocation = dataLocation.replace("${workspaceFolder}", workspaceFolder);
+        }
+        if (dataLocation.indexOf("${workspaceFolder}") != -1) { // we failed to replace ${workspaceFolder} (e.g. no workspace is opened). 
+            dataLocation = '';
+        }
+    }
+
+    if (dataLocation != '') {
+        if (fs.existsSync(dataLocation) && !fs.lstatSync(dataLocation).isDirectory()) {
+            vscode.window.showErrorMessage("Custom data directory ('" + dataLocation + "') is not a directory. Falling back to the default data location.");
+            dataLocation = '';
+        }
+    }
+
+    if (dataLocation == '') {
+        // save defaultUserDir to the user settings now
+        vscode.workspace.getConfiguration("favorites").update('dataLocation', defaultUserDir, vscode.ConfigurationTarget.Global);
+        return defaultUserDir;
     } else {
-        if (os.platform() == 'win32')
-            return path.join(process.env.APPDATA, 'Code', 'User', 'favorites.user');
-        else if (os.platform() == 'darwin')
-            return path.join(process.env.HOME, 'Library', 'Application Support', 'Code', 'User', 'favorites.user');
-        else
-            return path.join(process.env.HOME, '.config', 'Code', 'User', 'favorites.user');
+        try {
+            if (!fs.existsSync(dataLocation))
+                fs.mkdirSync(dataLocation, { recursive: true });
+            return dataLocation;
+        } catch (error) {
+            if (error.code == 'EEXIST') {
+                return dataLocation;
+            } else {
+                vscode.window.showErrorMessage("Custom data directory ('" + dataLocation + "') cannot be accessed/created. Falling back to the default data location.");
+                return defaultUserDir;
+            }
+        }
     }
 }
 
+function quick_pick() {
+
+    let map = new Map();
+    try {
+        let lines: string[] = Utils
+            .read_all_lines(Utils.fav_file)
+            .filter(x => x != '');
+
+        lines.forEach(fileSpec => {
+            let specParts = fileSpec.split('|');
+            let file = specParts[0];
+            let alias = specParts.length > 1 ? specParts[1] : file;
+
+
+            // unfortunately showQuickPick does not support icons, so we need to use markdown
+            // https://code.visualstudio.com/api/references/icons-in-labels
+            let icon = "$(symbol-file) ";
+
+            if (!fs.existsSync(file)) {
+                if (file.startsWith("vscode-"))
+                    icon = "$(remote) "; // we cannot know if it exists for sure
+                else
+                    icon = "$(warning) ";
+            }
+            else if (fs.existsSync(file) && !Utils.is_file(file)) {
+                icon = "$(chevron-right) ";
+                // icon = "$(symbol-folder) ";
+            }
+
+
+            let key = alias;
+            if (key.length > 55)
+                key = key.substring(0, 20) + "..." + key.substring(file.length - 30);
+
+            map.set(icon + key, () => open(expandenv(file)));
+        });
+    } catch (error) {
+
+    }
+
+    vscode.window
+        .showQuickPick(Array.from(map.keys()))
+        .then(selectedItem => map.get(selectedItem)());
+}
+
 export function activate(context: vscode.ExtensionContext) {
+
+    InitUserDataDir(context);
+
+    // Watch the default favorites file for changes
+    fs.watchFile(Utils.fav_file, { interval: 1000 }, (curr: any, prev: any) => {
+        commands.executeCommand('favorites.refresh');
+        setupFolderWatchers();
+    });
 
     FavoritesTreeProvider.user_dir = get_user_dir();
 
     const treeViewProvider = new FavoritesTreeProvider(get_list_items, get_favorites_lists, get_current_list_name);
 
-
-    vscode.window.registerTreeDataProvider("favorites-own-view", treeViewProvider);
     vscode.window.registerTreeDataProvider("favorites-explorer-view", treeViewProvider);
 
     vscode.commands.registerCommand('favorites.open_new_window', open_in_new_window);
@@ -503,9 +681,16 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.load', load);
     vscode.commands.registerCommand('favorites.clickOnGroup', clickOnGroup);
     vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);
+    vscode.commands.registerCommand("favorites.quick_pick", quick_pick);
     vscode.commands.registerCommand('favorites.new_list', new_list);
-    vscode.commands.registerCommand('favorites.refresh', () => treeViewProvider.refresh(false));
-    vscode.commands.registerCommand('favorites.refresh_all', () => treeViewProvider.refresh(true));
+    vscode.commands.registerCommand('favorites.refresh', () => {
+        treeViewProvider.refresh(false);
+        setupFolderWatchers();
+    });
+    vscode.commands.registerCommand('favorites.refresh_all', () => {
+        treeViewProvider.refresh(true);
+        setupFolderWatchers();
+    });
     vscode.commands.registerCommand('favorites.edit', edit);
     vscode.commands.registerCommand('favorites.edit_list', edit_list);
     vscode.commands.registerCommand('favorites.add_workspace', add_workspace);
@@ -518,16 +703,23 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.associate_list_with_workspace', e => associate_list_with_workspace(e, true));
     vscode.commands.registerCommand('favorites.disassociate_list_from_workspace', e => associate_list_with_workspace(e, false));
     vscode.commands.registerCommand('favorites.open_all_files', open_all_files);
+    vscode.commands.registerCommand('favorites.open_extension_homepage', open_extension_homepage);
+    vscode.commands.registerCommand('favorites.copy_path', copy_path);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
+    vscode.commands.registerCommand('favorites.nullCommand', e => { });
 
     vscode.workspace.onDidChangeConfiguration(event => {
-        if (event.affectsConfiguration("favorites.singleListMode")) {
+        if (event.affectsConfiguration("favorites.singleListMode") ||
+            event.affectsConfiguration("favorites.separateWorkspaceLists")) {
+
             treeViewProvider.refresh(false);
+            setupFolderWatchers();
         }
     })
-}
 
+    setupFolderWatchers();
+}
 
 function GetCurrentWorkspaceFolder(): string {
     let folders = vscode.workspace.workspaceFolders;
@@ -536,6 +728,7 @@ function GetCurrentWorkspaceFolder(): string {
     else
         return null;
 }
+
 class Utils {
     private static _fav_file: string = null;
     static user_dir: string;
@@ -659,7 +852,7 @@ class Utils {
             fs.unwatchFile(file, (curr: any, prev: any) =>
                 commands.executeCommand('favorites.refresh'));
 
-        fs.watchFile(file, (curr: any, prev: any) =>
+        fs.watchFile(file, { interval: 1000 }, (curr: any, prev: any) =>
             commands.executeCommand('favorites.refresh'));
 
         Utils._fav_file = file;
@@ -697,6 +890,99 @@ class Utils {
             return default_list;
         }
     }
+}
+
+function setupFolderWatchers() {
+
+    let monitorFavoriteFolderItems_OldName = vscode.workspace
+        .getConfiguration("favorites")
+        .get('monitorFavoriteFolderItems', false);
+
+    let monitorFavoriteFolderItems = vscode.workspace
+        .getConfiguration("favorites")
+        .get('monitorFavoriteFolderItems', monitorFavoriteFolderItems_OldName);
+
+    // If the old setting exists but the new one doesn't, migrate the value
+    if (monitorFavoriteFolderItems_OldName && !vscode.workspace.getConfiguration("favorites").has('monitorFavoriteFolderItems')) {
+        try {
+            vscode.workspace.getConfiguration("favorites").update('monitorFavoriteFolderItems', monitorFavoriteFolderItems_OldName, vscode.ConfigurationTarget.Global);
+            monitorFavoriteFolderItems = monitorFavoriteFolderItems_OldName;
+        } catch (error) {
+            console.error('Failed to migrate setting:', error);
+        }
+    }
+
+    if (!monitorFavoriteFolderItems) {
+        return;
+    }
+
+    // Clear existing watchers
+    clearFavoritesFolderWatchers();
+
+    const favItems = get_list_items();
+    if (!favItems) return;
+
+    favItems.forEach(item => {
+        let itemPath = item;
+
+        // Handle items with aliases (format: path|alias)
+        if (item.includes('|')) {
+            itemPath = item.split('|')[0];
+        }
+
+        // Expand environment variables
+        itemPath = expandenv(itemPath);
+
+        // Convert URI to local path if needed
+        try {
+            const uri = vscode.Uri.parse(itemPath);
+            itemPath = uriToLocalPath(uri);
+        } catch (error) {
+            // If parsing fails, assume it's already a local path
+        }
+
+        // Only watch directories that exist
+        if (fs.existsSync(itemPath) && fs.lstatSync(itemPath).isDirectory()) {
+            try {
+                const watcher = fs.watch(itemPath, { recursive: false }, (eventType, filename) => {
+                    if (filename) {
+                        // Debounce the refresh to avoid too many updates
+                        if (!favoritesFolderWatchers.has(itemPath + '_timeout')) {
+                            favoritesFolderWatchers.set(itemPath + '_timeout', setTimeout(() => {
+                                commands.executeCommand('favorites.refresh');
+                                favoritesFolderWatchers.delete(itemPath + '_timeout');
+                            }, 500) as any);
+                        }
+                    }
+                });
+
+                favoritesFolderWatchers.set(itemPath, watcher);
+            } catch (error) {
+                console.error(`Failed to watch folder ${itemPath}:`, error);
+            }
+        }
+    });
+}
+
+function clearFavoritesFolderWatchers() {
+    favoritesFolderWatchers.forEach((watcher, path) => {
+        if (path.endsWith('_timeout')) {
+            clearTimeout(watcher as any);
+        } else {
+            (watcher as fs.FSWatcher).close();
+        }
+    });
+    favoritesFolderWatchers.clear();
+}
+
+// Cleanup function called when extension is deactivated
+export function deactivate() {
+    clearFavoritesFolderWatchers();
+    // Clean up workspace folder watchers too
+    workspaceFolderWatchers.forEach((watcher) => {
+        watcher.close();
+    });
+    workspaceFolderWatchers.clear();
 }
 
 

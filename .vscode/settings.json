@@ -14,7 +14,6 @@
         "oshilo"
     ],
     "python.linting.pylintEnabled": false,
-    "favorites.ownExplorer": false,
     "cSpell.ignoreWords": [
         "collapsable",
         "expandenv",

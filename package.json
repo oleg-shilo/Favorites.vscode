@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.6.0",
+    "version": "1.9.12",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -23,10 +23,7 @@
         "type": "git",
         "url": "https://github.com/oleg-shilo/Favorites.vscode.git"
     },
-    "activationEvents": [
-        "onView:favorites-explorer-view",
-        "onView:favorites-own-view"
-    ],
+    "activationEvents": [],
     "main": "./out/src/extension",
     "icon": "media/fav.png",
     "contributes": {
@@ -34,25 +31,17 @@
             "activitybar": [
                 {
                     "id": "favorites-explorer",
-                    "title": "Favorites Explorer",
+                    "title": "Favorites",
                     "icon": "resources/light/favorite.svg"
                 }
             ]
         },
         "views": {
-            "explorer": [
-                {
-                    "id": "favorites-explorer-view",
-                    "name": "Favorites",
-                    "when": "config.favorites.ownExplorer == false",
-                    "icon": "resources/light/favorite.svg"
-                }
-            ],
             "favorites-explorer": [
                 {
-                    "id": "favorites-own-view",
-                    "name": "Favorites",
-                    "when": "config.favorites.ownExplorer == true",
+                    "id": "favorites-explorer-view",
+                    "name": "",
+                    "dev_comment": "intentionally left empty to avoid the double title in the view `<extension_name>:<view.name>`",
                     "icon": "resources/light/favorite.svg"
                 }
             ]
@@ -64,22 +53,27 @@
                 "favorites.singleListMode": {
                     "type": "boolean",
                     "default": false,
-                    "description": "Only ever show a single favorites list. \nIn this mode the top tree-view element with the name of the current list (e.g. `< Default >` ) is removed. \nThis mode is useful for users who only use a single list of favorite documents.."
+                    "description": "Only ever show a single favorites list. \nIn this mode the top tree-view element with the name of the current list (e.g. `< Default >` ) is removed. \nThis mode is useful for users who only use a single list of favorite documents."
+                },
+                "favorites.separateWorkspaceLists": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Controls what items to show in the favorites list if a workspace specific favorite list found (applicable for folders/workspaces only).\n If `false` then merge normal favorites list and the workspace specific. Otherwise show only favorite items for the workspace."
+                },
+                "favorites.disablePreviewWarning": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Controls showing the warning when VSCode is configured for preview mode on opening files. \nThis setting helps preventing VSCode from opening Favorites files always in the same tab (reusing the tabs)."
                 },
                 "favorites.showFolderFiles": {
                     "type": "boolean",
-                    "default": false,
+                    "default": true,
                     "description": "Show favorite's folder item content (sub-folders and files). \nThis feature is heavily affected by the VSCode treeView item bug (#34130 and #24) which always triggers node selection when you try to expand it."
-                },
-                "favorites.ownExplorer": {
-                    "type": "boolean",
-                    "default": false,
-                    "markdownDescription": "Specifies if the _Favorites_ view should be placed in its own explorer (on activity bar) or in the root Explorer."
                 },
                 "favorites.dataLocation": {
                     "type": "string",
                     "default": "<default>",
-                    "markdownDescription": "Specifies the directory where the all user data is stored. Useful for portable VSCode deployment."
+                    "markdownDescription": "Specifies the directory where the all user data is stored. Useful for portable VSCode deployment. You can use `${workspaceFolder}\\.vscode` for storing the data in the workspace folder. Specify '&lt;default&gt;' or leave it empty if you want to switch to the default location"
                 },
                 "favorites.maxTooltipLength": {
                     "type": "number",
@@ -96,6 +90,11 @@
                     "default": false,
                     "markdownDescription": "Disable opening sub-folders of a folder from the favorites list (regardless if the parent folder is already opened or not). This configuration value controls presence of the `<Open folder>` menu item in the favorites tree. Changing this setting takes effect after refreshing the favorites tree."
                 },
+                "favorites.monitorFavoriteFolderItems": {
+                    "type": "boolean",
+                    "default": false,
+                    "markdownDescription": "Monitor for the location of the folder item in the Favorites list and add/remove the items dynamically as they appear on the file system. The setting change takes effect only after the favorites list is refreshed."
+                },
                 "favorites.showListSeparator": {
                     "type": "boolean",
                     "default": true,
@@ -104,11 +103,24 @@
                 "favorites.expandListGroups": {
                     "type": "boolean",
                     "default": true,
-                    "description": "Do not expand list groups after loading all lists in teh list selection node (root). This mode can save some real estate.\nThis si all about the initial state of the list group as you can expand collapse it as normal regardless of this configuration value."
+                    "description": "Do not expand list groups after loading all lists in the list selection node (root). This mode can save some real estate.\nThis is all about the initial state of the list group as you can expand collapse it as normal regardless of this configuration value."
+                },
+                "favorites.showContextMenu": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show the Add selected file to Favorites context menu entries in Explorer and editor menus."
                 }
             }
         },
         "commands": [
+            {
+                "command": "favorites.quick_pick",
+                "title": "Favorites: Quick pick",
+                "icon": {
+                    "light": "resources/light/document.svg",
+                    "dark": "resources/dark/document.svg"
+                }
+            },
             {
                 "command": "favorites.new_list",
                 "title": "Creates and loads a new Favorites list",
@@ -154,6 +166,10 @@
                 "title": "Move up"
             },
             {
+                "command": "favorites.copy_path",
+                "title": "Copy path to clipboard"
+            },
+            {
                 "command": "favorites.move_down",
                 "title": "Move down"
             },
@@ -164,6 +180,10 @@
             {
                 "command": "favorites.open_all_files",
                 "title": "Open all files from the selected Favorites list"
+            },
+            {
+                "command": "favorites.open_extension_homepage",
+                "title": "Open extension GitHub page"
             },
             {
                 "command": "favorites.refresh",
@@ -217,30 +237,29 @@
         "menus": {
             "explorer/context": [
                 {
-                    "command": "favorites.add_file"
+                    "command": "favorites.add_file",
+                    "when": "config.favorites.showContextMenu"
                 }
             ],
             "editor/title": [
                 {
-                    "command": "favorites.add_file"
+                    "command": "favorites.add_file",
+                    "when": "config.favorites.showContextMenu"
                 }
             ],
             "editor/title/context": [
                 {
-                    "command": "favorites.add_file"
+                    "command": "favorites.add_file",
+                    "when": "config.favorites.showContextMenu"
                 }
             ],
             "editor/context": [
                 {
-                    "command": "favorites.add_file"
+                    "command": "favorites.add_file",
+                    "when": "config.favorites.showContextMenu"
                 }
             ],
             "view/title": [
-                {
-                    "command": "favorites.new_list",
-                    "when": "!config.favorites.singleListMode && view == favorites-own-view",
-                    "group": "navigation@0"
-                },
                 {
                     "command": "favorites.new_list",
                     "when": "!config.favorites.singleListMode && view == favorites-explorer-view",
@@ -248,74 +267,84 @@
                 },
                 {
                     "command": "favorites.add",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.add_workspace",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.refresh_all",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.edit",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@3"
                 },
                 {
                     "command": "favorites.open_all_files",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
+                    "group": "custom@0"
+                },
+                {
+                    "command": "favorites.open_extension_homepage",
+                    "when": "view == favorites-explorer-view",
                     "group": "custom@0"
                 }
             ],
             "view/item/context": [
                 {
                     "command": "favorites.associate_list_with_workspace",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.disassociate_list_from_workspace",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.rename_list",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.remove_list",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
                 },
                 {
                     "command": "favorites.open_new_window",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@0"
                 },
                 {
                     "command": "favorites.remove",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.set_alias",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "favorites.copy_path",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.move_up",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
                 {
                     "command": "favorites.move_down",
-                    "when": "view == favorites-own-view || view == favorites-explorer-view",
+                    "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 }
             ]
@@ -343,7 +372,7 @@
         "@typescript-eslint/parser": "^4.9.0",
         "eslint": "^7.15.0",
         "glob": "^7.1.6",
-        "mocha": "^10.1.0",
+        "mocha": "^11.3.0",
         "typescript": "^4.1.2",
         "vscode-test": "^1.4.1"
     }
