@@ -19,6 +19,7 @@ let outputChannel = vscode.window.createOutputChannel("CS-Script3");
 let favoritesFolderWatchers: Map<string, fs.FSWatcher> = new Map();
 // Global storage for workspace folder watchers
 let workspaceFolderWatchers: Map<string, fs.FSWatcher> = new Map();
+let localListWatchers: vscode.Disposable[] = [];
 // Cache user dir for the current extension host process.
 let defaultUserDir: string;
 
@@ -718,6 +719,9 @@ export function activate(context: vscode.ExtensionContext) {
         }
     })
 
+    vscode.workspace.onDidChangeWorkspaceFolders(() => setupLocalListWatchers());
+    setupLocalListWatchers();
+
     setupFolderWatchers();
 }
 
@@ -964,6 +968,22 @@ function setupFolderWatchers() {
     });
 }
 
+function setupLocalListWatchers() {
+    localListWatchers.forEach(w => w.dispose());
+    localListWatchers = [];
+
+    if (!vscode.workspace.workspaceFolders?.length) return;
+
+    const refresh = () => commands.executeCommand('favorites.refresh');
+    for (const glob of ['**/.fav/local.list.txt', '**/.vscode/fav.local.list.txt']) {
+        const watcher = vscode.workspace.createFileSystemWatcher(glob);
+        watcher.onDidChange(refresh);
+        watcher.onDidCreate(refresh);
+        watcher.onDidDelete(refresh);
+        localListWatchers.push(watcher);
+    }
+}
+
 function clearFavoritesFolderWatchers() {
     favoritesFolderWatchers.forEach((watcher, path) => {
         if (path.endsWith('_timeout')) {
@@ -978,7 +998,8 @@ function clearFavoritesFolderWatchers() {
 // Cleanup function called when extension is deactivated
 export function deactivate() {
     clearFavoritesFolderWatchers();
-    // Clean up workspace folder watchers too
+    localListWatchers.forEach(w => w.dispose());
+    localListWatchers = [];
     workspaceFolderWatchers.forEach((watcher) => {
         watcher.close();
     });
