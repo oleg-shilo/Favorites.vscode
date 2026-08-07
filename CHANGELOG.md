@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.13 (10 Aug, 2026)
+
+- Security update
+  
 ## 1.9.12 (10 May, 2026)
 
 - #68: [Question] Compatible with Cursor? (v2)
