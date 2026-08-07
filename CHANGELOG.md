@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.9.14 (10 Aug, 2026)
+
+- #69: Add local list watchers for workspace folder changes
+- Bump js-yaml, @typescript-eslint/eslint-plugin, @typescript-eslint/parser and eslint
+
 ## 1.9.13 (10 Aug, 2026)
 
 - Security update
