@@ -40,10 +40,15 @@ function get_list_items() {
                         .filter(x => x != '' && !x.startsWith("#"))
                         .map(x => expandenv(x))
                         .map(x => {
-                            if (path.isAbsolute(x))
+                            if (path.isAbsolute(x)){
                                 return x;
-                            else
-                                return path.join(localDir, x);
+                            }
+                            else{
+                                if(x.startsWith('|')) // check if it is a separator line (e.g. |--- Section A ---)
+                                    return x;
+                                else
+                                    return path.join(localDir, x);
+                            }
                         });
                     if (localListItems.length > 0)
                         workspaceItems = workspaceItems.concat(localListItems);
