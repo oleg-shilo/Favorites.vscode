@@ -1,11 +1,15 @@
 # Change Log
 
-## 1.9.14 (10 Aug, 2026)
+## 1.9.15 (8 Aug, 2026)
 
-- #69: Add local list watchers for workspace folder changes
+- #69: Separator in fav.local.list.txt lists workspace's files
+
+## 1.9.14 (7 Aug, 2026)
+
+- #69-triggered: Add local list watchers for workspace folder changes
 - Bump js-yaml, @typescript-eslint/eslint-plugin, @typescript-eslint/parser and eslint
 
-## 1.9.13 (10 Aug, 2026)
+## 1.9.13 (6 Aug, 2026)
 
 - Security update
   
