@@ -1,8 +1,9 @@
 # Change Log
 
-## 1.9.15 (8 Aug, 2026)
+## 1.9.16 (9 Aug, 2026)
 
 - #69: Separator in fav.local.list.txt lists workspace's files
+- Added check for itemPath length before expanding environment variables
 
 ## 1.9.14 (7 Aug, 2026)
 

@@ -940,7 +940,8 @@ function setupFolderWatchers() {
         }
 
         // Expand environment variables
-        itemPath = expandenv(itemPath);
+        if(itemPath?.length > 0)
+          itemPath = expandenv(itemPath);
 
         // Convert URI to local path if needed
         try {
