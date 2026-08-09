@@ -92,8 +92,8 @@
                 },
                 "favorites.monitorFavoriteFolderItems": {
                     "type": "boolean",
-                    "default": false,
-                    "markdownDescription": "Monitor for the location of the folder item in the Favorites list and add/remove the items dynamically as they appear on the file system. The setting change takes effect only after the favorites list is refreshed."
+                    "default": true,
+                    "markdownDescription": "Monitor location of the folder item in the Favorites list and add/remove its items dynamically as they are created/deleted on the file system. The setting change takes effect only after the favorites list is refreshed."
                 },
                 "favorites.showListSeparator": {
                     "type": "boolean",
