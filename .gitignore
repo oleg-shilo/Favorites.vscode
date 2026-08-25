@@ -2,3 +2,4 @@ out
 node_modules
 /*.cmd
 /*.vsix
+.DS_Store

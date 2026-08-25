@@ -95,6 +95,24 @@ If for whatever reason you want to manage your lists in custom location then you
 
 This feature represents an interesting opportunity when you can spscify the location for the lists based on the workspace folder. Thus if you set the configuration to `${workspaceFolder}\.vscode` then all your lists will be managed from the workspace-specific folder `.vscode` if VSCode has workspace/folder opened. Otherwise the lists will be managed from the default location.
 
+### _Filtering out items (ignore.txt)_
+
+You can hide files/folders from the _Favorites_ tree by placing an `ignore.txt` file in the data location (the same folder where the favorites lists are stored). The file follows the regular `.gitignore` format:
+
+![](resources/images/use_ignore_txt.png)
+
+Any file/folder matching the rules is not shown in the _Favorites_ panel anymore. Supported syntax:
+
+* `#` - comments
+* `!` - negation (re-include a previously ignored item); the last matching rule wins
+* trailing `/` - matches directories only (and everything inside them)
+* patterns containing `/` are anchored to the base folder, while patterns without `/` match the name at any nesting level
+* wildcards `*`, `**` and `?`
+
+Click the “Reload Favorites” icon, or restart the IDE for the changes to take effect.
+
+If no `ignore.txt` is present, nothing is filtered out.
+
 ### _Experimental features_
 
 From v1.5.3 you can use a workspace local list specific for the workspace location. There are two possible locations and file names for this type of list:
