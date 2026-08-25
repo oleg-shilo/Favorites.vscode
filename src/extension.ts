@@ -166,6 +166,24 @@ function copy_path(element: FavoriteItem) {
     // vscode.window.showInformationMessage("Copied to clipboard!");
 }
 
+function copy_relative_path(element: FavoriteItem) {
+
+    let itemPath = element.context;
+    let workspacePath = GetCurrentWorkspaceFolder();
+
+    // Fall back to the full path when no workspace folder is open
+    let relativePath = workspacePath ? path.relative(workspacePath, itemPath) : itemPath;
+
+    vscode.env.clipboard.writeText(relativePath);
+}
+
+function copy_name(element: FavoriteItem) {
+
+    let name = path.basename(element.context);
+
+    vscode.env.clipboard.writeText(name);
+}
+
 function up(element: FavoriteItem) {
 
     let lines = Utils.read_all_lines(Utils.fav_file).filter(x => x != '');
@@ -711,6 +729,8 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.open_all_files', open_all_files);
     vscode.commands.registerCommand('favorites.open_extension_homepage', open_extension_homepage);
     vscode.commands.registerCommand('favorites.copy_path', copy_path);
+    vscode.commands.registerCommand('favorites.copy_relative_path', copy_relative_path);
+    vscode.commands.registerCommand('favorites.copy_name', copy_name);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
     vscode.commands.registerCommand('favorites.nullCommand', e => { });

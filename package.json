@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.9.16",
+    "version": "1.9.17",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -170,6 +170,14 @@
                 "title": "Copy path to clipboard"
             },
             {
+                "command": "favorites.copy_relative_path",
+                "title": "Copy relative path to clipboard"
+            },
+            {
+                "command": "favorites.copy_name",
+                "title": "Copy name to clipboard"
+            },
+            {
                 "command": "favorites.move_down",
                 "title": "Move down"
             },
@@ -334,6 +342,16 @@
                 },
                 {
                     "command": "favorites.copy_path",
+                    "when": "view == favorites-explorer-view",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "favorites.copy_relative_path",
+                    "when": "view == favorites-explorer-view",
+                    "group": "navigation@1"
+                },
+                {
+                    "command": "favorites.copy_name",
                     "when": "view == favorites-explorer-view",
                     "group": "navigation@1"
                 },
