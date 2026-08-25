@@ -267,9 +267,10 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                     fileName,
                     vscode.TreeItemCollapsibleState.Collapsed,
                     {
-                        command: '',
+                        command: 'favorites.open',
                         title: '',
-                        arguments: [],
+                        tooltip: truncatePath(file),
+                        arguments: [file],
                     },
                     null,
                     file
@@ -284,24 +285,24 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
         let nodes = [];
 
-        if (root || !vscode.workspace.getConfiguration("favorites").get('disableOpeningSubfolder', false)) {
+        // if (root || !vscode.workspace.getConfiguration("favorites").get('disableOpeningSubfolder', false)) {
 
-            let commandNode = new FavoriteItem(
-                "<Open folder>",
-                vscode.TreeItemCollapsibleState.None,
-                {
-                    command: 'favorites.open',
-                    title: '',
-                    tooltip: dir,
-                    arguments: [dir],
-                },
-                null,
-                dir);
-            commandNode.iconPath = null;
-            commandNode.tooltip = truncatePath(dir);
+        //     let commandNode = new FavoriteItem(
+        //         "<Open folder>",
+        //         vscode.TreeItemCollapsibleState.None,
+        //         {
+        //             command: 'favorites.open',
+        //             title: '',
+        //             tooltip: dir,
+        //             arguments: [dir],
+        //         },
+        //         null,
+        //         dir);
+        //     commandNode.iconPath = null;
+        //     commandNode.tooltip = truncatePath(dir);
 
-            nodes.push(commandNode);
-        }
+        //     nodes.push(commandNode);
+        // }
 
         dirNodes.forEach(item => nodes.push(item));
         fileNodes.forEach(item => nodes.push(item));
@@ -394,7 +395,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                         rootFolder = true;
                         if (showFolderFiles) {
                             collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
-                            commandValue = "favorites.nullCommand";
+                            commandValue = "favorites.reveal_folder";
                         }
                     }
                 } catch (error) {

@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.9.17",
+    "version": "1.9.18",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -182,8 +182,20 @@
                 "title": "Move down"
             },
             {
-                "command": "favorites.open_new_window",
-                "title": "Open in new window"
+                "command": "favorites.new_file",
+                "title": "New file"
+            },
+            {
+                "command": "favorites.new_folder",
+                "title": "New folder"
+            },
+            {
+                "command": "favorites.open_in_finder",
+                "title": "Open in Finder"
+            },
+            {
+                "command": "favorites.open_in_explorer",
+                "title": "Open in Explorer"
             },
             {
                 "command": "favorites.open_all_files",
@@ -326,8 +338,23 @@
                     "group": "navigation@2"
                 },
                 {
-                    "command": "favorites.open_new_window",
-                    "when": "view == favorites-explorer-view",
+                    "command": "favorites.new_file",
+                    "when": "view == favorites-explorer-view && viewItem == 'file'",
+                    "group": "navigation@0"
+                },
+                {
+                    "command": "favorites.new_folder",
+                    "when": "view == favorites-explorer-view && viewItem == 'file'",
+                    "group": "navigation@0"
+                },
+                {
+                    "command": "favorites.open_in_finder",
+                    "when": "view == favorites-explorer-view && isMac",
+                    "group": "navigation@0"
+                },
+                {
+                    "command": "favorites.open_in_explorer",
+                    "when": "view == favorites-explorer-view && !isMac",
                     "group": "navigation@0"
                 },
                 {
@@ -369,6 +396,7 @@
         }
     },
     "scripts": {
+        "package": "vsce package",
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",
         "watch": "tsc -watch -p ./",
