@@ -27,7 +27,7 @@ The functionality is self explanatory and includes following features:
 * Managing items and lists via the dedicated toolbar button or the node context menu.
 * Refreshing (reloading) _Favorites_ via the dedicated toolbar button.
 * Moving items up and down in the list
-* Managing (editing) _Favorites_ list directly in _VSCode_. Once the _Favorites_ list definition is edited and saved the changes are automatically reflected in the _Favorites_ panel. Below is a sample of the _Favorites_ list definition.
+* Managing (editing) _Favorites_ list directly in _VSCode_. Once the _Favorites_ list definition is edited and saved, the changes are automatically reflected in the _Favorites_ panel. Below is a sample of the _Favorites_ list definition.
 
 ### _Managing list items:_
 
@@ -39,8 +39,11 @@ The functionality is self explanatory and includes following features:
 
 ### _Using extension_
 
-Using the extension is stright forward. Just click the item in the Favourites list tree and the corresponding document will be opened in the current window.
-If you are dealing with the item that represents a folder then you can also click a command item to open the  folder in VSCode _as a folder_. This command item has an int=uiotive appearance:
+Using the extension is straightforward. Just click the item in the Favourites list tree and the corresponding document will be opened in the current window.
+
+> _After opening VSCode, the Favourites view (tree) may be a bit tricky to find, as its initial placement is completely managed by VSCode. Typically, you would need to right-click the extension's icon in the Activity Bar and choose Move to — or just drag the icon to a different position in the Activity Bar._
+
+If you are dealing with the item that represents a folder, then you can also click a command item to open the  folder in VSCode _as a folder_. This command item has an intuitive appearance:
   
 ![image](https://github.com/user-attachments/assets/2ae86a05-9f3d-4c4c-831b-7a20795cd9a1)
 
