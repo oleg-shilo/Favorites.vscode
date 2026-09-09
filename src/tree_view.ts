@@ -32,7 +32,7 @@ function truncatePath(path: string, length?: number): string {
         return path;
 }
 
-// gitignore-style rules loaded from `<user_dir>/ignore.txt`
+// gitignore-style rules loaded from `<user_dir>/.favignore`
 class IgnoreMatcher {
 
     private rules: { re: RegExp, negated: boolean, dirOnly: boolean }[] = [];
@@ -105,7 +105,7 @@ function globToRegex(pattern: string): string {
 let ignoreRulesCache: { matcher: IgnoreMatcher, mtime: number } | null = null;
 
 function loadIgnoreRules(): IgnoreMatcher | null {
-    const ignoreFile = path.join(FavoritesTreeProvider.user_dir, 'ignore.txt');
+    const ignoreFile = path.join(FavoritesTreeProvider.user_dir, '.favignore');
     let mtime: number;
     try {
         mtime = fs.statSync(ignoreFile).mtimeMs;
@@ -128,7 +128,7 @@ function defaultRoot(absPath: string): string {
     return path.dirname(absPath);
 }
 
-// Checks a local path against ignore.txt (relative to baseDir if given, else to the workspace/parent)
+// Checks a local path against .favignore (relative to baseDir if given, else to the workspace/parent)
 function isIgnored(absPath: string, isDir: boolean, baseDir?: string): boolean {
     const matcher = loadIgnoreRules();
     if (matcher == null) return false;
@@ -401,7 +401,7 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 } catch (error) {
                 }
 
-                // hide items matching the ignore.txt rules
+                // hide items matching the .favignore rules
                 if (path.isAbsolute(item_local_path) && isIgnored(item_local_path, rootFolder)) return;
 
                 let node = new FavoriteItem(

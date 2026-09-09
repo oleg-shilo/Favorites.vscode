@@ -3,7 +3,8 @@
 ## 1.9.17 (10 Aug, 2026)
 
 - Added "Copy Relative Path to Clipboard" and "Copy Name to Clipboard"
-- Using `ignore.txt` file to filter out items
+- Using `.favignore` file to filter out items
+- Bump serialize-javascript and mocha
 
 ## 1.9.16 (9 Aug, 2026)
 
