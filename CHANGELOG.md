@@ -1,6 +1,6 @@
 # Change Log
 
-## 1.9.17 (10 Aug, 2026)
+## 1.9.17 (9 Sep, 2026)
 
 - Added "Copy Relative Path to Clipboard" and "Copy Name to Clipboard"
 - Using `.favignore` file to filter out items
