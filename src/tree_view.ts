@@ -32,6 +32,120 @@ function truncatePath(path: string, length?: number): string {
         return path;
 }
 
+// gitignore-style rules loaded from `<user_dir>/ignore.txt`
+class IgnoreMatcher {
+
+    private rules: { re: RegExp, negated: boolean, dirOnly: boolean }[] = [];
+
+    constructor(lines: string[]) {
+        lines.forEach(line => {
+            line = line.trim();
+            if (!line || line.startsWith('#')) return;
+
+            let negated = false;
+            if (line.startsWith('!')) {
+                negated = true;
+                line = line.slice(1);
+            }
+
+            let dirOnly = false;
+            if (line.endsWith('/')) {
+                dirOnly = true;
+                line = line.slice(0, -1);
+            }
+
+            // A pattern containing '/' (or starting with '/') is anchored to the base dir,
+            // otherwise it matches the name at any nesting level.
+            let anchored = line.startsWith('/');
+            if (anchored) line = line.slice(1);
+            if (line.includes('/')) anchored = true;
+
+            if (!line) return;
+
+            let re = globToRegex(line);
+            this.rules.push({
+                re: new RegExp(anchored ? '^' + re + '$' : '(?:^|/)' + re + '$'),
+                negated,
+                dirOnly
+            });
+        });
+    }
+
+    // The last matching rule wins; `!` rules re-include (gitignore semantics)
+    ignores(relPath: string, isDir: boolean): boolean {
+        let ignored = false;
+        for (let r of this.rules) {
+            if (r.dirOnly && !isDir) continue;
+            if (r.re.test(relPath)) ignored = !r.negated;
+        }
+        return ignored;
+    }
+}
+
+function globToRegex(pattern: string): string {
+    let out = '';
+    for (let i = 0; i < pattern.length; i++) {
+        const c = pattern[i];
+        if (c == '*') {
+            if (pattern[i + 1] == '*') {
+                out += '.*';
+                i++;
+            }
+            else
+                out += '[^/]*';
+        }
+        else if (c == '?')
+            out += '[^/]';
+        else
+            out += c.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+    }
+    return out;
+}
+
+let ignoreRulesCache: { matcher: IgnoreMatcher, mtime: number } | null = null;
+
+function loadIgnoreRules(): IgnoreMatcher | null {
+    const ignoreFile = path.join(FavoritesTreeProvider.user_dir, 'ignore.txt');
+    let mtime: number;
+    try {
+        mtime = fs.statSync(ignoreFile).mtimeMs;
+    }
+    catch {
+        return null;
+    }
+
+    if (ignoreRulesCache == null || ignoreRulesCache.mtime != mtime) {
+        const content = fs.readFileSync(ignoreFile, 'utf8');
+        ignoreRulesCache = { matcher: new IgnoreMatcher(content.split(/\r?\n/)), mtime };
+    }
+    return ignoreRulesCache.matcher;
+}
+
+function defaultRoot(absPath: string): string {
+    const workspace = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
+    if (workspace && (absPath == workspace || absPath.startsWith(workspace + path.sep)))
+        return workspace;
+    return path.dirname(absPath);
+}
+
+// Checks a local path against ignore.txt (relative to baseDir if given, else to the workspace/parent)
+function isIgnored(absPath: string, isDir: boolean, baseDir?: string): boolean {
+    const matcher = loadIgnoreRules();
+    if (matcher == null) return false;
+
+    const root = baseDir ?? defaultRoot(absPath);
+    const relPath = path.relative(root, absPath).split(path.sep).join('/');
+    if (relPath && matcher.ignores(relPath, isDir)) return true;
+
+    // a dir-only rule like `build/` also hides everything inside the directory
+    let dir = path.dirname(absPath);
+    while (dir.startsWith(root + path.sep)) {
+        if (matcher.ignores(path.relative(root, dir).split(path.sep).join('/'), true)) return true;
+        dir = path.dirname(dir);
+    }
+    return false;
+}
+
 export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteItem> {
 
     public static user_dir: string;
@@ -126,8 +240,11 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
         fs.readdirSync(dir).forEach(fileName => {
             var file = path.join(dir, fileName);
+            const stat = fs.lstatSync(file);
 
-            if (fs.lstatSync(file).isFile()) {
+            if (isIgnored(file, stat.isDirectory(), dir)) return;
+
+            if (stat.isFile()) {
                 let node = new FavoriteItem(
                     fileName,
                     vscode.TreeItemCollapsibleState.None,
@@ -145,14 +262,15 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
                 fileNodes.push(node);
             }
-            else if (fs.lstatSync(file).isDirectory()) {
+            else if (stat.isDirectory()) {
                 let node = new FavoriteItem(
                     fileName,
                     vscode.TreeItemCollapsibleState.Collapsed,
                     {
-                        command: '',
+                        command: 'favorites.open',
                         title: '',
-                        arguments: [],
+                        tooltip: truncatePath(file),
+                        arguments: [file],
                     },
                     null,
                     file
@@ -167,24 +285,24 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
 
         let nodes = [];
 
-        if (root || !vscode.workspace.getConfiguration("favorites").get('disableOpeningSubfolder', false)) {
+        // if (root || !vscode.workspace.getConfiguration("favorites").get('disableOpeningSubfolder', false)) {
 
-            let commandNode = new FavoriteItem(
-                "<Open folder>",
-                vscode.TreeItemCollapsibleState.None,
-                {
-                    command: 'favorites.open',
-                    title: '',
-                    tooltip: dir,
-                    arguments: [dir],
-                },
-                null,
-                dir);
-            commandNode.iconPath = null;
-            commandNode.tooltip = truncatePath(dir);
+        //     let commandNode = new FavoriteItem(
+        //         "<Open folder>",
+        //         vscode.TreeItemCollapsibleState.None,
+        //         {
+        //             command: 'favorites.open',
+        //             title: '',
+        //             tooltip: dir,
+        //             arguments: [dir],
+        //         },
+        //         null,
+        //         dir);
+        //     commandNode.iconPath = null;
+        //     commandNode.tooltip = truncatePath(dir);
 
-            nodes.push(commandNode);
-        }
+        //     nodes.push(commandNode);
+        // }
 
         dirNodes.forEach(item => nodes.push(item));
         fileNodes.forEach(item => nodes.push(item));
@@ -267,20 +385,24 @@ export class FavoritesTreeProvider implements vscode.TreeDataProvider<FavoriteIt
                 let commandValue = 'favorites.open';
                 let collapsableState = vscode.TreeItemCollapsibleState.None;
                 let rootFolder = false;
+                let item_local_path = item_path;
 
                 try {
                     let item_uri = vscode.Uri.parse(item_path);
-                    let item_local_path = uriToLocalPath(item_uri);
+                    item_local_path = uriToLocalPath(item_uri);
 
                     if (path.isAbsolute(item_local_path) && fs.lstatSync(item_local_path).isDirectory()) {
                         rootFolder = true;
                         if (showFolderFiles) {
                             collapsableState = vscode.TreeItemCollapsibleState.Collapsed;
-                            commandValue = "favorites.nullCommand";
+                            commandValue = "favorites.reveal_folder";
                         }
                     }
                 } catch (error) {
                 }
+
+                // hide items matching the ignore.txt rules
+                if (path.isAbsolute(item_local_path) && isIgnored(item_local_path, rootFolder)) return;
 
                 let node = new FavoriteItem(
                     displayName,

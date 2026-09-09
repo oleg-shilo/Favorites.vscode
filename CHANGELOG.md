@@ -1,5 +1,10 @@
 # Change Log
 
+## 1.9.17 (10 Aug, 2026)
+
+- Added "Copy Relative Path to Clipboard" and "Copy Name to Clipboard"
+- Using `ignore.txt` file to filter out items
+
 ## 1.9.16 (9 Aug, 2026)
 
 - #69: Separator in fav.local.list.txt lists workspace's files

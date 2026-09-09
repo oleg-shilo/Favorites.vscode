@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { FavoritesTreeProvider, FavoriteItem, uriToLocalPath } from './tree_view';
 import { Uri, commands } from 'vscode';
-import { ExecSyncOptionsWithBufferEncoding } from 'child_process';
+import * as cp from 'child_process';
 import { env } from 'process';
 import { Console } from 'console';
 let expandenv = require('expandenv');
@@ -164,6 +164,24 @@ function copy_path(element: FavoriteItem) {
     let itemPath = element.context;
     vscode.env.clipboard.writeText(itemPath);
     // vscode.window.showInformationMessage("Copied to clipboard!");
+}
+
+function copy_relative_path(element: FavoriteItem) {
+
+    let itemPath = element.context;
+    let workspacePath = GetCurrentWorkspaceFolder();
+
+    // Fall back to the full path when no workspace folder is open
+    let relativePath = workspacePath ? path.relative(workspacePath, itemPath) : itemPath;
+
+    vscode.env.clipboard.writeText(relativePath);
+}
+
+function copy_name(element: FavoriteItem) {
+
+    let name = path.basename(element.context);
+
+    vscode.env.clipboard.writeText(name);
 }
 
 function up(element: FavoriteItem) {
@@ -375,6 +393,14 @@ function clickOnGroup() {
     vscode.window.showInformationMessage("Expand the node before selecting the list.");
 }
 
+function reveal_folder(path: string) {
+    let uri = Uri.parse(path);
+    if (!uri.scheme || uri.scheme.length <= 1)
+        uri = Uri.file(path);
+
+    commands.executeCommand('revealInExplorer', uri);
+}
+
 function open(path: string) {
     // VSCode opens documents clicked in the Favorites tree in the preview mode if 
     // workbench.editor.enablePreview enabled (VSCode default)
@@ -414,14 +440,14 @@ function open(path: string) {
     open_path(path, false);
 }
 
-function open_path(path: string, newWindow: boolean) {
+function open_path(targetPath: string, newWindow: boolean) {
 
-    // vscode.window.showErrorMessage("About to open :" + path);
-    let uri = Uri.parse(path);
+    // vscode.window.showErrorMessage("About to open :" + targetPath);
+    let uri = Uri.parse(targetPath);
 
     if (!uri.scheme || uri.scheme.length <= 1) {
         // if required it's possible to use `vscode.env.remoteName` to check if remote channel is open 
-        uri = Uri.file(path);
+        uri = Uri.file(targetPath);
     }
 
     // as for VSCode v1.63.2 these are anomalies/peculiarities of `vscode.openFolder` and `vscode.open`
@@ -445,26 +471,15 @@ function open_path(path: string, newWindow: boolean) {
         }
         else { // opening folder
 
+            // If the folder belongs to the currently opened workspace, just select it
+            // in the Explorer of the current window instead of opening it as a workspace
             if (!newWindow && vscode.workspace?.workspaceFolders) {
-                if (uri.fsPath.includes(vscode.workspace.workspaceFolders[0].uri.fsPath)) {
+                let inWorkspace = vscode.workspace.workspaceFolders.some(f =>
+                    uri.fsPath == f.uri.fsPath || uri.fsPath.startsWith(f.uri.fsPath + path.sep));
 
-                    if (uri.fsPath == vscode.workspace.workspaceFolders[0].uri.fsPath) {
-                        // is already opened folder
-                        commands.executeCommand('revealInExplorer', uri);
-                        return;
-
-                    } else {
-                        // child of already opened folder
-
-                        let disableOpeningSubfolderOfLoadedFolder = vscode.workspace
-                            .getConfiguration("favorites")
-                            .get('disableOpeningSubfolderOfLoadedFolder', false);
-
-                        if (disableOpeningSubfolderOfLoadedFolder) {
-                            vscode.window.showErrorMessage("The parent folder is already opened in VSCode.");
-                            return;
-                        }
-                    }
+                if (inWorkspace) {
+                    commands.executeCommand('revealInExplorer', uri);
+                    return;
                 }
             }
 
@@ -502,8 +517,85 @@ function open_path(path: string, newWindow: boolean) {
     }
 }
 
-function open_in_new_window(item: FavoriteItem) {
-    open_path(item.context, true);
+function open_in_file_manager(element: FavoriteItem) {
+    let itemPath = element.context;
+    if (!itemPath) return;
+
+    let uri = Uri.parse(itemPath);
+    if (!uri.scheme || uri.scheme.length <= 1)
+        uri = Uri.file(itemPath);
+
+    let localPath = uri.fsPath;
+    if (!fs.existsSync(localPath)) return;
+
+    let isDir = fs.lstatSync(localPath).isDirectory();
+
+    if (os.platform() == 'darwin') {
+        // open a folder in Finder, or reveal/select a file in Finder
+        if (isDir)
+            cp.spawn('open', [localPath]);
+        else
+            cp.spawn('open', ['-R', localPath]);
+    }
+    else if (os.platform() == 'win32') {
+        // open a folder in Explorer, or reveal/select a file in Explorer
+        if (isDir)
+            cp.spawn('explorer', [localPath]);
+        else
+            cp.spawn('explorer', ['/select,', localPath]);
+    }
+    else {
+        // Linux: open the folder (the parent folder for a file) with the default file manager
+        cp.spawn('xdg-open', [isDir ? localPath : path.dirname(localPath)]);
+    }
+}
+
+function get_local_dir(element: FavoriteItem): string {
+    let itemPath = element.context;
+    if (!itemPath) return null;
+
+    let uri = Uri.parse(itemPath);
+    if (!uri.scheme || uri.scheme.length <= 1)
+        uri = Uri.file(itemPath);
+
+    let localPath = uri.fsPath;
+    if (!fs.existsSync(localPath)) return null;
+
+    return fs.lstatSync(localPath).isDirectory() ? localPath : path.dirname(localPath);
+}
+
+async function new_file(element: FavoriteItem) {
+    let dir = get_local_dir(element);
+    if (!dir) return;
+
+    let name = await vscode.window.showInputBox({ prompt: "Enter the name of the new file", value: "new_file.txt" });
+    if (!name) return;
+
+    let file = path.join(dir, name);
+    if (fs.existsSync(file)) {
+        vscode.window.showErrorMessage("The file already exists.");
+        return;
+    }
+
+    fs.writeFileSync(file, '');
+    commands.executeCommand('favorites.refresh');
+}
+
+async function new_folder(element: FavoriteItem) {
+    let dir = get_local_dir(element);
+    if (!dir) return;
+
+    let name = await vscode.window.showInputBox({ prompt: "Enter the name of the new folder", value: "new_folder" });
+    if (!name) return;
+
+    let folder = path.join(dir, name);
+    if (fs.existsSync(folder)) {
+        vscode.window.showErrorMessage("The folder already exists.");
+        return;
+    }
+
+    fs.mkdirSync(folder);
+    commands.executeCommand('favorites.refresh');
 }
 
 function new_list() {
@@ -682,8 +774,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.registerTreeDataProvider("favorites-explorer-view", treeViewProvider);
 
-    vscode.commands.registerCommand('favorites.open_new_window', open_in_new_window);
+    vscode.commands.registerCommand('favorites.open_in_finder', open_in_file_manager);
+    vscode.commands.registerCommand('favorites.open_in_explorer', open_in_file_manager);
+    vscode.commands.registerCommand('favorites.new_file', new_file);
+    vscode.commands.registerCommand('favorites.new_folder', new_folder);
     vscode.commands.registerCommand('favorites.open', open);
+    vscode.commands.registerCommand('favorites.reveal_folder', reveal_folder);
     vscode.commands.registerCommand('favorites.load', load);
     vscode.commands.registerCommand('favorites.clickOnGroup', clickOnGroup);
     vscode.commands.registerCommand('favorites.alt_cmd', alt_cmd);
@@ -711,6 +807,8 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.open_all_files', open_all_files);
     vscode.commands.registerCommand('favorites.open_extension_homepage', open_extension_homepage);
     vscode.commands.registerCommand('favorites.copy_path', copy_path);
+    vscode.commands.registerCommand('favorites.copy_relative_path', copy_relative_path);
+    vscode.commands.registerCommand('favorites.copy_name', copy_name);
     vscode.commands.registerCommand('favorites.move_up', up);
     vscode.commands.registerCommand('favorites.move_down', down);
     vscode.commands.registerCommand('favorites.nullCommand', e => { });
