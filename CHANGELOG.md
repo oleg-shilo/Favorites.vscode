@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.18 (15 Sep, 2026)
+
+- #78: `<Open Folder>` functionality is missing
+
 ## 1.9.17 (9 Sep, 2026)
 
 - Added "Copy Relative Path to Clipboard" and "Copy Name to Clipboard"
