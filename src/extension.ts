@@ -784,6 +784,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand('favorites.new_file', new_file);
     vscode.commands.registerCommand('favorites.new_folder', new_folder);
     vscode.commands.registerCommand('favorites.open', open);
+    vscode.commands.registerCommand('favorites.open_new_window', open_in_new_window);
     vscode.commands.registerCommand('favorites.reveal_folder', reveal_folder);
     vscode.commands.registerCommand('favorites.load', load);
     vscode.commands.registerCommand('favorites.clickOnGroup', clickOnGroup);

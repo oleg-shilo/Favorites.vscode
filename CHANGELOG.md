@@ -1,5 +1,9 @@
 # Change Log
 
+## 1.9.19 (20 Sep, 2026)
+
+- #78 (part-2): restored `favorites.open_new_window`
+
 ## 1.9.18 (15 Sep, 2026)
 
 - #78: `<Open Folder>` functionality is missing
