@@ -2,7 +2,7 @@
     "name": "favorites",
     "displayName": "Favorites Manager",
     "description": "Manage and quickly access frequently used documents and documents' sets",
-    "version": "1.9.18",
+    "version": "1.9.19",
     "license": "MIT",
     "publisher": "oleg-shilo",
     "engines": {
@@ -182,6 +182,10 @@
                 "title": "Move down"
             },
             {
+                "command": "favorites.open_new_window",
+                "title": "Open in new window"
+            },
+            {
                 "command": "favorites.new_file",
                 "title": "New file"
             },
@@ -336,6 +340,11 @@
                     "command": "favorites.remove_list",
                     "when": "view == favorites-explorer-view",
                     "group": "navigation@2"
+                },
+                {
+                    "command": "favorites.open_new_window",
+                    "when": "view == favorites-explorer-view",
+                    "group": "navigation@0"
                 },
                 {
                     "command": "favorites.new_file",

@@ -517,6 +517,11 @@ function open_path(targetPath: string, newWindow: boolean) {
     }
 }
 
+function open_in_new_window(item: FavoriteItem) {
+    if (item.context) 
+        open_path(item.context, true);
+}
+
 function open_in_file_manager(element: FavoriteItem) {
     let itemPath = element.context;
     if (!itemPath) return;
